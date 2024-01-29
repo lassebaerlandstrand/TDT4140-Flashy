@@ -15,12 +15,9 @@ export default function ApplicationShell({
   return (
     <NextAuthProvider session={session!}>
       <MantineProvider>
-
         <HeaderMenu />
         <main className={styles.main}>
-          <Stack>
-            <>{children}</>
-          </Stack>
+          <>{children}</>
         </main>
       </MantineProvider>
     </NextAuthProvider>
