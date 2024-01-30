@@ -40,6 +40,23 @@ When moving an issue from the `Sprint Backlog` to `In Progress` remember to:
 - Assign it to someone (like yourself)
 - [Optional] Update the description with how you plan to solve the issue
 
+## How to use Git
+
+This developer guide will show how to do it with the terminal. You can do all these commands directly in VSCode by entering `Ctrl+Shift+P` or `Cmd+Shift+P` and typing what you want to do, like `Create branch`.
+
+Git is a version control system that enables collaborative development and effective code managment. 
+In Git there are three main areas or directories that represent different stages of your project.
+- Working directory: The working directory is where you actively make changes to your files.
+- Staging Area: In this area you have marked a modified file to be included in the next commit.
+- Local Repository: This area is the copy of the repository that is on your own computer.
+- Remote Repository: This area is hosted on platforms like GitLab. It serves as the central location where all commited changes are stored and where team members can collaborate.
+
+Here is a brief list of essential Git commands (Remember all these commands are integrated in VSCode and can you that instead of the terminal):
+- `git add <file-name>`. Stages a file for commit. This means a file goes from the working directory to the staging area.
+- `git add -all`: Same as above, just adds all the modified files to the staging area (useful when you want to commit all modified files)
+- `git commit -m "Your commit message"`: This commits all staged files into the local repository.
+- `git push`: Pushes your local repository to the remote repository so everyone can see it. \
+When you push from a branch for the first time, you may need to set a upstream branch (remote copy), just follow what the terminal says.
 
 ## Branching
 
@@ -48,7 +65,6 @@ When you plan to start on a new issue, you need to create a new branch (never ma
 ### Creating a new branch
 
 This is a step by step guide on how to create a new branch. 
-This developer guide will show how to do it with the terminal. You can do all these commands directly in VSCode by entering `Ctrl+Shift+P` or `Cmd+Shift+P` and typing what you want to do, like `Create branch`.
 
 1. First you need to be on the `dev`-branch (or the branch you want to branch out from). You can see which branch you are on by running `git branch` and you will be on the branch with the star next to it (or check the bottom left corner in VSCode). If you are on the wrong branch, use `git checkout <name-of-branch>` to change branch.
 ```
