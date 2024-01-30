@@ -10,16 +10,12 @@ TBA
 
 TBA
 
-## How to run
-
-TBA
-
 ## Workflow
 
 Our development process follows the Gitflow workflow to maintain a structured and stable codebase. We utilize three main types of branches:
 
-- `main`-branch: This is a protected branch, which should always be in working condition. You can consider this to be the "production"-branch. After a sprint, we will merge the `dev`-branch into the `main`-branch.
-- `dev`-branch: This is the branch we are working on under a sprint. You will branch out of `dev` and do a merge request to merge back into `dev`.
+- `main`-branch: This is a protected branch (you cannot commit directly to it), which should always be in working condition. You can consider this to be the "production"-branch. After a sprint, we will merge the `dev`-branch into the `main`-branch.
+- `dev`-branch: This is the branch we are working on under a sprint (also protected). You will branch out of `dev` and do a merge request to merge back into `dev`.
 - Feature branches: This is the name of the branches that you are actively working on. When you are branching out of `dev`, you are creating a feature branch.
 The name of a feature branch should follow this format `issue-number/short-description-of-task`. Example: `43/implement-searching-functionality`.
 
@@ -42,7 +38,7 @@ When moving an issue from the `Sprint Backlog` to `In Progress` remember to:
 
 ## How to use Git
 
-This developer guide will show how to do it with the terminal. You can do all these commands directly in VSCode by entering `Ctrl+Shift+P` or `Cmd+Shift+P` and typing what you want to do, like `Create branch`.
+This developer guide will show how to use git with the terminal. You can do all these commands directly in VSCode by entering `Ctrl+Shift+P` or `Cmd+Shift+P` and typing what you want to do, like `Create branch`.
 
 Git is a version control system that enables collaborative development and effective code managment. 
 In Git there are three main areas or directories that represent different stages of your project.
@@ -51,16 +47,16 @@ In Git there are three main areas or directories that represent different stages
 - Local Repository: This area is the copy of the repository that is on your own computer.
 - Remote Repository: This area is hosted on platforms like GitLab. It serves as the central location where all commited changes are stored and where team members can collaborate.
 
-Here is a brief list of essential Git commands (Remember all these commands are integrated in VSCode and can you that instead of the terminal):
+Here is a brief list of essential Git commands (Remember all these commands are integrated in VSCode and you can use that instead of the terminal):
 - `git add <file-name>`. Stages a file for commit. This means a file goes from the working directory to the staging area.
 - `git add -all`: Same as above, just adds all the modified files to the staging area (useful when you want to commit all modified files)
 - `git commit -m "Your commit message"`: This commits all staged files into the local repository.
 - `git push`: Pushes your local repository to the remote repository so everyone can see it. \
-When you push from a branch for the first time, you may need to set a upstream branch (remote copy), just follow what the terminal says.
+When you push from a new branch, you may need to set a upstream branch, just follow what the terminal says.
 
 ## Branching
 
-When you plan to start on a new issue, you need to create a new branch (never make changes directly to `dev` or `main`). The branch name should be the issue number followed by a short description of the issue. For example, if you are working on issue #1, you should create a branch named `1-implementing-new-feature`. This will ensure that the branch is automatically linked to that issue, and add some QOL improvements when creating merge requests.
+When you plan to start on a new issue, you need to create a new branch (never make changes directly to `dev` or `main`). The branch name should be the issue number followed by a short description of the issue. For example, if you are working on issue #1, you should create a branch named `1/implementing-new-feature`. This will ensure that the branch is automatically linked to that issue, and add some QOL improvements when creating merge requests.
 
 ### Creating a new branch
 
@@ -75,15 +71,15 @@ This is a step by step guide on how to create a new branch.
 > git checkout <name-of-branch>
 ```
 
-2. Now you can branch out into your own feature branch. Do this by running this command in your terminal. (Ignore the "<>" when typing your branch name). This will create a new branch with the name you specified, and automatically switch to that branch. You can now make changes to the code, and commit them to the branch. 
+2. Now you can branch out into your own feature branch. Do this by running this command in your terminal. This will create a new branch with the name you specified, and automatically switch to that branch. You can now make changes to the code, and commit them to the branch. 
 ```
-git checkout -b <issue-number/new-branch-name>
+git checkout -b "issue-number/new-branch-name"
 ```
 
 ### Updating a branch with content in `dev`
 
 Before you create a merge request, you should make sure that your branch is up to date with the `dev` branch. This is to ensure that there are no merge conflicts when you create the merge request. \
-The code block below assumes you start on your own branch and want to update it with main.
+The code block below assumes you start on your own branch and want to update it with `dev`.
 
 ```
 (Assuming you are on your own branch)
@@ -104,7 +100,7 @@ The code block below assumes you start on your own branch and want to update it 
 
 ## Merge requests (or pull requests)
 
-When you are done with your changes, and want to merge your branch into `dev`, you will need to create a Merge Request. This is done by going to the "Merge requests" tab on GitLab, and clicking the "New merge request" button. You will then be presented with a page where you can select the branch you want to merge into (which is `dev`), and the branch you want to merge from. You can then click the "Create merge request" button. You will then be presented with a page where you can write a description of the changes you have made. If this PR closes an issue add this in the description: `Closes #issue-number`, this will automatically close the issue when the merge request is merged. 
+When you are done with your changes, and want to merge your branch into `dev`, you will need to create a Merge Request. This is done by going to the "Merge requests" tab on GitLab, and clicking the "New merge request" button. Then you will be redirected to a new page where you can select the branch you want to merge into (which is `dev`), and the branch you want to merge from (your branch). You can then click the "Create merge request" button. You will then be presented with a page where you can write a description of the changes you have made. If this PR closes an issue add this in the description: `Closes #issue-number`, this will automatically close the issue when the merge request is merged. 
 
 A pipeline will start to run on the merge request, which will run tests and check that your project follows the styling format. The pipeline needs to be successful before you are allowed to merge.
 
@@ -114,7 +110,7 @@ When the review is done, you are ready to merge into `dev`. Click the "Merge pul
 
 ## Milestones
 
-We will use milestones to track sprint iterations. For each sprint iteration, we will have new milestone in GitLab.Utilizing milestones allows us to set specific goals, plans and allocate tasks, and monitor the overall advancement of our project.
+We will use milestones to track sprint iterations. For each sprint iteration, we will have new milestone in GitLab. Utilizing milestones allows us to set specific goals, plans and allocate tasks, and monitor the overall advancement of our project.
 
 ## Conventions
 
@@ -132,7 +128,7 @@ Are we going to use Prettier?
 
 ### Naming conventions
 
-Which type of style should be used for what is described below:
+The naming format should follow the list below:
 
 - `PascalCase`: Classes, interfaces, types, enums and components
 - `camelCase`: Variables, parameters, functions, methods and properties
@@ -140,12 +136,12 @@ Which type of style should be used for what is described below:
 
 ### Commenting
 
-There are two types of comments, JSDoc (`/** ... */`) and non-JSDoc ordinary comments (`// ... ` or `/* ... */`).
+There are two types of comments, JSDoc (`/** ... */`) and ordinary comments (`// ... ` or `/* ... */`).
 
 - Use `/** JSDoc */` comments for documentation, i.e. comments a user of the code should read.
 - Use `// line comments` for implementation comments, i.e. comments that only concern the implementation of the code itself.
 
-JSDoc comments are understood by tools (such as editors and documentation generators), while ordinary comments are only for other humans.
+In addition, JSDoc comments are understood by tools (such as editors and documentation generators), while ordinary comments are only for other humans.
 
 ### Other best practices
 
