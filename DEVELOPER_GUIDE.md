@@ -24,7 +24,7 @@ During a sprint, you will only need to consider the `dev`-branch and the feature
 
 ## Issues
 
-You will find all issues in the [issue boards](https://gitlab.stud.idi.ntnu.no/tdt4140-2024/produktomraade-3/gruppe-48/flashy/-/boards). We use issues to monitor our progress in a sprint and we have split the issue board into four parts: `Product Backlog`, `Spring Backlog`, `In Progress`, and `Closed`. During a sprint, you only need to consider the last three.
+You will find all issues in the [issue boards](https://pug48.atlassian.net/jira/software/projects/KAN/boards/1) on Jira. We use issues to monitor our progress in a sprint and we have split the issue board into five parts: `Product Backlog`, `Current Sprint` (Sprint backlog), `In Progress`, `Under review` and `Closed`. During a sprint, you only need to consider the last three.
 
 When you are creating a new issue remember to do the following:
 - Create a title which briefly explains the issue (example: `Implement filter functionality`)
@@ -123,14 +123,13 @@ In this project, we utilize ESLint as our linter to ensure code quality and cons
 
 ### Formatters
 
-TBA:
-Are we going to use Prettier?
+We are using Prettier. This formatter makes it so all code follows the same styling. An example of formatting is that all code uses 2-spaces indentation and each line is no longer than 150 characters. 
 
 ### Naming conventions
 
 The naming format should follow the list below:
 
-- `PascalCase`: Classes, interfaces, types, enums and components
+- `PascalCase`: Components, classes, interfaces, types, enums and components
 - `camelCase`: Variables, parameters, functions, methods and properties
 - `CONSTANT_CASE`: Global constant values
 
