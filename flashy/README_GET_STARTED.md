@@ -11,6 +11,13 @@
 #### Note:
 - required node V.20 or later
 
+# Adding the firebase necessitites
+Within /flashy
+- Add the `firebase-secret-credentials.json`
+    - Ask Mikael about this
+- Create a new file called `env.local` and add the necessary values following the `env.local.example` file
+    - Ask Mikael about this
+
 # Running the development server
 From the root environment:
 
