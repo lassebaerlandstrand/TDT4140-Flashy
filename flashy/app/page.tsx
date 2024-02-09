@@ -11,7 +11,7 @@ export default function Home() {
       {session ? (
         <>
           <Title>Hello, {session.user?.name}</Title>
-          <Image src="/flashy.png" alt="Flashy logo" width={500} height={500} />
+          <Image src="/logo/FlashyLogoMain.png" alt="Flashy logo" width={330} height={487} />
         </>
       ) : (
         <>
