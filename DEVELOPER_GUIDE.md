@@ -50,7 +50,7 @@ In Git there are three main areas or directories that represent different stages
 Here is a brief list of essential Git commands (Remember all these commands are integrated in VSCode and you can use that instead of the terminal):
 - `git add <file-name>`. Stages a file for commit. This means a file goes from the working directory to the staging area.
 - `git add -all`: Same as above, just adds all the modified files to the staging area (useful when you want to commit all modified files)
-- `git commit -m "Your commit message"`: This commits all staged files into the local repository.
+- `git commit -m "Your commit message"`: This commits all staged files into the local repository. On the next line of the commit message, type `Co-authored-by: name <name@example.com>` with specific information for each co-author. After the co-author information, add a closing quotation mark.
 - `git push`: Pushes your local repository to the remote repository so everyone can see it. \
 When you push from a new branch, you may need to set a upstream branch, just follow what the terminal says.
 
