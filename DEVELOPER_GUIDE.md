@@ -2,13 +2,11 @@
 
 This document is intended to provide information about the project structure, best practices and other useful information for contributors.
 
-## Prerequisites
-
-TBA
 
 ## Project structure
 
 TBA
+We are using the [Next.js project structure](https://nextjs.org/docs/app/building-your-application/routing). 
 
 ## Workflow
 
@@ -142,9 +140,17 @@ There are two types of comments, JSDoc (`/** ... */`) and ordinary comments (`//
 
 In addition, JSDoc comments are understood by tools (such as editors and documentation generators), while ordinary comments are only for other humans.
 
+### React best practices
+
+- **Keep Components Small and Focused**: Aim for single responsibility principle. Each component should ideally do one thing only.
+- **Decompose Components**: Break down your UI into smaller, reusable components to improve maintainability and reusability.
+- If you don't have a reason to otherwise, always declare a variable/function as a constant
+
+
 ### Other best practices
 
 - You should never use "[magic numbers](https://stackoverflow.com/questions/47882/what-is-a-magic-number-and-why-is-it-bad)", instead create a constant variable and reference it instead, this makes the code clearer and easier to read.
 - If you find yourself nesting a lot of if-statements, you should consider using the [guard clause](https://codingbeautydev.com/blog/stop-using-nested-ifs/?expand_article=1) pattern (invert the if-statement and return early).
 - Single-responsibility principle: A component should only have one responsibility/purpose. If a component has multiple responsibilities, it should be split into multiple component.
 - DRY (Don't Repeat Yourself) principle: Reduce repetition in code as much as possible.
+
