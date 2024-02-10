@@ -1,5 +1,6 @@
-import { collection, getDocs } from "@firebase/firestore";
+import { collection, deleteDoc, getDocs, updateDoc } from "@firebase/firestore";
 import { firestore } from "@/lib/firestore";
+import { ComboboxItem } from "@mantine/core";
 
 
 export async function getAllUsers(): Promise<User[]> {
@@ -10,12 +11,12 @@ export async function getAllUsers(): Promise<User[]> {
 
     docs.forEach(doc => {
         const docData = doc.data();
-
         users.push({
             email: docData.email,
             name: docData.name,
             image: docData.image,
             emailVerified: docData.emailVerified,
+            role: docData.role,
         });
     });
     
@@ -70,4 +71,34 @@ export async function getFlashcardsByEmail(email: string): Promise<Flashcard[]> 
     })
 
     return flashcards;
+}
+
+export const deleteUser = async (actionUser: User, deleteUserEmail: string) => {
+    const userCollection = collection(firestore, "users");
+    const docs = getDocs(userCollection);
+
+    (await docs).forEach(doc => {
+        const docData = doc.data();
+        if (docData.email == deleteUserEmail){
+            if (actionUser.role == "admin" || actionUser.email == deleteUserEmail){
+                // delete user
+                deleteDoc(doc.ref);
+            }
+        }
+    });
+
+}
+
+export const setUpdateUserRoles = async (actionUser: User | undefined, updateEmail: string, newRole: ComboboxItem | null) => {
+    const userCollection = collection(firestore, "users");
+    const docs = getDocs(userCollection);
+    if (actionUser && actionUser.role === "admin"){
+    (await docs).forEach(doc => {
+        const docData = doc.data();
+        if (docData.email == updateEmail){
+                updateDoc(doc.ref,{
+                    role: newRole?.value
+                })
+        }
+    })}
 }

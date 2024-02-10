@@ -5,7 +5,11 @@ import { Button, Stack, Title } from "@mantine/core";
 import { signIn, signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { useEffect } from "react";
-import { getAllFlashcards, getAllUsers, getFlashcardsByEmail } from "@/lib/utils/firebase";
+import {
+  getAllFlashcards,
+  getAllUsers,
+  getFlashcardsByEmail,
+} from "@/app/utils/firebase";
 
 export default function Home() {
   const { data: session } = useSession();
@@ -13,7 +17,7 @@ export default function Home() {
   useEffect(() => {
     async function printAllFlashcards() {
       console.log(await getAllFlashcards());
-    } 
+    }
     printAllFlashcards();
   }, []);
 

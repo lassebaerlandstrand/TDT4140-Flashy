@@ -3,4 +3,5 @@ type User = {
     name: string;
     image: string;
     emailVerified: boolean;
+    role: string;
 }
