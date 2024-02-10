@@ -15,7 +15,7 @@ export default async function RootStyleRegistry({
         <ColorSchemeScript />
       </head>
       <body>
-        <MantineProvider>
+        <MantineProvider defaultColorScheme="dark">
           <ApplicationShell session={session!}>{children}</ApplicationShell>;
         </MantineProvider>
       </body>
