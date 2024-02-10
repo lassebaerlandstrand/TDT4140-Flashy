@@ -1,5 +1,6 @@
 import { getServerSession } from "next-auth";
 import ApplicationShell from "@/components/root/ApplicationShell";
+import { ColorSchemeScript } from "@mantine/core";
 
 export default async function RootStyleRegistry({
   children,
@@ -8,10 +9,12 @@ export default async function RootStyleRegistry({
 }) {
   const session = await getServerSession();
   return (
-    <html lang="nb">
-      <head></head>
+    <html lang="en">
+      <head>
+        <ColorSchemeScript />
+      </head>
       <body>
-        <ApplicationShell session={session!}>{children}</ApplicationShell>
+        <ApplicationShell session={session!}>{children}</ApplicationShell>;
       </body>
     </html>
   );
