@@ -1,9 +1,22 @@
 "use client";
 import { NextAuthProvider } from "../../lib/auth/providers/SessionProvider";
-import styles from "./ApplicationShell.module.css";
 import { Session } from "next-auth";
-import HeaderMenu from "../navigation/Header";
-import { MantineProvider, Stack } from "@mantine/core";
+import {
+  AppShell,
+  Burger,
+  Group,
+  MantineProvider,
+  Skeleton,
+} from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
+
+import "@mantine/core/styles.css";
+import { NavbarNested } from "../navigation/NavbarNested";
+
+export const metadata = {
+  title: "My Mantine app",
+  description: "I have followed setup instructions carefully",
+};
 
 export default function ApplicationShell({
   children,
@@ -12,13 +25,35 @@ export default function ApplicationShell({
   children: React.ReactNode;
   session: Session;
 }) {
+  const [opened, { toggle }] = useDisclosure();
+
   return (
     <NextAuthProvider session={session!}>
       <MantineProvider>
-        <HeaderMenu />
-        <main className={styles.main}>
-          <>{children}</>
-        </main>
+        <AppShell
+          // header={{ height: 60 }}
+          navbar={{
+            width: 320,
+            breakpoint: "sm",
+            collapsed: { mobile: !opened },
+          }}
+          padding="md"
+        >
+          {/* <AppShell.Header>
+            <Group h="100%" px="md">
+              <Burger
+                opened={opened}
+                onClick={toggle}
+                hiddenFrom="sm"
+                size="sm"
+              />
+            </Group>
+          </AppShell.Header> */}
+          <AppShell.Navbar p="md">
+            <NavbarNested />
+          </AppShell.Navbar>
+          <AppShell.Main>{children}</AppShell.Main>
+        </AppShell>
       </MantineProvider>
     </NextAuthProvider>
   );
