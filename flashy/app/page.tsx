@@ -4,9 +4,24 @@ import Image from "next/image";
 import { Button, Stack, Title } from "@mantine/core";
 import { signIn, signOut, useSession } from "next-auth/react";
 import Link from "next/link";
+import { firestore } from "@/lib/firestore";
+import { collection, getDocs } from "@firebase/firestore";
+import { useEffect } from "react";
+import { getAllUsers } from "@/lib/utils/firebase";
 
 export default function Home() {
   const { data: session } = useSession();
+
+  useEffect(() => {
+    // getUsers();
+
+    async function abc() {
+      console.log(await getAllUsers());
+    } 
+    abc();
+      
+  }, [])
+
   return (
     <Stack align="center">
       <Button component={Link} href="/demo">
