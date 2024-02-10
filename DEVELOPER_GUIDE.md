@@ -2,6 +2,25 @@
 
 This document is intended to provide information about the project structure, best practices and other useful information for contributors.
 
+## Prerequisites
+- Node v21.6 (the latest version)
+- NVM v1.12
+- Next.js v14
+- Mantine/carousel v7.5.2
+- Embla-Carousel-React v7.1
+- Mantine/core & hooks v7.5
+
+## How to install
+
+### NVM
+[Tutorial here](https://nextjs.org/docs/app/building-your-application/routing)
+
+### Node
+`nvm install 21`, then `nvm use 21`
+
+### Mantine
+- `npm install @mantine/core @mantine/hooks`
+- `npm install embla-carousel-react@^7.1.0 @mantine/carousel`
 
 ## Project structure
 
