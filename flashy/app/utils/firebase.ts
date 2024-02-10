@@ -1,6 +1,7 @@
 import { collection, deleteDoc, getDocs, updateDoc } from "@firebase/firestore";
 import { firestore } from "@/lib/firestore";
 import { ComboboxItem } from "@mantine/core";
+import { Session } from "next-auth";
 
 
 export async function getAllUsers(): Promise<User[]> {
@@ -73,7 +74,7 @@ export async function getFlashcardsByEmail(email: string): Promise<Flashcard[]> 
     return flashcards;
 }
 
-export const deleteUser = async (actionUser: User, deleteUserEmail: string) => {
+export const deleteUser = async (actionUser: User | Session["user"], deleteUserEmail: string) => {
     const userCollection = collection(firestore, "users");
     const docs = getDocs(userCollection);
 
