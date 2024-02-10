@@ -5,6 +5,7 @@ import {
   rem,
   Skeleton,
   Container,
+  Flex,
 } from "@mantine/core";
 import {
   IconNotes,
@@ -62,24 +63,30 @@ export function NavbarNested() {
 
   return (
     <nav className={classes.navbar}>
-      <Container className={classes.header}>
-        <Group justify="space-between">
-          <Logo style={{ width: rem(120) }} />
-          <Code fw={700}>Flashy v.1.0</Code>
-        </Group>
-      </Container>
+      <Flex
+        direction="column"
+        justify="space-between"
+        style={{ height: "100%", width: "100%" }}
+      >
+        <Container className={classes.header}>
+          <Group justify="space-between">
+            <Logo style={{ width: rem(120) }} />
+            <Code fw={700}>Flashy v.1.0</Code>
+          </Group>
+        </Container>
 
-      <ScrollArea className={classes.links}>
-        {Array(5)
-          .fill(0)
-          .map((_, index) => (
-            <Skeleton key={index} h={28} mt="sm" animate={false} />
-          ))}
-      </ScrollArea>
+        <ScrollArea className={classes.links}>
+          {Array(5)
+            .fill(0)
+            .map((_, index) => (
+              <Skeleton key={index} h={28} mt="sm" animate={false} />
+            ))}
+        </ScrollArea>
 
-      <Container className={classes.footer}>
-        <UserButton />
-      </Container>
+        <Container className={classes.footer}>
+          <UserButton />
+        </Container>
+      </Flex>
     </nav>
   );
 }

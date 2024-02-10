@@ -1,13 +1,7 @@
 "use client";
 import { NextAuthProvider } from "../../lib/auth/providers/SessionProvider";
 import { Session } from "next-auth";
-import {
-  AppShell,
-  Burger,
-  Group,
-  MantineProvider,
-  Skeleton,
-} from "@mantine/core";
+import { AppShell, Burger, Group, Skeleton } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 
 import "@mantine/core/styles.css";
@@ -29,17 +23,16 @@ export default function ApplicationShell({
 
   return (
     <NextAuthProvider session={session!}>
-      <MantineProvider>
-        <AppShell
-          // header={{ height: 60 }}
-          navbar={{
-            width: 320,
-            breakpoint: "sm",
-            collapsed: { mobile: !opened },
-          }}
-          padding="md"
-        >
-          {/* <AppShell.Header>
+      <AppShell
+        // header={{ height: 60 }}
+        navbar={{
+          width: 320,
+          breakpoint: "sm",
+          collapsed: { mobile: !opened },
+        }}
+        padding="md"
+      >
+        {/* <AppShell.Header>
             <Group h="100%" px="md">
               <Burger
                 opened={opened}
@@ -49,12 +42,11 @@ export default function ApplicationShell({
               />
             </Group>
           </AppShell.Header> */}
-          <AppShell.Navbar p="md">
-            <NavbarNested />
-          </AppShell.Navbar>
-          <AppShell.Main>{children}</AppShell.Main>
-        </AppShell>
-      </MantineProvider>
+        <AppShell.Navbar p="md">
+          <NavbarNested />
+        </AppShell.Navbar>
+        <AppShell.Main>{children}</AppShell.Main>
+      </AppShell>
     </NextAuthProvider>
   );
 }

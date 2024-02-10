@@ -9,9 +9,7 @@ export default function Home() {
   const { data: session } = useSession();
   return (
     <Stack align="center">
-      <Button component={Link} href="/">
-        Go home
-      </Button>
+      <Button>Go home</Button>
       {session ? (
         <>
           <Title>Hello, {session.user?.name}</Title>
