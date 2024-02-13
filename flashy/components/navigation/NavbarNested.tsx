@@ -1,42 +1,18 @@
 import {
   Group,
   Code,
-  ScrollArea,
-  rem,
-  Skeleton,
   Container,
   Flex,
   Stack,
   UnstyledButton,
-  Divider,
   Text,
   Space,
 } from "@mantine/core";
-import { Logo } from "./Logo";
-import classes from "./NavbarNested.module.css";
-import { UserButton } from "../user/UserButton";
+import classes from "@/components/navigation/NavbarNested.module.css";
+import { UserButton } from "@/components/user/UserButton";
 import Image from "next/image";
-import {
-  Icon2fa,
-  IconBellRinging,
-  IconBulb,
-  IconCheckbox,
-  IconDatabaseImport,
-  IconFingerprint,
-  IconKey,
-  IconReceipt2,
-  IconSettings,
-  IconUser,
-  IconCards,
-} from "@tabler/icons-react";
-import { useRouter } from "next/navigation";
+import { IconFingerprint, IconUser, IconCards } from "@tabler/icons-react";
 import Link from "next/link";
-
-const links = [
-  { icon: IconBulb, label: "Activity", notifications: 3 },
-  { icon: IconCheckbox, label: "Tasks", notifications: 4 },
-  { icon: IconUser, label: "Contacts" },
-];
 
 const data = [
   { link: "/profile", label: "Profile", icon: IconUser },
@@ -56,6 +32,7 @@ export function NavbarNested() {
       <Text>{item.label}</Text>
     </UnstyledButton>
   ));
+
   return (
     <nav className={classes.navbar}>
       <Flex

@@ -1,4 +1,4 @@
-import { Card, Avatar, Text, Group, Button } from "@mantine/core";
+import { Card, Avatar, Text, Group, Button, Pill } from "@mantine/core";
 import classes from "./UserCard.module.css";
 import { Session } from "next-auth";
 import { deleteUser } from "@/app/utils/firebase";
@@ -41,9 +41,9 @@ export function UserCard({ user }: Session) {
       <Text ta="center" fz="lg" fw={500} mt="sm">
         {user.name}
       </Text>
-      <Text ta="center" fz="sm" c="dimmed">
+      <Pill style={{ color: "black", background: "cyan" }}>
         Pro subsription
-      </Text>
+      </Pill>
       <Group mt="md" justify="center" gap={30}>
         {items}
       </Group>

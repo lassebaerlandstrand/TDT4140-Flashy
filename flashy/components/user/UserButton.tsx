@@ -23,9 +23,9 @@ export function UserButton() {
             component={Link}
             href="/profile"
           >
-            <Group>
+            <Group justify="center" gap="xs">
               <Avatar src={session.user?.image} radius="xl" />
-              <Container style={{ flex: 1 }}>
+              <Container>
                 <Text size="sm" fw={500}>
                   {session.user?.name}
                 </Text>

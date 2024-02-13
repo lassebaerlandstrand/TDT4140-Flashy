@@ -4,8 +4,8 @@ import { cert } from "firebase-admin/app";
 import { Adapter } from "next-auth/adapters";
 import { Session, User,  } from "next-auth";
 
-type AuthOptionsLogin = {user: User & {role: string}};
-type AuthOptionsSession = {session: Session, user: User & {role: string}};
+type AuthOptionsLogin = {user: User & {role: string, username: string, age: number | null}};
+type AuthOptionsSession = {session: Session, user: User & {role: string, username: string, age: number | null}};
 
 export const authOptions = {
   providers: [
@@ -28,6 +28,8 @@ export const authOptions = {
       // Add a default role to the user if it doesn't exist
       if (!user.role!) {
         user.role = 'user';
+        user.username = ''
+        user.age = null
       }
       return true;
     },
