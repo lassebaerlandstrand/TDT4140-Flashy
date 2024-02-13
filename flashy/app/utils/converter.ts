@@ -1,16 +1,12 @@
 import {
-  DocumentReference,
-  QueryDocumentSnapshot,
-  FirestoreDataConverter,
-  WithFieldValue,
   DocumentData,
-  doc,
-  getDoc,
-  getFirestore,
+  DocumentReference,
+  FirestoreDataConverter,
+  QueryDocumentSnapshot,
+  WithFieldValue,
+  getDoc
 } from "@firebase/firestore";
-export const converter = <
-  T extends { [x: string]: any }
->(): FirestoreDataConverter<T> => ({
+export const converter = <T extends { [x: string]: any }>(): FirestoreDataConverter<T> => ({
   toFirestore: (data: WithFieldValue<T>): DocumentData => {
     return data;
   },
@@ -18,7 +14,9 @@ export const converter = <
     return snap.data() as T;
   },
 });
-export const fetchByRef = async <T extends { [x: string]: any }>(
+
+
+export const convertDocumentRefToType = async <T extends { [x: string]: any }>(
   ref: DocumentReference
 ): Promise<T | undefined> => {
   const docSnap = await getDoc(ref.withConverter(converter<T>()));
@@ -27,3 +25,8 @@ export const fetchByRef = async <T extends { [x: string]: any }>(
   }
   return undefined;
 };
+
+export const getIdForDocumentRef = async (ref: DocumentReference) => {
+  const docSnap = await getDoc(ref);
+  return docSnap.id;
+}

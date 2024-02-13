@@ -12,7 +12,7 @@ import {
 } from "@firebase/firestore";
 import { ComboboxItem } from "@mantine/core";
 import { Session } from "next-auth";
-import { converter, fetchByRef } from "../types/converter";
+import { converter, convertDocumentRefToType, getIdForDocumentRef } from "./converter";
 import { get } from "http";
 
 /*
@@ -110,45 +110,69 @@ export async function getFlashcardSet(flashcardId: string) {
   const flashcardDocument = doc(flashcardCollection, flashcardId);
   const flashcardDoc = await getDocs(flashcardCollection);
 
-  console.log(flashcardDoc);
+  if (flashcardDoc.docs.length == 0) {
+    throw new Error("No flashcard with that id");
+  }
+  const tempFlashcard = flashcardDoc.docs[0].data();
+  const creator = await convertDocumentRefToType<User>(tempFlashcard.creator);
 
-  const viewsCollection = collection(flashcardDocument, "views");
+  const viewsCollection = collection(flashcardDocument, "views").withConverter(converter<FlashcardView>());
   const viewsDoc = await getDocs(viewsCollection);
 
   const usersFlagged = collection(flashcardDocument, "usersFlagged");
-  const flaggedDoc = await getDocs(usersFlagged);
+  const flaggedDoc = doc(usersFlagged, await getIdForDocumentRef(tempFlashcard.creator));
+  const flagged = (await getDoc(flaggedDoc)); // TODO: This needs to be converted
 
-  const likesCollection = collection(flashcardDocument, "likes").withConverter(
-    converter<FlashcardLike>()
-  );
+  const likesCollection = collection(flashcardDocument, "likes");
   const likesDoc = await getDocs(likesCollection);
-  const likes = likesDoc.docs.map((doc) => doc.data() as FlashcardLike);
 
   const commentsCollection = collection(flashcardDocument, "comments");
   const commentsDoc = await getDocs(commentsCollection);
 
-  if (flashcardDoc.docs.length == 0) {
-    throw new Error("No flashcard with that id");
-  }
 
-  const tempFlashcard = flashcardDoc.docs[0].data();
-  console.log(tempFlashcard);
   console.log(tempFlashcard.creator);
 
-  const newC = await fetchByRef<User>(tempFlashcard.creator);
-  console.log("Creator:", newC);
 
-  const creator = getUserByEmail(tempFlashcard.creatorEmail);
+  const views = viewsDoc.docs.map((doc) => doc.data());
 
-  // console.log(creator);
+  const likes = await Promise.all(likesDoc.docs.map(async (doc) => {
+    return {
+      likedBy: await convertDocumentRefToType<User>(doc.data().likedBy),
+    };
+  }));
 
-  // flashcardDoc.forEach(doc => console.log(doc.data()));
-  // viewsDoc.forEach(doc => console.log(doc.data()));
-  // flaggedDoc.forEach(doc => console.log(doc.data()));
-  // likesDoc.forEach(doc => console.log(doc.data()));
-  // commentsDoc.forEach(doc => console.log(doc.data()));
+  const comments = await Promise.all(commentsDoc.docs.map(async (doc) => {
+    return {
+      commentedBy: await convertDocumentRefToType<User>(doc.data().commentedBy),
+      content: doc.data().content,
+    };
+  }));
 
-  return null;
+  console.log("FlaggedDoc:", flaggedDoc.docs.map((doc) => doc.data()));
+  // const flagged = await Promise.all(flaggedDoc.docs.map(async (doc) => {
+  //   return {
+
+  //     flaggedBy: await convertDocumentRefToType<User>(doc.data().users.flaggedBy),
+  //     cardsFlagged: doc.data().users.flaggedBy,
+  //   };
+  // }));
+
+  console.log("Likes:", likes);
+  console.log("Comments:", comments);
+  // console.log("Flagged:", flagged);
+
+
+  const flashcard: FlashcardSet = {
+    creator: creator,
+    title: tempFlashcard.title,
+    numViews: tempFlashcard.numViews,
+    likes: likes,
+    comments: comments,
+    flagged: [],
+    views: views,
+  };
+
+  return flashcard;
 }
 
 export const deleteUser = async (

@@ -5,17 +5,23 @@ type FlashcardSet = {
     likes: FlashcardLike[];
     comments: FlashcardComment[];
     flagged: FlashcardFlagged[];
+    views: FlashcardView[];
 }
 
 type FlashcardFlagged = {
-    flaggedBy: User;
+    cardsFlagged: string[];
 }
 
 type FlashcardComment = {
-    commentedBy: User;
+    commentedBy: User | undefined;
     content: string;
 }
 
 type FlashcardLike = {
-    likedBy: User;
+    likedBy: User | undefined;
+}
+
+type FlashcardView = {
+    front: string;
+    back: string;
 }
