@@ -1,6 +1,6 @@
 "use client"
 
-import { getFlashcard } from "@/app/utils/firebase";
+import { getFlashcardSet } from "@/app/utils/firebase";
 import { useEffect } from "react";
 
 
@@ -10,7 +10,7 @@ export default function Flashcards() {
 
     useEffect(() => {
         async function printFlashcard() {
-          console.log(await getFlashcard("dummyFlashcardSet,"));
+          console.log(await getFlashcardSet("dummyFlashcardSet"));
         }
         printFlashcard();
       }, []);

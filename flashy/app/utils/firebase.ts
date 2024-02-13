@@ -1,8 +1,18 @@
 import { firestore } from "@/lib/firestore";
-import { collection, deleteDoc, doc, getDoc, getDocs, updateDoc } from "@firebase/firestore";
+import { collection, deleteDoc, doc, getDoc, getDocs, limit, query, updateDoc, where } from "@firebase/firestore";
 import { ComboboxItem } from "@mantine/core";
 import { Session } from "next-auth";
+import { converter } from "../types/converter";
+import { get } from "http";
 
+
+/*
+const usersRef = collection(firestore, "users").withConverter(converter<User>());
+const queryA = query(usersRef, where("email", "==", "lassebaerlandstrand@gmail.com"));
+const querySnapshot = await getDocs(queryA);
+const userDoc = querySnapshot.docs[0].data();
+  
+ */
 
 export async function getAllUsers(): Promise<User[]> {
     const userCollection = collection(firestore, "users");
@@ -74,10 +84,23 @@ export async function getAllUsers(): Promise<User[]> {
 //     return flashcards;
 // }
 
-export async function getFlashcard(flashcardId: string): Promise<FlashcardSet[]>{
+async function getUserByEmail(email: string): Promise<User | null> {
+    const usersRef = collection(firestore, "users").withConverter(converter<User>());
+    const queryA = query(usersRef, where("email", "==", email));
+    const querySnapshot = await getDocs(queryA);
+    let user = null;
+    if (querySnapshot.docs.length != 0){
+        user = querySnapshot.docs[0].data();
+    }
+    return user;
+}
+
+export async function getFlashcardSet(flashcardId: string){
     const flashcardCollection = collection(firestore, "flashies");
-    const flashcardDocument = doc(flashcardCollection, "dummyFlashcardSet");
-    const outerDoc = await getDocs(flashcardCollection);
+    const flashcardDocument = doc(flashcardCollection, flashcardId);
+    const flashcardDoc = await getDocs(flashcardCollection);
+
+    console.log(flashcardDoc);
     
     const viewsCollection = collection(flashcardDocument, "views");
     const viewsDoc = await getDocs(viewsCollection);
@@ -85,23 +108,36 @@ export async function getFlashcard(flashcardId: string): Promise<FlashcardSet[]>
     const usersFlagged = collection(flashcardDocument, "usersFlagged");
     const flaggedDoc = await getDocs(usersFlagged);
 
-    const likesCollection = collection(flashcardDocument, "likes");
+    const likesCollection = collection(flashcardDocument, "likes").withConverter(converter<FlashcardLike>());;
     const likesDoc = await getDocs(likesCollection);
+    const likes = likesDoc.docs.map(doc => doc.data() as FlashcardLike);
 
     const commentsCollection = collection(flashcardDocument, "comments");
     const commentsDoc = await getDocs(commentsCollection);
 
+    if(flashcardDoc.docs.length == 0){
+        throw new Error("No flashcard with that id");
+    }
 
-    // const userCollection = collection(firestore, "users").where
-     
+    const tempFlashcard = flashcardDoc.docs[0].data();
+    console.log(tempFlashcard);
+    console.log(tempFlashcard.creator);
 
+    const creator = getUserByEmail(tempFlashcard.creatorEmail);
     
 
-    outerDoc.forEach(doc => console.log(doc.data()));
-    viewsDoc.forEach(doc => console.log(doc.data()));
-    flaggedDoc.forEach(doc => console.log(doc.data()));
-    likesDoc.forEach(doc => console.log(doc.data()));
-    commentsDoc.forEach(doc => console.log(doc.data()));
+    // console.log(creator);
+
+    
+    
+    
+    
+
+    // flashcardDoc.forEach(doc => console.log(doc.data()));
+    // viewsDoc.forEach(doc => console.log(doc.data()));
+    // flaggedDoc.forEach(doc => console.log(doc.data()));
+    // likesDoc.forEach(doc => console.log(doc.data()));
+    // commentsDoc.forEach(doc => console.log(doc.data()));
 
     return null;
 }
