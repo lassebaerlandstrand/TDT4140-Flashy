@@ -11,15 +11,13 @@ export default function Flashcards() {
   const { data: session } = useSession();
 
   useEffect(() => {
-    if (session == null) {
+    if (session == null)
       return;
-    }
 
     async function fetchFlashcardSet() {
-      console.log(session?.user);
-      const flashcardSet = await getFlashcardSet("dummyFlashcardSet", session?.user.id);
+      if (session == null) return;
+      const flashcardSet = await getFlashcardSet("dummyFlashcardSet", session.user.id);
       setFlashcardSet(flashcardSet);
-      // getAllUsers();
     }
     fetchFlashcardSet();
   }, [session]);
@@ -28,7 +26,7 @@ export default function Flashcards() {
     return <Loader color="blue" size={48} />;
   }
 
-  // console.log(flashcardSet);
+  console.log(flashcardSet);
 
   return <CarouselCard />;
 }

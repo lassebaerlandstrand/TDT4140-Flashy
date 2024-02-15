@@ -38,7 +38,6 @@ export const authOptions = {
 
       // Add id field to the session object
       session.user.id = modifiedUser.id;
-      console.log("Session:", session.user.id);
 
       // Add role to the session object
       if (modifiedUser.role && session.user) {
