@@ -1,15 +1,5 @@
 import { firestore } from "@/lib/firestore";
-import {
-  collection,
-  deleteDoc,
-  doc,
-  getDoc,
-  getDocs,
-  limit,
-  query,
-  updateDoc,
-  where,
-} from "@firebase/firestore";
+import { collection, deleteDoc, doc, getDoc, getDocs, limit, query, updateDoc, where } from "@firebase/firestore";
 import { ComboboxItem } from "@mantine/core";
 import { Session } from "next-auth";
 import { converter, convertDocumentRefToType, getIdForDocumentRef } from "./converter";
@@ -93,9 +83,7 @@ export async function getAllUsers(): Promise<User[]> {
 // }
 
 async function getUserByEmail(email: string): Promise<User | null> {
-  const usersRef = collection(firestore, "users").withConverter(
-    converter<User>()
-  );
+  const usersRef = collection(firestore, "users").withConverter(converter<User>());
   const queryA = query(usersRef, where("email", "==", email));
   const querySnapshot = await getDocs(queryA);
   let user = null;
@@ -119,9 +107,15 @@ export async function getFlashcardSet(flashcardId: string) {
   const viewsCollection = collection(flashcardDocument, "views").withConverter(converter<FlashcardView>());
   const viewsDoc = await getDocs(viewsCollection);
 
+  // Get all flagged cards by the tempFlashcard.creator.
   const usersFlagged = collection(flashcardDocument, "usersFlagged");
   const flaggedDoc = doc(usersFlagged, await getIdForDocumentRef(tempFlashcard.creator));
-  const flagged = (await getDoc(flaggedDoc)); // TODO: This needs to be converted
+  const flagged = await getDoc(flaggedDoc);
+  const flaggedData = flagged.data();
+  const flaggedArray = flaggedData?.cardsFlagged;
+  // flaggedArray.forEach((card: String) => {
+  //   console.log("Flagged card:", card);
+  // });
 
   const likesCollection = collection(flashcardDocument, "likes");
   const likesDoc = await getDocs(likesCollection);
@@ -129,26 +123,29 @@ export async function getFlashcardSet(flashcardId: string) {
   const commentsCollection = collection(flashcardDocument, "comments");
   const commentsDoc = await getDocs(commentsCollection);
 
-
-  console.log(tempFlashcard.creator);
-
+  // console.log(tempFlashcard.creator);
 
   const views = viewsDoc.docs.map((doc) => doc.data());
+  console.log("Views:", views);
 
-  const likes = await Promise.all(likesDoc.docs.map(async (doc) => {
-    return {
-      likedBy: await convertDocumentRefToType<User>(doc.data().likedBy),
-    };
-  }));
+  const likes = await Promise.all(
+    likesDoc.docs.map(async (doc) => {
+      return {
+        likedBy: await convertDocumentRefToType<User>(doc.data().likedBy),
+      };
+    })
+  );
 
-  const comments = await Promise.all(commentsDoc.docs.map(async (doc) => {
-    return {
-      commentedBy: await convertDocumentRefToType<User>(doc.data().commentedBy),
-      content: doc.data().content,
-    };
-  }));
+  const comments = await Promise.all(
+    commentsDoc.docs.map(async (doc) => {
+      return {
+        commentedBy: await convertDocumentRefToType<User>(doc.data().commentedBy),
+        content: doc.data().content,
+      };
+    })
+  );
 
-  console.log("FlaggedDoc:", flaggedDoc.docs.map((doc) => doc.data()));
+  // console.log("FlaggedDoc:", flaggedDoc.docs.map((doc) => doc.data()));
   // const flagged = await Promise.all(flaggedDoc.docs.map(async (doc) => {
   //   return {
 
@@ -157,10 +154,8 @@ export async function getFlashcardSet(flashcardId: string) {
   //   };
   // }));
 
-  console.log("Likes:", likes);
-  console.log("Comments:", comments);
-  // console.log("Flagged:", flagged);
-
+  // console.log("Likes:", likes);
+  // console.log("Comments:", comments);
 
   const flashcard: FlashcardSet = {
     creator: creator,
@@ -175,10 +170,7 @@ export async function getFlashcardSet(flashcardId: string) {
   return flashcard;
 }
 
-export const deleteUser = async (
-  actionUser: User | Session["user"],
-  deleteUserEmail: string
-) => {
+export const deleteUser = async (actionUser: User | Session["user"], deleteUserEmail: string) => {
   const userCollection = collection(firestore, "users");
   const docs = getDocs(userCollection);
 

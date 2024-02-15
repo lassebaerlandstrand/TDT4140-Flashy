@@ -1,17 +1,11 @@
-"use client"
+"use client";
 
 import { getAllUsers, getFlashcardSet } from "@/app/utils/firebase";
 import CarouselCard from "@/components/carousel/carousel";
 import { useEffect, useState } from "react";
 
-
-
-
 export default function Flashcards() {
-
   const [flashcardSet, setFlashcardSet] = useState<FlashcardSet>();
-
-
 
   useEffect(() => {
     async function fetchFlashcardSet() {
@@ -26,10 +20,7 @@ export default function Flashcards() {
     return <div>Loading...</div>;
   }
 
-  console.log(flashcardSet);
+  // console.log(flashcardSet);
 
-  return (
-    <CarouselCard />
-  )
-
+  return <CarouselCard />;
 }
