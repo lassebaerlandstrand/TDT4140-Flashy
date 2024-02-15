@@ -1,10 +1,12 @@
 type FlashcardSet = {
-    creator?: User;
+    id: string;
+    creator?: User; // Could possibly set this to string to save on read operations
     title: string;
     numViews: number;
-    likes: FlashcardLike[];
+    numOfLikes: number;
+    userHasLiked: boolean;
     comments: FlashcardComment[];
-    flagged: FlashcardFlagged[];
+    flagged: FlashcardFlagged;
     views: FlashcardView[];
 }
 
@@ -13,12 +15,8 @@ type FlashcardFlagged = {
 }
 
 type FlashcardComment = {
-    commentedBy: User | undefined;
+    commentedBy: string; // Set this to string to save on read operations
     content: string;
-}
-
-type FlashcardLike = {
-    likedBy: User | undefined;
 }
 
 type FlashcardView = {
