@@ -1,11 +1,11 @@
 import { FirestoreAdapter } from "@auth/firebase-adapter";
 import { cert } from "firebase-admin/app";
-import { Session, User, } from "next-auth";
+import { User as NextUser, Session } from "next-auth";
 import { Adapter } from "next-auth/adapters";
 import GoogleProvider from "next-auth/providers/google";
 
-type AuthOptionsLogin = { user: User & { role: string, username: string, age: number | null } };
-type AuthOptionsSession = { session: Session, user: User & { role: string, username: string, age: number | null } };
+type AuthOptionsLogin = { user: NextUser & User };
+type AuthOptionsSession = { session: Session, user: NextUser & User };
 
 export const authOptions = {
   providers: [
@@ -28,8 +28,8 @@ export const authOptions = {
       // Add a default role to the user if it doesn't exist
       if (!user.role!) {
         user.role = 'user';
-        user.username = ''
-        user.age = null
+        user.username = user.name;
+        user.age = null;
       }
       return true;
     },
