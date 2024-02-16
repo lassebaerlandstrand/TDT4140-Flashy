@@ -34,6 +34,12 @@ async function getViews(flashcardDocument: DocumentReference) {
   );
 }
 
+export async function getAllFlashCardSets(): Promise<FlashcardSet[]> {
+  const flashcardCollection = collection(firestore, "flashies");
+  const flashcardDocs = await getDocs(flashcardCollection);
+  return flashcardDocs.docs.map(doc => doc.data()) as FlashcardSet[];
+}
+
 async function userHasLikedFlashcard(flashcardDocument: DocumentReference, currentUserId: User["id"]): Promise<boolean> {
   const currentUserRef = doc(firestore, "users", currentUserId);
   const likesCollection = collection(flashcardDocument, "likes");
@@ -127,6 +133,8 @@ export async function getFlashcardSet(flashcardId: string, currentUserId: User["
 
   return flashcard;
 }
+
+
 
 export const deleteUser = async (actionUser: User | Session["user"], deleteUserEmail: string) => {
   const userCollection = collection(firestore, "users");
