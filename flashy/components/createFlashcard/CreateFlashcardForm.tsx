@@ -75,7 +75,7 @@ export const CreateFlashCardForm = () => {
 
                 <Stack gap="xl">
                     {form.values.views.map((_, index) => (
-                        <Group>
+                        <Group key={index}>
                             <Text mt={22}>Kort {index + 1}:</Text>
                             <Group>
                                 <Textarea label="Framside" placeholder="Skriv inn det som skal vises på framsiden"  {...form.getInputProps(`views.${index}.front`)} />
