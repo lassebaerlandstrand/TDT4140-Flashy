@@ -1,4 +1,4 @@
-import { Button, SimpleGrid, Stack, Title } from "@mantine/core";
+import { Button, Container, SimpleGrid, Stack, Title } from "@mantine/core";
 import { signIn, signOut, useSession } from "next-auth/react";
 
 export default function HeaderMenu() {
@@ -6,10 +6,10 @@ export default function HeaderMenu() {
   return (
     <header>
       <SimpleGrid cols={2}>
-        <div>
+        <Container>
           <Title>Hello</Title>
-        </div>
-        <div>
+        </Container>
+        <Container>
           <Stack>
             {session ? (
               <>
@@ -23,7 +23,7 @@ export default function HeaderMenu() {
               </Button>
             )}
           </Stack>
-        </div>
+        </Container>
       </SimpleGrid>
     </header>
   );

@@ -1,3 +1,4 @@
+import { User } from "@/app/types/user";
 import { FirestoreAdapter } from "@auth/firebase-adapter";
 import { cert } from "firebase-admin/app";
 import { User as NextUser, Session } from "next-auth";

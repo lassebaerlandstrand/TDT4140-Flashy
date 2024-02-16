@@ -1,10 +1,11 @@
 "use client";
 
+import { getAllUsers } from "@/app/utils/firebase";
+import { UsersTable } from "@/components/admin/UserTable";
 import { LoadingOverlay, Stack, Title } from "@mantine/core";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import { getAllUsers } from "@/app/utils/firebase";
-import { UsersTable } from "@/components/admin/UserTable";
+import { User } from "../types/user";
 
 export default function Home() {
   const { data: session } = useSession();

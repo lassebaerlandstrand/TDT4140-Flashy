@@ -1,4 +1,5 @@
 import ApplicationShell from "@/components/root/ApplicationShell";
+import { authOptions } from "@/lib/auth/auth";
 import "@mantine/carousel/styles.css";
 import { ColorSchemeScript, MantineProvider, createTheme } from "@mantine/core";
 import { Notifications } from "@mantine/notifications";
@@ -14,7 +15,7 @@ export default async function RootStyleRegistry({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await getServerSession();
+  const session = await getServerSession(authOptions);
 
   return (
     <html lang="en">

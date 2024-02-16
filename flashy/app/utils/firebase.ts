@@ -3,6 +3,7 @@ import { DocumentReference, addDoc, collection, deleteDoc, doc, getCountFromServ
 import { ComboboxItem } from "@mantine/core";
 import { Session } from "next-auth";
 import { CreateFlashCardType, FlashcardComment, FlashcardFlagged, FlashcardSet, Visibility } from "../types/flashcard";
+import { User } from "../types/user";
 import { convertDocumentRefToType, converter } from "./converter";
 
 export async function getAllUsers(): Promise<User[]> {

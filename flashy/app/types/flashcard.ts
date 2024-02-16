@@ -1,3 +1,5 @@
+import { User } from "./user";
+
 export enum Visibility {
     Public = 'Offentlig',
     Private = 'Privat',

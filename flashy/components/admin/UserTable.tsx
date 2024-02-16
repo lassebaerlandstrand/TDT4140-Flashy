@@ -1,17 +1,18 @@
 import {
-  Avatar,
-  Badge,
-  Table,
-  Group,
-  Text,
   ActionIcon,
   Anchor,
-  rem,
+  Avatar,
+  Badge,
   ComboboxItem,
+  Group,
   Select,
+  Table,
+  Text,
+  rem,
 } from "@mantine/core";
 import { IconPencil, IconTrash } from "@tabler/icons-react";
 
+import { User } from "@/app/types/user";
 import { deleteUser, setUpdateUserRoles } from "@/app/utils/firebase";
 import { useState } from "react";
 
