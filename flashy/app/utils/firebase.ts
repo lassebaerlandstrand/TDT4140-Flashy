@@ -21,9 +21,17 @@ async function getUserByEmail(email: string): Promise<User | null> {
 }
 
 async function getViews(flashcardDocument: DocumentReference) {
-  const viewsCollection = collection(flashcardDocument, "views").withConverter(converter<FlashcardView>());
+  const viewsCollection = collection(flashcardDocument, "views");
   const viewsDocs = await getDocs(viewsCollection);
-  return viewsDocs.docs.map((doc) => doc.data());
+
+  return viewsDocs.docs.map(doc => {
+    return {
+      id: doc.id,
+      front: doc.data().front,
+      back: doc.data().back
+    }
+  }
+  );
 }
 
 async function userHasLikedFlashcard(flashcardDocument: DocumentReference, currentUserId: User["id"]): Promise<boolean> {

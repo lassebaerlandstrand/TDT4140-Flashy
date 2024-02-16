@@ -6,7 +6,11 @@ import { Loader } from "@mantine/core";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 
-export default function Flashcards() {
+type FlashcardsType = {
+  params: { flashcardTitle: string }
+};
+
+export default function Flashcards({ params }: FlashcardsType) {
   const [flashcardSet, setFlashcardSet] = useState<FlashcardSet>();
   const { data: session } = useSession();
 

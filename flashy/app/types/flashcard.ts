@@ -21,6 +21,7 @@ type FlashcardComment = {
 }
 
 type FlashcardView = {
+    id: string;
     front: string;
     back: string;
 }
