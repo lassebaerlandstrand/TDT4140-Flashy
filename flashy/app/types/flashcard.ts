@@ -1,14 +1,27 @@
-type Flashcard = {
-    creator?: User;
+type FlashcardSet = {
+    id: string;
+    creator: User;
     title: string;
-    views: number;
+    numViews: number;
+    numOfLikes: number;
+    userHasLiked: boolean;
+    userHasFavorited: boolean;
+    comments: FlashcardComment[];
+    flagged: FlashcardFlagged;
+    views: FlashcardView[];
+}
+
+type FlashcardFlagged = {
+    cardsFlagged: string[];
 }
 
 type FlashcardComment = {
-    commentedBy: User;
+    commentedBy: User | undefined;
     content: string;
 }
 
-type FlashcardLike = {
-    likedBy: User;
+type FlashcardView = {
+    id: string;
+    front: string;
+    back: string;
 }

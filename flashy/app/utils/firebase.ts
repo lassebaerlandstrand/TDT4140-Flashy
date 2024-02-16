@@ -1,105 +1,163 @@
-import { collection, deleteDoc, getDocs, updateDoc } from "@firebase/firestore";
 import { firestore } from "@/lib/firestore";
+import { DocumentReference, collection, deleteDoc, doc, getCountFromServer, getDoc, getDocs, limit, query, updateDoc, where } from "@firebase/firestore";
 import { ComboboxItem } from "@mantine/core";
 import { Session } from "next-auth";
-
+import { convertDocumentRefToType, converter } from "./converter";
 
 export async function getAllUsers(): Promise<User[]> {
-    const userCollection = collection(firestore, "users");
-    const docs = await getDocs(userCollection);
-
-    const users: User[] = [];
-
-    docs.forEach(doc => {
-        const docData = doc.data();
-        users.push({
-            email: docData.email,
-            name: docData.name,
-            image: docData.image,
-            emailVerified: docData.emailVerified,
-            role: docData.role,
-        });
-    });
-    
-    return users;
+  const userCollection = collection(firestore, "users").withConverter(converter<User>());
+  const userDocs = await getDocs(userCollection);
+  return userDocs.docs.map(doc => doc.data());
 }
 
-export async function getAllFlashcards(): Promise<Flashcard[]> {
-    const flashcardCollection = collection(firestore, "flashies");
-    const docs = await getDocs(flashcardCollection);
+async function getUserByEmail(email: string): Promise<User | null> {
+  const usersRef = collection(firestore, "users").withConverter(converter<User>());
+  const querySelelction = query(usersRef, where("email", "==", email), limit(1));
+  const querySnapshot = await getDocs(querySelelction);
 
-
-    const users = await getAllUsers();
-    const flashcards: Flashcard[] = [];
-
-    docs.forEach(doc => {
-        const docData = doc.data();
-
-        const creator = users.find(user => user.email == docData.creatorEmail);
-        flashcards.push({
-            creator: creator,
-            title: docData.title,
-            views: docData.views,
-        });
-    })
-
-    return flashcards;
+  if (querySnapshot.docs.length != 0)
+    return querySnapshot.docs[0].data();
+  return null;
 }
 
-export async function getFlashcardsByEmail(email: string): Promise<Flashcard[]> {
-    const flashcardCollection = collection(firestore, "flashies");
-    const docs = await getDocs(flashcardCollection);
+async function getViews(flashcardDocument: DocumentReference) {
+  const viewsCollection = collection(flashcardDocument, "views");
+  const viewsDocs = await getDocs(viewsCollection);
 
-    const users = await getAllUsers();
-    const user = users.find(user => user.email == email);
-
-    if (user == null){
-        throw new Error("There is no user registered with that email");
+  return viewsDocs.docs.map(doc => {
+    return {
+      id: doc.id,
+      front: doc.data().front,
+      back: doc.data().back
     }
+  }
+  );
+}
 
-    const flashcards: Flashcard[] = [];
+async function userHasLikedFlashcard(flashcardDocument: DocumentReference, currentUserId: User["id"]): Promise<boolean> {
+  const currentUserRef = doc(firestore, "users", currentUserId);
+  const likesCollection = collection(flashcardDocument, "likes");
+  const queryLikes = query(likesCollection, where("likedBy", "==", currentUserRef), limit(1));
+  const queryDocs = await getDocs(queryLikes);
+  return !queryDocs.empty;
+}
 
-    docs.forEach(doc => {
-        const docData = doc.data();
+async function getNumberOfLikes(flashcardDocument: DocumentReference): Promise<number> {
+  const likesCollection = collection(flashcardDocument, "likes");
+  const numOfLikes = await getCountFromServer(likesCollection);
+  return numOfLikes.data().count;
+}
 
-        if (docData.creatorEmail == email){
-            flashcards.push({
-                creator: user,
-                title: docData.title,
-                views: docData.views,
-            });
-        }
+async function getHasFavoritedFlashcard(flashcardDocument: DocumentReference, currentUserId: User["id"]): Promise<boolean> {
+  const currentUserRef = doc(firestore, "users", currentUserId);
+  const favoritesCollection = collection(flashcardDocument, "favorites");
+  const queryFavorites = query(favoritesCollection, where("favoritedBy", "==", currentUserRef), limit(1));
+  const queryDocs = await getDocs(queryFavorites);
+  return !queryDocs.empty;
+
+}
+
+async function getComments(flashcardDocument: DocumentReference): Promise<FlashcardComment[]> {
+  const commentsCollection = collection(flashcardDocument, "comments");
+  const commentsDocs = await getDocs(commentsCollection);
+
+  const comments = await Promise.all(
+    commentsDocs.docs.map(async (doc) => {
+      return {
+        commentedBy: await convertDocumentRefToType<User>(doc.data().commentedBy),
+        content: doc.data().content,
+      };
     })
+  );
 
-    return flashcards;
+  return comments;
 }
 
-export const deleteUser = async (actionUser: User | Session["user"], deleteUserEmail: string) => {
-    const userCollection = collection(firestore, "users");
-    const docs = getDocs(userCollection);
+async function getFlaggedCards(flashcardDocument: DocumentReference, currentUserId: User["id"]): Promise<FlashcardFlagged> {
+  const usersFlagged = collection(flashcardDocument, "usersFlagged");
+  const flaggedDoc = doc(usersFlagged, currentUserId).withConverter(converter<FlashcardFlagged>());
+  const flagged = await getDoc(flaggedDoc);
 
-    (await docs).forEach(doc => {
-        const docData = doc.data();
-        if (docData.email == deleteUserEmail){
-            if (actionUser.role == "admin" || actionUser.email == deleteUserEmail){
-                // delete user
-                deleteDoc(doc.ref);
-            }
-        }
+  if (flagged.exists()) {
+    return flagged.data();
+  }
+  return { cardsFlagged: [] };
+}
+/*
+ Here are some ideas if we want to reduce the number of read operations further:
+ - Convert creator field into a string
+ - Convert commentedBy field into a string
+ - Convert a subCollection into a field in the parent document
+*/
+export async function getFlashcardSet(flashcardId: string, currentUserId: User["id"]) {
+  const flashcardCollection = collection(firestore, "flashies");
+  const flashcardDocument = doc(flashcardCollection, flashcardId);
+  const flashcardDoc = await getDoc(flashcardDocument);
+
+  const flashcardData = flashcardDoc.data();
+
+  if (flashcardData == null)
+    throw new Error("Flashcard not found");
+
+  const creator = await convertDocumentRefToType<User>(flashcardData.creator);
+
+  if (creator == null)
+    throw new Error("Creator not found");
+
+  const views = await getViews(flashcardDocument);
+  const userHasLiked = await userHasLikedFlashcard(flashcardDocument, currentUserId);
+  const numOfLikes = await getNumberOfLikes(flashcardDocument);
+  const userHasFavorited = await getHasFavoritedFlashcard(flashcardDocument, currentUserId);
+  const comments = await getComments(flashcardDocument);
+  const flagged = await getFlaggedCards(flashcardDocument, currentUserId);
+
+
+  const flashcard: FlashcardSet = {
+    id: flashcardDoc.id,
+    creator: creator,
+    title: flashcardData.title,
+    numViews: flashcardData.numViews,
+    numOfLikes: numOfLikes,
+    userHasLiked: userHasLiked,
+    userHasFavorited: userHasFavorited,
+    comments: comments,
+    flagged: flagged,
+    views: views,
+  };
+
+  return flashcard;
+}
+
+export const deleteUser = async (actionUser: User | Session["user"], deleteUserEmail: string) => {
+  const userCollection = collection(firestore, "users");
+  const docs = getDocs(userCollection);
+
+  (await docs).forEach((doc) => {
+    const docData = doc.data();
+    if (docData.email == deleteUserEmail) {
+      if (actionUser.role == "admin" || actionUser.email == deleteUserEmail) {
+        // delete user
+        deleteDoc(doc.ref);
+      }
+    }
+  });
+};
+
+export const setUpdateUserRoles = async (
+  actionUser: User | undefined,
+  updateEmail: string,
+  newRole: ComboboxItem | null
+) => {
+  const userCollection = collection(firestore, "users");
+  const docs = getDocs(userCollection);
+  if (actionUser && actionUser.role === "admin") {
+    (await docs).forEach((doc) => {
+      const docData = doc.data();
+      if (docData.email == updateEmail) {
+        updateDoc(doc.ref, {
+          role: newRole?.value,
+        });
+      }
     });
-
-}
-
-export const setUpdateUserRoles = async (actionUser: User | undefined, updateEmail: string, newRole: ComboboxItem | null) => {
-    const userCollection = collection(firestore, "users");
-    const docs = getDocs(userCollection);
-    if (actionUser && actionUser.role === "admin"){
-    (await docs).forEach(doc => {
-        const docData = doc.data();
-        if (docData.email == updateEmail){
-                updateDoc(doc.ref,{
-                    role: newRole?.value
-                })
-        }
-    })}
-}
+  }
+};

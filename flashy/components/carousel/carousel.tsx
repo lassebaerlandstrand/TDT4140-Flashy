@@ -1,7 +1,7 @@
 "use client";
 
 import { Carousel } from "@mantine/carousel";
-import { Paper, Text, Title, Button, Stack, Container } from "@mantine/core";
+import { Button, Container, Paper, Stack, Text, Title } from "@mantine/core";
 import classes from "./carousel.module.css";
 
 interface CardProps {

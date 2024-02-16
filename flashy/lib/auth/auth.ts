@@ -1,11 +1,11 @@
 import { FirestoreAdapter } from "@auth/firebase-adapter";
-import GoogleProvider from "next-auth/providers/google";
 import { cert } from "firebase-admin/app";
+import { Session, User, } from "next-auth";
 import { Adapter } from "next-auth/adapters";
-import { Session, User,  } from "next-auth";
+import GoogleProvider from "next-auth/providers/google";
 
-type AuthOptionsLogin = {user: User & {role: string, username: string, age: number | null}};
-type AuthOptionsSession = {session: Session, user: User & {role: string, username: string, age: number | null}};
+type AuthOptionsLogin = { user: User & { role: string, username: string, age: number | null } };
+type AuthOptionsSession = { session: Session, user: User & { role: string, username: string, age: number | null } };
 
 export const authOptions = {
   providers: [
@@ -24,7 +24,7 @@ export const authOptions = {
     }),
   }) as Adapter,
   callbacks: {
-    async signIn({ user}: AuthOptionsLogin) {
+    async signIn({ user }: AuthOptionsLogin) {
       // Add a default role to the user if it doesn't exist
       if (!user.role!) {
         user.role = 'user';
@@ -33,15 +33,18 @@ export const authOptions = {
       }
       return true;
     },
-      async session({ session, user }: AuthOptionsSession) {
-        const modifiedUser = user
-        
-        // Add role to the session object
-        if (modifiedUser.role && session.user) {
-          session.user.role = modifiedUser.role;
-        }
+    async session({ session, user }: AuthOptionsSession) {
+      const modifiedUser = user
 
-        return session;
+      // Add id field to the session object
+      session.user.id = modifiedUser.id;
+
+      // Add role to the session object
+      if (modifiedUser.role && session.user) {
+        session.user.role = modifiedUser.role;
+      }
+
+      return session;
     }
   }
 };
