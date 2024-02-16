@@ -1,5 +1,5 @@
 import { firestore } from "@/lib/firestore";
-import { DocumentReference, collection, deleteDoc, doc, getCountFromServer, getDoc, getDocs, limit, query, updateDoc, where } from "@firebase/firestore";
+import { DocumentReference, addDoc, collection, deleteDoc, doc, getCountFromServer, getDoc, getDocs, limit, query, setDoc, updateDoc, where } from "@firebase/firestore";
 import { ComboboxItem } from "@mantine/core";
 import { Session } from "next-auth";
 import { convertDocumentRefToType, converter } from "./converter";
@@ -161,3 +161,47 @@ export const setUpdateUserRoles = async (
     });
   }
 };
+
+
+export async function createNewFlashcard(flashcard: CreateFlashCardType) {
+  // Check if flashcard is available
+  const flashcardDoc = doc(firestore, "flashies", flashcard.title);
+  const flashcardData = await getDoc(flashcardDoc);
+  if (flashcardData.exists()) {
+    throw new Error("Flashcard already exists");
+  }
+
+  // Create flashcard
+  const docData = {
+    creator: flashcard.creator,
+    title: flashcard.title,
+    numViews: 0,
+    numOfLikes: 0,
+    userHasLiked: false,
+    userHasFavorited: false,
+  };
+
+  try {
+    await setDoc(flashcardDoc, docData);
+  } catch (e) {
+    throw new Error("Failed to create flashcard");
+  }
+
+  // Create views within flashcard
+  const viewsCollection = collection(flashcardDoc, "views");
+  flashcard.views = [
+    { front: "front1", back: "back1" },
+    { front: "front2", back: "back2" },
+  ]
+
+  try {
+    await Promise.all(
+      flashcard.views.map(async (view) => {
+        return await addDoc(viewsCollection, view);
+      })
+    );
+  }
+  catch (e) {
+    throw new Error("Failed to create views");
+  }
+}

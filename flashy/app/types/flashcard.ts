@@ -25,3 +25,14 @@ type FlashcardView = {
     front: string;
     back: string;
 }
+
+type CreateFlashCardType = {
+    creator: User;
+    title: string;
+    views: CreateViewType[];
+}
+
+type CreateViewType = {
+    front: string;
+    back: string;
+}

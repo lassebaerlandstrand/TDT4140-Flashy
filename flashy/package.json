@@ -15,6 +15,7 @@
     "@firebase/firestore": "^4.4.2",
     "@mantine/carousel": "^7.5.2",
     "@mantine/core": "^7.5.0",
+    "@mantine/form": "^7.5.3",
     "@mantine/hooks": "^7.5.0",
     "@tabler/icons-react": "^2.47.0",
     "embla-carousel-react": "^7.1.0",
