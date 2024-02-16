@@ -2,8 +2,9 @@
 
 import { CreateFlashCardType, Visibility } from "@/app/types/flashcard";
 import { createNewFlashcard } from "@/app/utils/firebase";
-import { ActionIcon, Button, Group, Select, Stack, Text, TextInput, Textarea } from "@mantine/core";
+import { ActionIcon, Button, Divider, Group, Select, Stack, Text, TextInput, Textarea } from "@mantine/core";
 import { useForm } from "@mantine/form";
+import { notifications } from "@mantine/notifications";
 import { IconX } from "@tabler/icons-react";
 import { useSession } from "next-auth/react";
 
@@ -18,7 +19,11 @@ export const CreateFlashCardForm = () => {
             visibility: Visibility.Public,
         },
 
-        validate: {},
+        validate: {
+            title: (value) => {
+                if (value.length < 3) return 'Navnet må være minst 3 tegn';
+            },
+        }
     });
 
     const onSubmit = (values: typeof form.values) => {
@@ -31,15 +36,22 @@ export const CreateFlashCardForm = () => {
             visibility: values.visibility,
         }
 
-        try {
-            createNewFlashcard(flashcardSet);
-        }
-        catch (error) {
-            console.error(error);
-        }
-    }
+        createNewFlashcard(flashcardSet).then(() => {
+            notifications.show({
+                title: "Settet er laget",
+                message: "Synligheten på settet er " + values.visibility + " og det er lagt til i din profil",
+                color: "green",
+            });
+            form.reset();
+        }).catch((error) => {
+            notifications.show({
+                title: 'Noe gikk galt',
+                message: error.message,
+                color: 'red',
+            })
+        });
 
-    console.log(form.values);
+    }
 
     return (
 
@@ -59,9 +71,10 @@ export const CreateFlashCardForm = () => {
                     {...form.getInputProps('visibility')}
                 />
 
-                <Button onClick={() => form.setFieldValue('views', [...form.values.views, { front: '', back: '' }])}>Legg til nytt kort</Button>
+                <Divider />
+
                 <Stack gap="xl">
-                    {form.values.views.map((view, index) => (
+                    {form.values.views.map((_, index) => (
                         <Group>
                             <Text mt={22}>Kort {index + 1}:</Text>
                             <Group>
@@ -74,6 +87,7 @@ export const CreateFlashCardForm = () => {
                         </Group>
                     ))}
                 </Stack>
+                <Button onClick={() => form.setFieldValue('views', [...form.values.views, { front: '', back: '' }])}>Legg til nytt kort</Button>
 
                 <Group justify="flex-end" mt="md">
                     <Button type="submit">Lag sett</Button>

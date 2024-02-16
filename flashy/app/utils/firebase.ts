@@ -171,7 +171,7 @@ export async function createNewFlashcard(flashcard: CreateFlashCardType) {
   const flashcardDoc = doc(firestore, "flashies", flashcard.title);
   const flashcardData = await getDoc(flashcardDoc);
   if (flashcardData.exists()) {
-    throw new Error("Flashcard already exists");
+    throw new Error("Navnet på settet er allerede i bruk");
   }
 
   // Create flashcard
@@ -179,29 +179,22 @@ export async function createNewFlashcard(flashcard: CreateFlashCardType) {
     creator: flashcard.creator,
     title: flashcard.title,
     numViews: 0,
-    numOfLikes: 0,
-    userHasLiked: false,
-    userHasFavorited: false,
     isPublic: flashcard.visibility === Visibility.Public,
   };
 
-  try {
-    await setDoc(flashcardDoc, docData);
-  } catch (e) {
-    throw new Error("Failed to create flashcard");
-  }
+  await setDoc(flashcardDoc, docData).catch(() => {
+    throw new Error("Feilet å opprette flashcard settet");
+  });
 
   // Create views within flashcard
   const viewsCollection = collection(flashcardDoc, "views");
 
-  try {
-    await Promise.all(
-      flashcard.views.map(async (view) => {
-        return await addDoc(viewsCollection, view);
-      })
-    );
-  }
-  catch (e) {
-    throw new Error("Failed to create views");
-  }
+  await Promise.all(
+    flashcard.views.map(async (view) => {
+      return await addDoc(viewsCollection, view);
+    })
+  ).catch(() => {
+    throw new Error("Feilet å opprette kortene for settet");
+  });
+
 }

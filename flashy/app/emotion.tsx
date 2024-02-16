@@ -1,7 +1,9 @@
-import { getServerSession } from "next-auth";
 import ApplicationShell from "@/components/root/ApplicationShell";
-import { ColorSchemeScript, MantineProvider, createTheme } from "@mantine/core";
 import "@mantine/carousel/styles.css";
+import { ColorSchemeScript, MantineProvider, createTheme } from "@mantine/core";
+import { Notifications } from "@mantine/notifications";
+import '@mantine/notifications/styles.css';
+import { getServerSession } from "next-auth";
 
 const theme = createTheme({
   fontFamily: "Open Sans, sans-serif",
@@ -21,6 +23,7 @@ export default async function RootStyleRegistry({
       </head>
       <body>
         <MantineProvider theme={theme}>
+          <Notifications />
           <ApplicationShell session={session!}>{children}</ApplicationShell>;
         </MantineProvider>
       </body>
