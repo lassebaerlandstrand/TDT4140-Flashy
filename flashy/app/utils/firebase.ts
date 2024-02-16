@@ -2,6 +2,7 @@ import { firestore } from "@/lib/firestore";
 import { DocumentReference, addDoc, collection, deleteDoc, doc, getCountFromServer, getDoc, getDocs, limit, query, setDoc, updateDoc, where } from "@firebase/firestore";
 import { ComboboxItem } from "@mantine/core";
 import { Session } from "next-auth";
+import { CreateFlashCardType, FlashcardComment, FlashcardFlagged, FlashcardSet, Visibility } from "../types/flashcard";
 import { convertDocumentRefToType, converter } from "./converter";
 
 export async function getAllUsers(): Promise<User[]> {
@@ -110,6 +111,7 @@ export async function getFlashcardSet(flashcardId: string, currentUserId: User["
   const userHasFavorited = await getHasFavoritedFlashcard(flashcardDocument, currentUserId);
   const comments = await getComments(flashcardDocument);
   const flagged = await getFlaggedCards(flashcardDocument, currentUserId);
+  const visibility = flashcardData.isPublic ? Visibility.Public : Visibility.Private;
 
 
   const flashcard: FlashcardSet = {
@@ -123,6 +125,7 @@ export async function getFlashcardSet(flashcardId: string, currentUserId: User["
     comments: comments,
     flagged: flagged,
     views: views,
+    visibility: visibility,
   };
 
   return flashcard;
@@ -179,6 +182,7 @@ export async function createNewFlashcard(flashcard: CreateFlashCardType) {
     numOfLikes: 0,
     userHasLiked: false,
     userHasFavorited: false,
+    isPublic: flashcard.visibility === Visibility.Public,
   };
 
   try {
@@ -189,10 +193,6 @@ export async function createNewFlashcard(flashcard: CreateFlashCardType) {
 
   // Create views within flashcard
   const viewsCollection = collection(flashcardDoc, "views");
-  flashcard.views = [
-    { front: "front1", back: "back1" },
-    { front: "front2", back: "back2" },
-  ]
 
   try {
     await Promise.all(

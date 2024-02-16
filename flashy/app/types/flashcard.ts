@@ -1,4 +1,9 @@
-type FlashcardSet = {
+export enum Visibility {
+    Public = 'Offentlig',
+    Private = 'Privat',
+}
+
+export type FlashcardSet = {
     id: string;
     creator: User;
     title: string;
@@ -9,30 +14,32 @@ type FlashcardSet = {
     comments: FlashcardComment[];
     flagged: FlashcardFlagged;
     views: FlashcardView[];
+    visibility: Visibility;
 }
 
-type FlashcardFlagged = {
+export type FlashcardFlagged = {
     cardsFlagged: string[];
 }
 
-type FlashcardComment = {
+export type FlashcardComment = {
     commentedBy: User | undefined;
     content: string;
 }
 
-type FlashcardView = {
+export type FlashcardView = {
     id: string;
     front: string;
     back: string;
 }
 
-type CreateFlashCardType = {
+export type CreateFlashCardType = {
     creator: User;
     title: string;
     views: CreateViewType[];
+    visibility: Visibility;
 }
 
-type CreateViewType = {
+export type CreateViewType = {
     front: string;
     back: string;
 }

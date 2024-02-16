@@ -1,7 +1,7 @@
 "use client";
 
 import { CreateFlashCardForm } from "@/components/createFlashcard/CreateFlashcardForm";
-import { Container, Loader, Title } from "@mantine/core";
+import { Loader, Stack, Title } from "@mantine/core";
 import { useSession } from "next-auth/react";
 
 export default function FlashcardCreationForm() {
@@ -12,10 +12,10 @@ export default function FlashcardCreationForm() {
     }
 
     return (
-        <Container>
+        <Stack gap="xl">
             <Title>Lag et nytt Flashy-sett</Title>
             <CreateFlashCardForm />
-        </Container>
+        </Stack>
     );
 
 }

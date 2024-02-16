@@ -1,5 +1,6 @@
 "use client";
 
+import { FlashcardSet } from "@/app/types/flashcard";
 import { getFlashcardSet } from "@/app/utils/firebase";
 import CarouselCard from "@/components/carousel/carousel";
 import { Loader } from "@mantine/core";
