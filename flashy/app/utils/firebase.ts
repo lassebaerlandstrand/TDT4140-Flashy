@@ -27,10 +27,11 @@ async function getViews(flashcardDocument: DocumentReference) {
 }
 
 async function userHasLikedFlashcard(flashcardDocument: DocumentReference, currentUserId: User["id"]): Promise<boolean> {
+  const currentUserRef = doc(firestore, "users", currentUserId);
   const likesCollection = collection(flashcardDocument, "likes");
-  const queryLikes = query(likesCollection, where("likedBy", "==", `users/${currentUserId}`), limit(1));
+  const queryLikes = query(likesCollection, where("likedBy", "==", currentUserRef), limit(1));
   const queryDocs = await getDocs(queryLikes);
-  return queryDocs.docs.length != 0;
+  return !queryDocs.empty;
 }
 
 async function getNumberOfLikes(flashcardDocument: DocumentReference): Promise<number> {
@@ -39,10 +40,29 @@ async function getNumberOfLikes(flashcardDocument: DocumentReference): Promise<n
   return numOfLikes.data().count;
 }
 
+async function getHasFavoritedFlashcard(flashcardDocument: DocumentReference, currentUserId: User["id"]): Promise<boolean> {
+  const currentUserRef = doc(firestore, "users", currentUserId);
+  const favoritesCollection = collection(flashcardDocument, "favorites");
+  const queryFavorites = query(favoritesCollection, where("favoritedBy", "==", currentUserRef), limit(1));
+  const queryDocs = await getDocs(queryFavorites);
+  return !queryDocs.empty;
+
+}
+
 async function getComments(flashcardDocument: DocumentReference): Promise<FlashcardComment[]> {
-  const commentsCollection = collection(flashcardDocument, "comments").withConverter(converter<FlashcardComment>());
+  const commentsCollection = collection(flashcardDocument, "comments");
   const commentsDocs = await getDocs(commentsCollection);
-  return commentsDocs.docs.map((doc) => doc.data());
+
+  const comments = await Promise.all(
+    commentsDocs.docs.map(async (doc) => {
+      return {
+        commentedBy: await convertDocumentRefToType<User>(doc.data().commentedBy),
+        content: doc.data().content,
+      };
+    })
+  );
+
+  return comments;
 }
 
 async function getFlaggedCards(flashcardDocument: DocumentReference, currentUserId: User["id"]): Promise<FlashcardFlagged> {
@@ -55,7 +75,12 @@ async function getFlaggedCards(flashcardDocument: DocumentReference, currentUser
   }
   return { cardsFlagged: [] };
 }
-
+/*
+ Here are some ideas if we want to reduce the number of read operations further:
+ - Convert creator field into a string
+ - Convert commentedBy field into a string
+ - Convert a subCollection into a field in the parent document
+*/
 export async function getFlashcardSet(flashcardId: string, currentUserId: User["id"]) {
   const flashcardCollection = collection(firestore, "flashies");
   const flashcardDocument = doc(flashcardCollection, flashcardId);
@@ -66,10 +91,15 @@ export async function getFlashcardSet(flashcardId: string, currentUserId: User["
   if (flashcardData == null)
     throw new Error("Flashcard not found");
 
-  const creator = await convertDocumentRefToType<User>(flashcardData.creator); // Could convert to username in database to save on read operations
+  const creator = await convertDocumentRefToType<User>(flashcardData.creator);
+
+  if (creator == null)
+    throw new Error("Creator not found");
+
   const views = await getViews(flashcardDocument);
   const userHasLiked = await userHasLikedFlashcard(flashcardDocument, currentUserId);
   const numOfLikes = await getNumberOfLikes(flashcardDocument);
+  const userHasFavorited = await getHasFavoritedFlashcard(flashcardDocument, currentUserId);
   const comments = await getComments(flashcardDocument);
   const flagged = await getFlaggedCards(flashcardDocument, currentUserId);
 
@@ -81,6 +111,7 @@ export async function getFlashcardSet(flashcardId: string, currentUserId: User["
     numViews: flashcardData.numViews,
     numOfLikes: numOfLikes,
     userHasLiked: userHasLiked,
+    userHasFavorited: userHasFavorited,
     comments: comments,
     flagged: flagged,
     views: views,
