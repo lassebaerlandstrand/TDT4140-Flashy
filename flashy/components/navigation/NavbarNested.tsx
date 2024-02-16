@@ -2,16 +2,23 @@ import classes from "@/components/navigation/NavbarNested.module.css";
 import { UserButton } from "@/components/user/UserButton";
 import { Code, Container, Flex, Group, Space, Stack, Text, UnstyledButton } from "@mantine/core";
 import { IconCards, IconFingerprint, IconUser } from "@tabler/icons-react";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 
 const data = [
   { link: "/profile", label: "Profile", icon: IconUser },
   { link: "/flashies", label: "My flashies", icon: IconCards },
-  { link: "/admin", label: "Administration", icon: IconFingerprint },
 ];
 
 export function NavbarNested() {
+  // if (isAdmin) {
+  //   data.push({ link: "/admin", label: "Administration", icon: IconFingerprint });
+  // }
+  const session = useSession();
+  if (session?.data?.user?.role == "admin" && !data.find((item) => item.label == "Administration")) {
+    data.push({ link: "/admin", label: "Administration", icon: IconFingerprint });
+  }
   const links = data.map((item) => (
     <UnstyledButton component={Link} className={classes.link} href={item.link} key={item.label}>
       <item.icon className={classes.linkIcon} stroke={1.5} />
