@@ -5,7 +5,7 @@ import { ActionIcon, Button, Loader, Stack, TextInput, Title, rem, useMantineThe
 import { IconArrowRight, IconSearch } from "@tabler/icons-react";
 import { signIn, useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import { getAllFlashCardSets } from "./utils/firebase";
+import { getAllPublicFlashCardSets } from "./utils/firebase";
 
 export default function Home() {
   const { data: session } = useSession();
@@ -17,7 +17,7 @@ export default function Home() {
 
     async function fetchFlashcardSet() {
       if (session == null) return;
-      const flashcardSet = await getAllFlashCardSets();
+      const flashcardSet = await getAllPublicFlashCardSets();
       setFlashcardSets(flashcardSet);
     }
     fetchFlashcardSet();
