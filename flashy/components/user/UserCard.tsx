@@ -1,7 +1,7 @@
-import { Card, Avatar, Text, Group, Button, Pill } from "@mantine/core";
-import classes from "./UserCard.module.css";
+import { Avatar, Card, Group, Pill, Text } from "@mantine/core";
 import { Session } from "next-auth";
-import { deleteUser } from "@/app/utils/firebase";
+import { ConfirmationModal } from "./ConfirmationModal";
+import classes from "./UserCard.module.css";
 
 const stats = [
   { value: "64", label: "Likes" },
@@ -30,34 +30,15 @@ export function UserCard({ user }: Session) {
             "url(https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=500&q=80)",
         }}
       />
-      <Avatar
-        src={user.image}
-        size={80}
-        radius={80}
-        mx="auto"
-        mt={-30}
-        className={classes.avatar}
-      />
+      <Avatar src={user.image} size={80} radius={80} mx="auto" mt={-30} className={classes.avatar} />
       <Text ta="center" fz="lg" fw={500} mt="sm">
         {user.name}
       </Text>
-      <Pill style={{ color: "black", background: "cyan" }}>
-        Pro subsription
-      </Pill>
+      <Pill style={{ color: "black", background: "cyan" }}>Pro subsription</Pill>
       <Group mt="md" justify="center" gap={30}>
         {items}
       </Group>
-      <Button
-        onClick={() => deleteUser(user, user.email)}
-        fullWidth
-        color="red"
-        radius="md"
-        mt="xl"
-        size="md"
-        variant="default"
-      >
-        Delete Account
-      </Button>
+      <ConfirmationModal user={user} expires={""} />
     </Card>
   );
 }
