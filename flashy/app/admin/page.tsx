@@ -1,10 +1,10 @@
 "use client";
 
+import { getAllUsers } from "@/app/utils/firebase";
+import { UsersTable } from "@/components/admin/UserTable";
 import { LoadingOverlay, Stack, Title } from "@mantine/core";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import { getAllUsers } from "@/app/utils/firebase";
-import { UsersTable } from "@/components/admin/UserTable";
 
 export default function Home() {
   const { data: session } = useSession();
@@ -25,14 +25,11 @@ export default function Home() {
 
   return (
     <Stack align="center">
-      {session ? (
+      {session?.user.role == "admin" ? (
         <Stack>
           <Title>Welcome, {session.user?.name}</Title>
           {users.length > 0 ? (
-            <UsersTable
-              actionUser={getCurrentActionUser(session.user?.email ?? "")}
-              users={users}
-            />
+            <UsersTable actionUser={getCurrentActionUser(session.user?.email ?? "")} users={users} />
           ) : (
             <Stack>
               <LoadingOverlay visible />
