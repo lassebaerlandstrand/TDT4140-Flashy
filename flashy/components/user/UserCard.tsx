@@ -1,6 +1,6 @@
-import { Avatar, Card, Group, Pill, Text } from "@mantine/core";
+import { Avatar, Button, Card, Group, Pill, Text } from "@mantine/core";
 import { Session } from "next-auth";
-import { ConfirmationModal } from "./ConfirmationModal";
+import { confirmationModal } from "./ConfirmationModal";
 import classes from "./UserCard.module.css";
 
 const stats = [
@@ -21,6 +21,10 @@ export function UserCard({ user }: Session) {
     </div>
   ));
 
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    confirmationModal({ user, expires: null }, true);
+  };
+
   return (
     <Card withBorder padding="xl" radius="md" className={classes.card}>
       <Card.Section
@@ -38,7 +42,9 @@ export function UserCard({ user }: Session) {
       <Group mt="md" justify="center" gap={30}>
         {items}
       </Group>
-      <ConfirmationModal user={user} expires={""} />
+      <Button onClick={handleClick} fullWidth color="red" radius="md" mt="xl" size="md" variant="default">
+        Slett Konto
+      </Button>
     </Card>
   );
 }

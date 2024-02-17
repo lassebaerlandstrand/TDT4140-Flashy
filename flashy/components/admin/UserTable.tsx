@@ -3,7 +3,7 @@ import { IconPencil, IconTrash } from "@tabler/icons-react";
 
 import { setUpdateUserRoles } from "@/app/utils/firebase";
 import { useState } from "react";
-import { openModal } from "../user/ConfirmationModal";
+import { confirmationModal } from "../user/ConfirmationModal";
 
 const jobColors: Record<string, string> = {
   admin: "cyan",
@@ -17,7 +17,7 @@ type UserTableProps = {
 
 const deleteUserFromCollection = async (actionUser: User | undefined, deleteUserEmail: string) => {
   if (actionUser) {
-    openModal({ user: actionUser, expires: null }, false);
+    confirmationModal({ user: actionUser, expires: null }, false);
   }
 };
 
