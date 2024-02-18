@@ -27,14 +27,11 @@ export function NavbarNested() {
     <nav className={classes.navbar}>
       <Flex direction="column" justify="space-between" style={{ height: "100%", width: "100%" }}>
         <Container className={classes.header}>
-          <Group justify="space-between">
+          <Group justify="space-around">
             <UnstyledButton component={Link} href="/">
-              <Group justify="flex-start">
-                <Image src="/logo/FlashyLogoSymbol.png" alt="Flashy logo" width={40} height={40} />
-                <Image src="/logo/FlashyLogoText.png" alt="Flashy logo" width={80} height={40} />
-              </Group>
+              <Image src="/logo/FlashyLogoHorizontal.png" alt="Flashy logo" width={127} height={40} />
             </UnstyledButton>
-            <Code fw={700}>V.0.1.0</Code>
+            <Code fw={700}>V 0.1.0</Code>
           </Group>
           <Space h="md" />
           <Stack>{links}</Stack>
