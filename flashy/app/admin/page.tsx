@@ -26,14 +26,11 @@ export default function Home() {
 
   return (
     <Stack align="center">
-      {session ? (
+      {session?.user.role == "admin" ? (
         <Stack>
           <Title>Welcome, {session.user?.name}</Title>
           {users.length > 0 ? (
-            <UsersTable
-              actionUser={getCurrentActionUser(session.user?.email ?? "")}
-              users={users}
-            />
+            <UsersTable actionUser={getCurrentActionUser(session.user?.email ?? "")} users={users} />
           ) : (
             <Stack>
               <LoadingOverlay visible />

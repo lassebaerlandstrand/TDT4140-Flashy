@@ -1,92 +1,81 @@
 "use client";
 
+import { FlashcardView } from "@/app/types/flashcard";
 import { Carousel } from "@mantine/carousel";
-import { Button, Container, Paper, Stack, Text, Title } from "@mantine/core";
-import classes from "./carousel.module.css";
+import { Button, Container, Group, Paper, Stack, Text, Title, UnstyledButton } from "@mantine/core";
+import { useState } from "react";
 
-interface CardProps {
-  image: string;
-  title: string;
-  category: string;
-}
+function Card(view: FlashcardView) {
+  const [frontOrBack, setFrontOrBack] = useState("front");
 
-function Card({ image, title, category }: CardProps) {
+  const handleClick = () => {
+    if (frontOrBack === "front") {
+      setFrontOrBack("back");
+    } else {
+      setFrontOrBack("front");
+    }
+  };
   return (
-    <Paper
-      shadow="md"
-      p="xl"
-      radius="md"
-      style={{ backgroundImage: `url(${image})`, height: "30vh" }}
-      className={classes.card}
-    >
-      <Container>
-        <Text className={classes.category} size="xs">
-          {category}
-        </Text>
-        <Title order={3} className={classes.title}>
-          {title}
-        </Title>
-      </Container>
-      <Button variant="white" color="dark">
-        Read article
-      </Button>
-    </Paper>
+    <UnstyledButton style={{ width: "100%", height: "100%" }} onClick={() => handleClick()}>
+      <Paper
+        shadow="md"
+        p="xl"
+        radius="md"
+        style={{ height: "100%", width: "100%", backgroundColor: frontOrBack == "front" ? "orange" : "#7AD1DD" }}
+      >
+        <Stack align="center" style={{ width: "100%" }}>
+          <Title style={{ textAlign: "center" }}>{frontOrBack === "front" ? "Spørsmål" : "Fasit"}</Title>
+          <Text style={{ textAlign: "center" }} lineClamp={4} size="xl" p={10}>
+            {frontOrBack === "front" ? <>{view.front}</> : <>{view.back}</>}
+          </Text>
+        </Stack>
+      </Paper>
+    </UnstyledButton>
   );
 }
+type CarouselCardProps = {
+  views: FlashcardView[];
+};
 
-export default function CarouselCard() {
-  const slides = data.map((item) => (
-    <Carousel.Slide key={item.title}>
+export default function CarouselCard({ views }: CarouselCardProps) {
+  const [currentViews, setCurrentViews] = useState(views);
+  const originalViews = [...views];
+
+  // Shuffle function
+  const shuffleViews = () => {
+    let shuffled = [...currentViews];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    setCurrentViews(shuffled);
+  };
+
+  const resetViews = () => {
+    setCurrentViews(originalViews);
+  };
+  const slides = currentViews.map((item, index) => (
+    <Carousel.Slide key={item.id}>
+      <Title style={{ position: "absolute", left: 10, top: 10 }}>{index + 1}</Title>
       <Card {...item} />
     </Carousel.Slide>
   ));
 
   return (
     <Stack align="center">
-      <Container style={{ width: "80%" }}>
-        <Carousel slideSize={{ base: "100%" }} align="start">
+      <Group>
+        <Button onClick={shuffleViews} style={{ margin: 10 }}>
+          Shuffle
+        </Button>
+        <Button onClick={resetViews} style={{ margin: 10 }}>
+          Reset
+        </Button>
+      </Group>
+      <Container style={{ width: "50vw" }}>
+        <Carousel height={400} slideGap="xl" withIndicators align="start">
           {slides}
         </Carousel>
       </Container>
     </Stack>
   );
 }
-
-const data = [
-  {
-    image:
-      "https://images.unsplash.com/photo-1508193638397-1c4234db14d8?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80",
-    title: "Best forests to visit in North America",
-    category: "nature",
-  },
-  {
-    image:
-      "https://images.unsplash.com/photo-1559494007-9f5847c49d94?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80",
-    title: "Hawaii beaches review: better than you think",
-    category: "beach",
-  },
-  {
-    image:
-      "https://images.unsplash.com/photo-1608481337062-4093bf3ed404?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80",
-    title: "Mountains at night: 12 best locations to enjoy the view",
-    category: "nature",
-  },
-  {
-    image:
-      "https://images.unsplash.com/photo-1507272931001-fc06c17e4f43?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80",
-    title: "Aurora in Norway: when to visit for best experience",
-    category: "nature",
-  },
-  {
-    image:
-      "https://images.unsplash.com/photo-1510798831971-661eb04b3739?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80",
-    title: "Best places to visit this winter",
-    category: "tourism",
-  },
-  {
-    image:
-      "https://images.unsplash.com/photo-1582721478779-0ae163c05a60?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80",
-    title: "Active volcanos reviews: travel at your own risk",
-    category: "nature",
-  },
-];

@@ -1,30 +1,57 @@
 "use client";
 
-import { Button, Stack, Title } from "@mantine/core";
-import { signIn, signOut, useSession } from "next-auth/react";
-import Image from "next/image";
+import { FlashiesTable } from "@/components/tables/FlashiesTable";
+import { ActionIcon, Button, Group, Loader, Stack, TextInput, Title, rem, useMantineTheme } from "@mantine/core";
+import { IconArrowRight, IconSearch } from "@tabler/icons-react";
+import { signIn, useSession } from "next-auth/react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { FlashcardSet } from "./types/flashcard";
+import { getAllPublicFlashCardSets } from "./utils/firebase";
 
 export default function Home() {
   const { data: session } = useSession();
+  const [flashcardSets, setFlashcardSets] = useState<FlashcardSet[]>();
+  const theme = useMantineTheme();
 
+  useEffect(() => {
+    if (session == null) return;
+
+    async function fetchFlashcardSet() {
+      if (session == null) return;
+      const flashcardSet = await getAllPublicFlashCardSets();
+      setFlashcardSets(flashcardSet);
+    }
+    fetchFlashcardSet();
+  }, [session]);
 
   return (
     <Stack align="center">
-      <Button component={Link} href="/demo">
-        Go to demo
-      </Button>
       {session ? (
-        <>
-          <Title>Hello, {session.user?.name}</Title>
-          <Image
-            src="/logo/FlashyLogoMain.png"
-            alt="Flashy logo"
-            width={330}
-            height={487}
-          />
-          <Button onClick={() => signOut()}>Sign out</Button>
-        </>
+        !flashcardSets ? (
+          <Loader color="blue" size={48} />
+        ) : (
+          <>
+            <Title>All Flashies</Title>
+            <Group justify="space-between">
+              <TextInput
+                radius="xl"
+                size="md"
+                placeholder="Søk etter flashies etter tittel"
+                rightSectionWidth={42}
+                width="100%"
+                leftSection={<IconSearch style={{ width: rem(18), height: rem(18) }} stroke={1.5} />}
+                rightSection={
+                  <ActionIcon size={32} radius="xl" color={theme.primaryColor} variant="filled">
+                    <IconArrowRight style={{ width: rem(18), height: rem(18) }} stroke={1.5} />
+                  </ActionIcon>
+                }
+              />
+              <Button component={Link} href="/createFlashcard" >Lag nytt sett</Button>
+            </Group>
+            {<FlashiesTable flashies={flashcardSets} />}
+          </>
+        )
       ) : (
         <>
           <Title>Sign in to continue</Title>

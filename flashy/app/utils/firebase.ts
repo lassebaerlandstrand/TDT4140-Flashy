@@ -1,5 +1,19 @@
 import { firestore } from "@/lib/firestore";
-import { DocumentReference, addDoc, collection, deleteDoc, doc, getCountFromServer, getDoc, getDocs, limit, query, setDoc, updateDoc, where } from "@firebase/firestore";
+import {
+  DocumentReference,
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  getCountFromServer,
+  getDoc,
+  getDocs,
+  limit,
+  query,
+  setDoc,
+  updateDoc,
+  where,
+} from "@firebase/firestore";
 import { ComboboxItem } from "@mantine/core";
 import { Session } from "next-auth";
 import { CreateFlashCardType, FlashcardComment, FlashcardFlagged, FlashcardSet, Visibility } from "../types/flashcard";
@@ -9,7 +23,7 @@ import { convertDocumentRefToType, converter } from "./converter";
 export async function getAllUsers(): Promise<User[]> {
   const userCollection = collection(firestore, "users").withConverter(converter<User>());
   const userDocs = await getDocs(userCollection);
-  return userDocs.docs.map(doc => doc.data());
+  return userDocs.docs.map((doc) => doc.data());
 }
 
 async function getUserByEmail(email: string): Promise<User | null> {
@@ -17,8 +31,7 @@ async function getUserByEmail(email: string): Promise<User | null> {
   const querySelelction = query(usersRef, where("email", "==", email), limit(1));
   const querySnapshot = await getDocs(querySelelction);
 
-  if (querySnapshot.docs.length != 0)
-    return querySnapshot.docs[0].data();
+  if (querySnapshot.docs.length != 0) return querySnapshot.docs[0].data();
   return null;
 }
 
@@ -26,17 +39,26 @@ async function getViews(flashcardDocument: DocumentReference) {
   const viewsCollection = collection(flashcardDocument, "views");
   const viewsDocs = await getDocs(viewsCollection);
 
-  return viewsDocs.docs.map(doc => {
+  return viewsDocs.docs.map((doc) => {
     return {
       id: doc.id,
       front: doc.data().front,
-      back: doc.data().back
-    }
-  }
-  );
+      back: doc.data().back,
+    };
+  });
 }
 
-async function userHasLikedFlashcard(flashcardDocument: DocumentReference, currentUserId: User["id"]): Promise<boolean> {
+export async function getAllPublicFlashCardSets(): Promise<FlashcardSet[]> {
+  const flashcardCollection = collection(firestore, "flashies");
+  const querySelection = query(flashcardCollection, where("isPublic", "==", true));
+  const flashcardDocs = await getDocs(querySelection);
+  return flashcardDocs.docs.map((doc) => doc.data()) as FlashcardSet[];
+}
+
+async function userHasLikedFlashcard(
+  flashcardDocument: DocumentReference,
+  currentUserId: User["id"]
+): Promise<boolean> {
   const currentUserRef = doc(firestore, "users", currentUserId);
   const likesCollection = collection(flashcardDocument, "likes");
   const queryLikes = query(likesCollection, where("likedBy", "==", currentUserRef), limit(1));
@@ -50,13 +72,15 @@ async function getNumberOfLikes(flashcardDocument: DocumentReference): Promise<n
   return numOfLikes.data().count;
 }
 
-async function getHasFavoritedFlashcard(flashcardDocument: DocumentReference, currentUserId: User["id"]): Promise<boolean> {
+async function getHasFavoritedFlashcard(
+  flashcardDocument: DocumentReference,
+  currentUserId: User["id"]
+): Promise<boolean> {
   const currentUserRef = doc(firestore, "users", currentUserId);
   const favoritesCollection = collection(flashcardDocument, "favorites");
   const queryFavorites = query(favoritesCollection, where("favoritedBy", "==", currentUserRef), limit(1));
   const queryDocs = await getDocs(queryFavorites);
   return !queryDocs.empty;
-
 }
 
 async function getComments(flashcardDocument: DocumentReference): Promise<FlashcardComment[]> {
@@ -75,7 +99,10 @@ async function getComments(flashcardDocument: DocumentReference): Promise<Flashc
   return comments;
 }
 
-async function getFlaggedCards(flashcardDocument: DocumentReference, currentUserId: User["id"]): Promise<FlashcardFlagged> {
+async function getFlaggedCards(
+  flashcardDocument: DocumentReference,
+  currentUserId: User["id"]
+): Promise<FlashcardFlagged> {
   const usersFlagged = collection(flashcardDocument, "usersFlagged");
   const flaggedDoc = doc(usersFlagged, currentUserId).withConverter(converter<FlashcardFlagged>());
   const flagged = await getDoc(flaggedDoc);
@@ -98,13 +125,11 @@ export async function getFlashcardSet(flashcardId: string, currentUserId: User["
 
   const flashcardData = flashcardDoc.data();
 
-  if (flashcardData == null)
-    throw new Error("Flashcard not found");
+  if (flashcardData == null) throw new Error("Flashcard not found");
 
   const creator = await convertDocumentRefToType<User>(flashcardData.creator);
 
-  if (creator == null)
-    throw new Error("Creator not found");
+  if (creator == null) throw new Error("Creator not found");
 
   const views = await getViews(flashcardDocument);
   const userHasLiked = await userHasLikedFlashcard(flashcardDocument, currentUserId);
@@ -113,7 +138,6 @@ export async function getFlashcardSet(flashcardId: string, currentUserId: User["
   const comments = await getComments(flashcardDocument);
   const flagged = await getFlaggedCards(flashcardDocument, currentUserId);
   const visibility = flashcardData.isPublic ? Visibility.Public : Visibility.Private;
-
 
   const flashcard: FlashcardSet = {
     id: flashcardDoc.id,
@@ -177,7 +201,7 @@ export async function createNewFlashcard(flashcard: CreateFlashCardType) {
 
   // Create flashcard
   const docData = {
-    creator: flashcard.creator,
+    creator: doc(firestore, "users", flashcard.creator.id),
     title: flashcard.title,
     numViews: 0,
     isPublic: flashcard.visibility === Visibility.Public,

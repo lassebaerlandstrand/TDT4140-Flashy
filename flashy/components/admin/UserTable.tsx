@@ -1,20 +1,10 @@
-import {
-  ActionIcon,
-  Anchor,
-  Avatar,
-  Badge,
-  ComboboxItem,
-  Group,
-  Select,
-  Table,
-  Text,
-  rem,
-} from "@mantine/core";
+import { ActionIcon, Anchor, Avatar, Badge, ComboboxItem, Group, Select, Table, Text, rem } from "@mantine/core";
 import { IconPencil, IconTrash } from "@tabler/icons-react";
 
 import { User } from "@/app/types/user";
-import { deleteUser, setUpdateUserRoles } from "@/app/utils/firebase";
+import { setUpdateUserRoles } from "@/app/utils/firebase";
 import { useState } from "react";
+import { confirmationModal } from "../user/ConfirmationModal";
 
 const jobColors: Record<string, string> = {
   admin: "cyan",
@@ -26,20 +16,15 @@ type UserTableProps = {
   users: User[];
 };
 
-const deleteUserFromCollection = async (
-  actionUser: User | undefined,
-  deleteUserEmail: string
-) => {
+const deleteUserFromCollection = async (actionUser: User | undefined, deleteUserEmail: string) => {
   if (actionUser) {
-    deleteUser(actionUser, deleteUserEmail);
+    confirmationModal({ user: actionUser, expires: null }, false);
   }
 };
 
 export function UsersTable({ actionUser, users }: UserTableProps) {
   const [editingUserId, setEditingUserId] = useState<string | null>(null);
-  const [userRoles, setUserRoles] = useState<
-    Record<string, ComboboxItem | null>
-  >(() => {
+  const [userRoles, setUserRoles] = useState<Record<string, ComboboxItem | null>>(() => {
     const roles: Record<string, ComboboxItem | null> = {};
     users.forEach((user) => {
       roles[user.email] = { value: user.role, label: user.role };
@@ -67,22 +52,16 @@ export function UsersTable({ actionUser, users }: UserTableProps) {
           </Text>
         </Group>
       </Table.Td>
-
       <Table.Td>
         {editingUserId === user.email ? (
           <Select
             data={roleOptions}
             value={userRoles[user.email]?.value || null}
-            onChange={(value) =>
-              handleRoleChange(
-                user.email,
-                value ? { value, label: value } : null
-              )
-            }
+            onChange={(value) => handleRoleChange(user.email, value ? { value, label: value } : null)}
           />
         ) : (
-          <Badge color={jobColors[user.role]} variant="light">
-            {user.role}
+          <Badge color={jobColors[userRoles[user.email]?.value || user.role]} variant="light">
+            {userRoles[user.email]?.label || user.role}
           </Badge>
         )}
       </Table.Td>

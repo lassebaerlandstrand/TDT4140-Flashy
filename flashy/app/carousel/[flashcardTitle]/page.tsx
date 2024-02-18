@@ -3,12 +3,12 @@
 import { FlashcardSet } from "@/app/types/flashcard";
 import { getFlashcardSet } from "@/app/utils/firebase";
 import CarouselCard from "@/components/carousel/carousel";
-import { Loader } from "@mantine/core";
+import { Code, Loader, Stack, Text, Title } from "@mantine/core";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 
 type FlashcardsType = {
-  params: { flashcardTitle: string }
+  params: { flashcardTitle: string };
 };
 
 export default function Flashcards({ params }: FlashcardsType) {
@@ -16,8 +16,7 @@ export default function Flashcards({ params }: FlashcardsType) {
   const { data: session } = useSession();
 
   useEffect(() => {
-    if (session == null)
-      return;
+    if (session == null) return;
 
     async function fetchFlashcardSet() {
       if (session == null) return;
@@ -33,5 +32,13 @@ export default function Flashcards({ params }: FlashcardsType) {
 
   console.log(flashcardSet);
 
-  return <CarouselCard />;
+  return (
+    <Stack align="center">
+      <Title>{flashcardSet.title}</Title>
+      <Text>
+        by: <Code>{flashcardSet.creator.name}</Code>
+      </Text>
+      <CarouselCard views={flashcardSet.views} />
+    </Stack>
+  );
 }

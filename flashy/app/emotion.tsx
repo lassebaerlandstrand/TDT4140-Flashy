@@ -2,6 +2,7 @@ import ApplicationShell from "@/components/root/ApplicationShell";
 import { authOptions } from "@/lib/auth/auth";
 import "@mantine/carousel/styles.css";
 import { ColorSchemeScript, MantineProvider, createTheme } from "@mantine/core";
+import { ModalsProvider } from "@mantine/modals";
 import { Notifications } from "@mantine/notifications";
 import '@mantine/notifications/styles.css';
 import { getServerSession } from "next-auth";
@@ -25,7 +26,9 @@ export default async function RootStyleRegistry({
       <body>
         <MantineProvider theme={theme}>
           <Notifications />
-          <ApplicationShell session={session!}>{children}</ApplicationShell>;
+          <ModalsProvider>
+            <ApplicationShell session={session!}>{children}</ApplicationShell>;
+          </ModalsProvider>
         </MantineProvider>
       </body>
     </html>
