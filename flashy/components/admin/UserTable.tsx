@@ -1,8 +1,9 @@
 import { ActionIcon, Anchor, Avatar, Badge, ComboboxItem, Group, Select, Table, Text, rem } from "@mantine/core";
 import { IconPencil, IconTrash } from "@tabler/icons-react";
 
-import { deleteUser, setUpdateUserRoles } from "@/app/utils/firebase";
+import { setUpdateUserRoles } from "@/app/utils/firebase";
 import { useState } from "react";
+import { confirmationModal } from "../user/ConfirmationModal";
 
 const jobColors: Record<string, string> = {
   admin: "cyan",
@@ -16,7 +17,7 @@ type UserTableProps = {
 
 const deleteUserFromCollection = async (actionUser: User | undefined, deleteUserEmail: string) => {
   if (actionUser) {
-    deleteUser(actionUser, deleteUserEmail);
+    confirmationModal({ user: actionUser, expires: null }, false);
   }
 };
 
