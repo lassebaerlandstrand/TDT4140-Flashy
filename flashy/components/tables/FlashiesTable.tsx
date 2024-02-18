@@ -1,4 +1,4 @@
-import { FlashcardSet } from "@/app/types/flashcard";
+import { ShallowFlashcardSet } from "@/app/types/flashcard";
 import classes from "@/components/tables/FlashiesTable.module.css";
 import { ScrollArea, Table, UnstyledButton } from "@mantine/core";
 import cx from "clsx";
@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useState } from "react";
 
 type FlashiesTableProps = {
-  flashies: FlashcardSet[];
+  flashies: ShallowFlashcardSet[];
 };
 
 export function FlashiesTable({ flashies }: FlashiesTableProps) {
@@ -19,7 +19,7 @@ export function FlashiesTable({ flashies }: FlashiesTableProps) {
           {flashy.title}
         </UnstyledButton>
       </Table.Td>
-      <Table.Td>{flashy.creator.name}</Table.Td>
+      <Table.Td>{flashy.creator ? flashy.creator.name : "Slettet bruker"}</Table.Td>
       <Table.Td>{flashy.numOfLikes}</Table.Td>
       <Table.Td>{flashy.numViews}</Table.Td>
       <Table.Td>

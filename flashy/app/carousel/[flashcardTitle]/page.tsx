@@ -51,7 +51,7 @@ export default function Flashcards({ params }: FlashcardsType) {
     <Stack align="center">
       <Title>{flashcardSet.title}</Title>
       <Text>
-        by: <Code>{flashcardSet.creator.name}</Code>
+        by: <Code>{flashcardSet.creator ? flashcardSet.creator.name : "Slettet bruker"}</Code>
       </Text>
       <CarouselCard views={flashcardSet.views} />
     </Stack>
