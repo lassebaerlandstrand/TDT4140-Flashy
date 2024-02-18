@@ -1,6 +1,7 @@
 import { firestore } from "@/lib/firestore";
 import {
   DocumentReference,
+  addDoc,
   collection,
   deleteDoc,
   doc,
@@ -9,11 +10,13 @@ import {
   getDocs,
   limit,
   query,
+  setDoc,
   updateDoc,
   where,
 } from "@firebase/firestore";
 import { ComboboxItem } from "@mantine/core";
 import { Session } from "next-auth";
+import { CreateFlashCardType, FlashcardComment, FlashcardFlagged, FlashcardSet, Visibility } from "../types/flashcard";
 import { convertDocumentRefToType, converter } from "./converter";
 
 export async function getAllUsers(): Promise<User[]> {
@@ -133,6 +136,7 @@ export async function getFlashcardSet(flashcardId: string, currentUserId: User["
   const userHasFavorited = await getHasFavoritedFlashcard(flashcardDocument, currentUserId);
   const comments = await getComments(flashcardDocument);
   const flagged = await getFlaggedCards(flashcardDocument, currentUserId);
+  const visibility = flashcardData.isPublic ? Visibility.Public : Visibility.Private;
 
   const flashcard: FlashcardSet = {
     id: flashcardDoc.id,
@@ -145,6 +149,7 @@ export async function getFlashcardSet(flashcardId: string, currentUserId: User["
     comments: comments,
     flagged: flagged,
     views: views,
+    visibility: visibility,
   };
 
   return flashcard;
@@ -183,3 +188,37 @@ export const setUpdateUserRoles = async (
     });
   }
 };
+
+
+export async function createNewFlashcard(flashcard: CreateFlashCardType) {
+  // Check if flashcard is available
+  const flashcardDoc = doc(firestore, "flashies", flashcard.title);
+  const flashcardData = await getDoc(flashcardDoc);
+  if (flashcardData.exists()) {
+    throw new Error("Navnet på settet er allerede i bruk");
+  }
+
+  // Create flashcard
+  const docData = {
+    creator: doc(firestore, "users", flashcard.creator.id),
+    title: flashcard.title,
+    numViews: 0,
+    isPublic: flashcard.visibility === Visibility.Public,
+  };
+
+  await setDoc(flashcardDoc, docData).catch(() => {
+    throw new Error("Feilet å opprette flashcard settet");
+  });
+
+  // Create views within flashcard
+  const viewsCollection = collection(flashcardDoc, "views");
+
+  await Promise.all(
+    flashcard.views.map(async (view) => {
+      return await addDoc(viewsCollection, view);
+    })
+  ).catch(() => {
+    throw new Error("Feilet å opprette kortene for settet");
+  });
+
+}

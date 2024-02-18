@@ -1,5 +1,6 @@
 "use client";
 
+import { FlashcardView } from "@/app/types/flashcard";
 import { Carousel } from "@mantine/carousel";
 import { Button, Container, Group, Paper, Stack, Text, Title, UnstyledButton } from "@mantine/core";
 import { useState } from "react";

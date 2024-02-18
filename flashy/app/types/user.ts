@@ -5,4 +5,6 @@ type User = {
     image: string;
     emailVerified: boolean;
     role: string;
+    age: number | null;
+    username: string;
 }

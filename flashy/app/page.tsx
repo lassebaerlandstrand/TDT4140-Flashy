@@ -1,10 +1,12 @@
 "use client";
 
 import { FlashiesTable } from "@/components/tables/FlashiesTable";
-import { ActionIcon, Button, Loader, Stack, TextInput, Title, rem, useMantineTheme } from "@mantine/core";
+import { ActionIcon, Button, Group, Loader, Stack, TextInput, Title, rem, useMantineTheme } from "@mantine/core";
 import { IconArrowRight, IconSearch } from "@tabler/icons-react";
 import { signIn, useSession } from "next-auth/react";
+import Link from "next/link";
 import { useEffect, useState } from "react";
+import { FlashcardSet } from "./types/flashcard";
 import { getAllPublicFlashCardSets } from "./utils/firebase";
 
 export default function Home() {
@@ -31,19 +33,22 @@ export default function Home() {
         ) : (
           <>
             <Title>All Flashies</Title>
-            <TextInput
-              radius="xl"
-              size="md"
-              placeholder="Search flashies by title"
-              rightSectionWidth={42}
-              width="100%"
-              leftSection={<IconSearch style={{ width: rem(18), height: rem(18) }} stroke={1.5} />}
-              rightSection={
-                <ActionIcon size={32} radius="xl" color={theme.primaryColor} variant="filled">
-                  <IconArrowRight style={{ width: rem(18), height: rem(18) }} stroke={1.5} />
-                </ActionIcon>
-              }
-            />
+            <Group justify="space-between">
+              <TextInput
+                radius="xl"
+                size="md"
+                placeholder="Søk etter flashies etter tittel"
+                rightSectionWidth={42}
+                width="100%"
+                leftSection={<IconSearch style={{ width: rem(18), height: rem(18) }} stroke={1.5} />}
+                rightSection={
+                  <ActionIcon size={32} radius="xl" color={theme.primaryColor} variant="filled">
+                    <IconArrowRight style={{ width: rem(18), height: rem(18) }} stroke={1.5} />
+                  </ActionIcon>
+                }
+              />
+              <Button component={Link} href="/createFlashcard" >Lag nytt sett</Button>
+            </Group>
             {<FlashiesTable flashies={flashcardSets} />}
           </>
         )
