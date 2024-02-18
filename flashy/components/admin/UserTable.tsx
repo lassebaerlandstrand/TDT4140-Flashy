@@ -15,10 +15,8 @@ type UserTableProps = {
   users: User[];
 };
 
-const deleteUserFromCollection = async (actionUser: User | undefined, deleteUserEmail: string) => {
-  if (actionUser) {
-    confirmationModal({ user: actionUser, expires: null }, false);
-  }
+const deleteUserFromCollection = async (actionUser: User | undefined, deleteUser: User) => {
+  confirmationModal({ user: deleteUser, expires: null }, actionUser == deleteUser);
 };
 
 export function UsersTable({ actionUser, users }: UserTableProps) {
@@ -82,7 +80,7 @@ export function UsersTable({ actionUser, users }: UserTableProps) {
             <IconTrash
               style={{ width: rem(16), height: rem(16) }}
               stroke={1.5}
-              onClick={() => deleteUserFromCollection(actionUser, user.email)}
+              onClick={() => deleteUserFromCollection(actionUser, user)}
             />
           </ActionIcon>
         </Group>
