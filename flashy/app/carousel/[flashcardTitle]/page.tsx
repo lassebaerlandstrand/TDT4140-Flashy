@@ -31,7 +31,7 @@ export default function Flashcards({ params }: FlashcardsType) {
       }
     }
     fetchFlashcardSet();
-  }, [session]);
+  }, [session, params.flashcardTitle]);
 
   if (failedToFetch) {
     return (
