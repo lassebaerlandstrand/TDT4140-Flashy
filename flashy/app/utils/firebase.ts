@@ -200,7 +200,7 @@ export async function createNewFlashcard(flashcard: CreateFlashCardType) {
 
   // Create flashcard
   const docData = {
-    creator: flashcard.creator,
+    creator: doc(firestore, "users", flashcard.creator.id),
     title: flashcard.title,
     numViews: 0,
     isPublic: flashcard.visibility === Visibility.Public,
