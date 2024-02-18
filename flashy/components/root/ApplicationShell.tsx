@@ -3,7 +3,7 @@ import { NextAuthProvider } from "@/lib/auth/providers/SessionProvider";
 import {
   AppShell
 } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
+import { useDisclosure, useDocumentTitle } from "@mantine/hooks";
 import { Session } from "next-auth";
 
 import classes from "@/components/root/ApplicationShell.module.css";
@@ -23,6 +23,7 @@ export default function ApplicationShell({
   session: Session;
 }) {
   const [opened, { toggle }] = useDisclosure();
+  useDocumentTitle("Flashy");
   return (
     <NextAuthProvider session={session!}>
       <AppShell
