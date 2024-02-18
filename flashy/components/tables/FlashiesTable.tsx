@@ -1,3 +1,4 @@
+import { FlashcardSet } from "@/app/types/flashcard";
 import classes from "@/components/tables/FlashiesTable.module.css";
 import { ScrollArea, Table, UnstyledButton } from "@mantine/core";
 import cx from "clsx";

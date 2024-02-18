@@ -1,6 +1,7 @@
 import { firestore } from "@/lib/firestore";
 import {
-  DocumentReference, addDoc,
+  DocumentReference,
+  addDoc,
   collection,
   deleteDoc,
   doc,
@@ -8,7 +9,8 @@ import {
   getDoc,
   getDocs,
   limit,
-  query, setDoc,
+  query,
+  setDoc,
   updateDoc,
   where,
 } from "@firebase/firestore";

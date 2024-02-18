@@ -5,6 +5,7 @@ import { ActionIcon, Button, Loader, Stack, TextInput, Title, rem, useMantineThe
 import { IconArrowRight, IconSearch } from "@tabler/icons-react";
 import { signIn, useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
+import { FlashcardSet } from "./types/flashcard";
 import { getAllPublicFlashCardSets } from "./utils/firebase";
 
 export default function Home() {
