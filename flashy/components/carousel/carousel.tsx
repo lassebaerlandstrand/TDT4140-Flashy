@@ -1,7 +1,7 @@
 "use client";
 
 import { Carousel } from "@mantine/carousel";
-import { Container, Paper, Stack, Text, Title, UnstyledButton } from "@mantine/core";
+import { Button, Container, Group, Paper, Stack, Text, Title, UnstyledButton } from "@mantine/core";
 import { useState } from "react";
 
 function Card(view: FlashcardView) {
@@ -37,7 +37,23 @@ type CarouselCardProps = {
 };
 
 export default function CarouselCard({ views }: CarouselCardProps) {
-  const slides = views.map((item, index) => (
+  const [currentViews, setCurrentViews] = useState(views);
+  const originalViews = [...views];
+
+  // Shuffle function
+  const shuffleViews = () => {
+    let shuffled = [...currentViews];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    setCurrentViews(shuffled);
+  };
+
+  const resetViews = () => {
+    setCurrentViews(originalViews);
+  };
+  const slides = currentViews.map((item, index) => (
     <Carousel.Slide key={item.id}>
       <Title style={{ position: "absolute", left: 10, top: 10 }}>{index + 1}</Title>
       <Card {...item} />
@@ -46,6 +62,14 @@ export default function CarouselCard({ views }: CarouselCardProps) {
 
   return (
     <Stack align="center">
+      <Group>
+        <Button onClick={shuffleViews} style={{ margin: 10 }}>
+          Shuffle
+        </Button>
+        <Button onClick={resetViews} style={{ margin: 10 }}>
+          Reset
+        </Button>
+      </Group>
       <Container style={{ width: "50vw" }}>
         <Carousel height={400} slideGap="xl" withIndicators align="start">
           {slides}
