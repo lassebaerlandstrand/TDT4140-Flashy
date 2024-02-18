@@ -1,7 +1,11 @@
 import { FirestoreAdapter } from "@auth/firebase-adapter";
-import GoogleProvider from "next-auth/providers/google";
 import { cert } from "firebase-admin/app";
+import { Session, User, } from "next-auth";
 import { Adapter } from "next-auth/adapters";
+import GoogleProvider from "next-auth/providers/google";
+
+type AuthOptionsLogin = { user: User & { role: string, username: string, age: number | null } };
+type AuthOptionsSession = { session: Session, user: User & { role: string, username: string, age: number | null } };
 
 export const authOptions = {
   providers: [
@@ -19,5 +23,28 @@ export const authOptions = {
       projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECTID,
     }),
   }) as Adapter,
+  callbacks: {
+    async signIn({ user }: AuthOptionsLogin) {
+      // Add a default role to the user if it doesn't exist
+      if (!user.role!) {
+        user.role = 'user';
+        user.username = ''
+        user.age = null
+      }
+      return true;
+    },
+    async session({ session, user }: AuthOptionsSession) {
+      const modifiedUser = user
 
+      // Add id field to the session object
+      session.user.id = modifiedUser.id;
+
+      // Add role to the session object
+      if (modifiedUser.role && session.user) {
+        session.user.role = modifiedUser.role;
+      }
+
+      return session;
+    }
+  }
 };
