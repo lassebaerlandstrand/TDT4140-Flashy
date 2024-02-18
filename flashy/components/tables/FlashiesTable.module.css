@@ -1,0 +1,11 @@
+.header {
+    position: sticky;
+    top: 0;
+    background-color: var(--mantine-color-body);
+    transition: box-shadow 150ms ease;
+
+  }
+  
+  .scrolled {
+    box-shadow: var(--mantine-shadow-sm);
+  }
