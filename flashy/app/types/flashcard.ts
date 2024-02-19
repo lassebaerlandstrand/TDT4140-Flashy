@@ -40,6 +40,7 @@ export type FlashcardComment = {
 
 export type FlashcardView = {
     id: string;
+    isCopy: boolean;
     front: string;
     back: string;
 }
@@ -54,4 +55,5 @@ export type CreateFlashCardType = {
 export type CreateViewType = {
     front: string;
     back: string;
+    isCopy: boolean;
 }

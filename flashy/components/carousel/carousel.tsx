@@ -2,37 +2,11 @@
 
 import { FlashcardView } from "@/app/types/flashcard";
 import { Carousel } from "@mantine/carousel";
-import { Button, Container, Group, Paper, Stack, Text, Title, UnstyledButton } from "@mantine/core";
+import { Button, Container, Group, Stack, Title } from "@mantine/core";
+import { IconCheck, IconQuestionMark } from "@tabler/icons-react";
 import { useState } from "react";
+import Card from "./card";
 
-function Card(view: FlashcardView) {
-  const [frontOrBack, setFrontOrBack] = useState("front");
-
-  const handleClick = () => {
-    if (frontOrBack === "front") {
-      setFrontOrBack("back");
-    } else {
-      setFrontOrBack("front");
-    }
-  };
-  return (
-    <UnstyledButton style={{ width: "100%", height: "100%" }} onClick={() => handleClick()}>
-      <Paper
-        shadow="md"
-        p="xl"
-        radius="md"
-        style={{ height: "100%", width: "100%", backgroundColor: frontOrBack == "front" ? "orange" : "#7AD1DD" }}
-      >
-        <Stack align="center" style={{ width: "100%" }}>
-          <Title style={{ textAlign: "center" }}>{frontOrBack === "front" ? "Spørsmål" : "Fasit"}</Title>
-          <Text style={{ textAlign: "center" }} lineClamp={4} size="xl" p={10}>
-            {frontOrBack === "front" ? <>{view.front}</> : <>{view.back}</>}
-          </Text>
-        </Stack>
-      </Paper>
-    </UnstyledButton>
-  );
-}
 type CarouselCardProps = {
   views: FlashcardView[];
 };
@@ -41,11 +15,32 @@ export default function CarouselCard({ views }: CarouselCardProps) {
   const [currentViews, setCurrentViews] = useState(views);
   const [isShuffled, setIsShuffled] = useState(false);
   const originalViews = [...views];
+  const [difficultViews, setDifficultViews] = useState([] as FlashcardView[]);
+  const [combinedViews, setCombinedViews] = useState(currentViews);
+
+  const toggleDifficult = (markedView: FlashcardView) => {
+    const markedViewCopy: FlashcardView = { ...markedView, id: markedView.id + "copy", isCopy: true };
+    let newDifficultViews = [...difficultViews];
+
+    if (markedViewCopy) {
+      if (newDifficultViews.some((card) => card.id === markedView.id + "copy")) {
+        newDifficultViews = newDifficultViews.filter((view) => view.id !== markedViewCopy.id);
+        setDifficultViews(newDifficultViews);
+      } else {
+        newDifficultViews = [...difficultViews, markedViewCopy];
+        setDifficultViews(newDifficultViews);
+      }
+    }
+
+    setCombinedViews([...currentViews, ...newDifficultViews]);
+  };
 
   // Shuffle function
   const shuffleViews = () => {
+    let newCurrentViews = [...currentViews];
     if (isShuffled) {
       setCurrentViews(originalViews);
+      newCurrentViews = originalViews;
       setIsShuffled(!isShuffled);
     } else {
       let shuffled = [...currentViews];
@@ -53,22 +48,34 @@ export default function CarouselCard({ views }: CarouselCardProps) {
         const j = Math.floor(Math.random() * (i + 1));
         [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
       }
-      setIsShuffled(!isShuffled);
       setCurrentViews(shuffled);
+      newCurrentViews = shuffled;
+      setIsShuffled(!isShuffled);
     }
+    setCombinedViews([...newCurrentViews, ...difficultViews]);
   };
-  const slides = currentViews.map((item, index) => (
+  const slides = combinedViews.map((item, index) => (
     <Carousel.Slide key={item.id}>
       <Title style={{ position: "absolute", left: 10, top: 10 }}>{index + 1}</Title>
-      <Card {...item} />
+      <Card
+        view={item}
+        hasCopy={difficultViews.some((card) => card.id === item.id + "copy")}
+        toggleDifficult={(markedView: FlashcardView) => toggleDifficult(markedView)}
+        {...item}
+      />
     </Carousel.Slide>
   ));
 
   return (
     <Stack align="center">
       <Group>
-        <Button onClick={shuffleViews} style={{ margin: 10 }} color={isShuffled ? "blue" : "gray"}>
-          Shuffle
+        <Button
+          onClick={shuffleViews}
+          style={{ margin: 10 }}
+          color={isShuffled ? "blue" : "gray"}
+          rightSection={isShuffled ? <IconCheck></IconCheck> : <IconQuestionMark></IconQuestionMark>}
+        >
+          Shuffle{isShuffled ? "d" : ""}
         </Button>
       </Group>
       <Container style={{ width: "50vw" }}>
