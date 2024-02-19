@@ -11,32 +11,16 @@ type CarouselCardProps = {
 };
 
 export default function CarouselCard({ views }: CarouselCardProps) {
-  const [currentViews, setCurrentViews] = useState(views);
-  const [isShuffled, setIsShuffled] = useState(false);
-  const originalViews = [...views];
-  const [difficultViews, setDifficultViews] = useState([] as FlashcardView[]);
-  const [combinedViews, setCombinedViews] = useState(currentViews);
-
-  const toggleDifficult = (markedView: FlashcardView) => {
-    const markedViewCopy: FlashcardView = { ...markedView, id: markedView.id + "copy", isCopy: true };
-    if (markedViewCopy) {
-      let found: boolean = false;
-      difficultViews.forEach((card) => {
-        if (card.id === markedViewCopy.id) {
-          found = true;
-        }
-      });
-      if (found) {
-        setDifficultViews(difficultViews.filter((view) => view.id !== markedViewCopy.id));
-      } else {
-        setDifficultViews([...difficultViews, markedViewCopy]); // TODO: bugga
-      }
-    }
-    setCombinedViews([...currentViews, ...difficultViews]); // TODO: bugga
-    console.log(difficultViews);
-  };
-
   function Card(view: FlashcardView) {
+    const [markedCards, setMarkedCards] = useState([] as string[]);
+
+    const toggleDifficult = (cardID: string) => {
+      if (markedCards.includes(cardID)) {
+        setMarkedCards(markedCards.filter((id) => id !== cardID));
+      } else {
+        setMarkedCards([...markedCards, cardID]);
+      }
+    };
     const [frontOrBack, setFrontOrBack] = useState("front");
 
     const handleClick = () => {
@@ -63,23 +47,22 @@ export default function CarouselCard({ views }: CarouselCardProps) {
               </Text>
             </Stack>
           </UnstyledButton>
-          {view.isCopy ? (
-            <></>
-          ) : (
-            <Group justify="right">
-              <Checkbox
-                onClick={() => {
-                  toggleDifficult(view);
-                }}
-                style={{ paddingBottom: 100 }}
-                label="Vanskelig?"
-              />
-            </Group>
-          )}
+          <Group justify="right">
+            <Checkbox
+              onClick={() => {
+                toggleDifficult(view.id);
+              }}
+              style={{ paddingBottom: 100 }}
+              label="Vanskelig?"
+            />
+          </Group>
         </Paper>
       </>
     );
   }
+  const [currentViews, setCurrentViews] = useState(views);
+  const [isShuffled, setIsShuffled] = useState(false);
+  const originalViews = [...views];
 
   // Shuffle function
   const shuffleViews = () => {
@@ -96,7 +79,7 @@ export default function CarouselCard({ views }: CarouselCardProps) {
       setCurrentViews(shuffled);
     }
   };
-  const slides = combinedViews.map((item, index) => (
+  const slides = currentViews.map((item, index) => (
     <Carousel.Slide key={item.id}>
       <Title style={{ position: "absolute", left: 10, top: 10 }}>{index + 1}</Title>
       <Card {...item} />

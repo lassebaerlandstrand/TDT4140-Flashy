@@ -15,25 +15,17 @@ export default function CarouselCard({ views }: CarouselCardProps) {
   const [isShuffled, setIsShuffled] = useState(false);
   const originalViews = [...views];
   const [difficultViews, setDifficultViews] = useState([] as FlashcardView[]);
-  const [combinedViews, setCombinedViews] = useState(currentViews);
+  const [combinedViews, setCombinedViews] = useState([...currentViews, ...difficultViews]);
 
-  const toggleDifficult = (markedView: FlashcardView) => {
-    const markedViewCopy: FlashcardView = { ...markedView, id: markedView.id + "copy", isCopy: true };
-    if (markedViewCopy) {
-      let found: boolean = false;
-      difficultViews.forEach((card) => {
-        if (card.id === markedViewCopy.id) {
-          found = true;
-        }
-      });
-      if (found) {
-        setDifficultViews(difficultViews.filter((view) => view.id !== markedViewCopy.id));
+  const toggleDifficult = (id: string) => {
+    const markedView = originalViews.find((view) => view.id === id);
+    if (markedView) {
+      if (difficultViews.includes(markedView)) {
+        setDifficultViews(difficultViews.filter((view) => view.id !== id));
       } else {
-        setDifficultViews([...difficultViews, markedViewCopy]); // TODO: bugga
+        setDifficultViews([...difficultViews, markedView]);
       }
     }
-    setCombinedViews([...currentViews, ...difficultViews]); // TODO: bugga
-    console.log(difficultViews);
   };
 
   function Card(view: FlashcardView) {
@@ -63,19 +55,15 @@ export default function CarouselCard({ views }: CarouselCardProps) {
               </Text>
             </Stack>
           </UnstyledButton>
-          {view.isCopy ? (
-            <></>
-          ) : (
-            <Group justify="right">
-              <Checkbox
-                onClick={() => {
-                  toggleDifficult(view);
-                }}
-                style={{ paddingBottom: 100 }}
-                label="Vanskelig?"
-              />
-            </Group>
-          )}
+          <Group justify="right">
+            <Checkbox
+              onClick={() => {
+                toggleDifficult(view.id);
+              }}
+              style={{ paddingBottom: 100 }}
+              label="Vanskelig?"
+            />
+          </Group>
         </Paper>
       </>
     );
