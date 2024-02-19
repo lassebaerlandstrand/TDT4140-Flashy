@@ -57,8 +57,8 @@ export default function FlashcardEditForm({ params }: FlashcardEditFormType) {
 
 
     return (
-        <Stack gap="xl">
-            <Title>Rediger settet {flashcardSet.title}</Title>
+        <Stack gap="xl" w={800}>
+            <Title>Rediger settet "{flashcardSet.title}"</Title>
             <EditFlashCardForm flashcardSet={flashcardSet} />
         </Stack>
     );

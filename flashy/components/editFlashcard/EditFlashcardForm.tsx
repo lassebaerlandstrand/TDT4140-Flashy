@@ -37,6 +37,7 @@ export const EditFlashCardForm = ({ flashcardSet }: EditFlashCardFormType) => {
           placeholder="Rediger synlighet"
           data={Object.values(Visibility)}
           {...form.getInputProps('visibility')}
+          maw={150}
         />
 
         <Divider />
@@ -79,11 +80,13 @@ export const EditFlashCardForm = ({ flashcardSet }: EditFlashCardFormType) => {
             </Grid>
           ))}
         </Stack>
-        <Button onClick={() => form.setFieldValue('views', [...form.values.views, { front: '', back: '' }])}>Legg til nytt kort</Button>
+        <Group justify="center">
+          <Button onClick={() => form.setFieldValue('views', [...form.values.views, { front: '', back: '' }])}>Legg til nytt kort</Button>
+        </Group>
 
         <Group justify="flex-end" mt="md">
           <Button onClick={() => form.reset()} color="red" disabled={!form.isDirty()}>Reset</Button>
-          <Button type="submit" disabled={!form.isDirty()}>Oppdater settet</Button>
+          <Button type="submit" disabled={!form.isDirty()}>Lagre redigert sett</Button>
         </Group>
       </Stack>
     </form >

@@ -12,7 +12,7 @@ export default function FlashcardCreationForm() {
     }
 
     return (
-        <Stack gap="xl">
+        <Stack gap="xl" w={800}>
             <Title>Lag et nytt Flashy-sett</Title>
             <CreateFlashCardForm />
         </Stack>

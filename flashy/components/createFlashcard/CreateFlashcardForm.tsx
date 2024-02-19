@@ -2,7 +2,7 @@
 
 import { CreateFlashCardType, Visibility } from "@/app/types/flashcard";
 import { createNewFlashcard } from "@/app/utils/firebase";
-import { ActionIcon, Button, Divider, Group, Select, Stack, Text, TextInput, Textarea } from "@mantine/core";
+import { ActionIcon, Button, Divider, Flex, Grid, Group, Select, Stack, Text, TextInput, Textarea } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import { IconX } from "@tabler/icons-react";
@@ -50,44 +50,74 @@ export const CreateFlashCardForm = () => {
         color: 'red',
       })
     });
-
   }
 
   return (
 
     <form onSubmit={form.onSubmit((values) => onSubmit(values))}>
       <Stack>
-        <TextInput
-          withAsterisk
-          label="Navn på sett"
-          placeholder="Skriv inn navn på settet"
-          {...form.getInputProps('title')}
-        />
 
-        <Select
-          label="Sett synlighet"
-          placeholder="Velg synlighet"
-          data={Object.values(Visibility)}
-          {...form.getInputProps('visibility')}
-        />
+        <Group justify="space-between">
+          <TextInput
+            withAsterisk
+            label="Navn på sett"
+            placeholder="Skriv inn navn på settet"
+            {...form.getInputProps('title')}
+            w={250}
+          />
+
+          <Select
+            label="Sett synlighet"
+            placeholder="Rediger synlighet"
+            data={Object.values(Visibility)}
+            {...form.getInputProps('visibility')}
+            maw={150}
+          />
+        </Group>
 
         <Divider />
 
         <Stack gap="xl">
           {form.values.views.map((_, index) => (
-            <Group key={index}>
-              <Text mt={22}>Kort {index + 1}:</Text>
-              <Group>
-                <Textarea label="Framside" placeholder="Skriv inn det som skal vises på framsiden"  {...form.getInputProps(`views.${index}.front`)} />
-                <Textarea label="Bakside" placeholder="Skriv inn det som skal vises på baksiden" {...form.getInputProps(`views.${index}.back`)} />
-                <ActionIcon mt={22} onClick={() => form.setFieldValue('views', form.values.views.filter((_, i) => i !== index))} color="red" >
-                  <IconX stroke={1.5} />
-                </ActionIcon>
-              </Group>
-            </Group>
+            <Grid key={index}>
+              <Grid.Col span={1}>
+                <Flex justify="center" align="center" style={{ height: "100%" }}>
+                  <Text fw={700}>{index + 1}:</Text> {/* Order is not guaranteed to be the same in Firebase*/}
+                </Flex>
+              </Grid.Col>
+              <Grid.Col span={5}>
+                <Textarea
+                  label="Framside"
+                  placeholder="Skriv inn det som skal vises på framsiden"
+                  {...form.getInputProps(`views.${index}.front`)}
+                  autosize
+                  resize="vertical"
+                  minRows={4}
+                />
+              </Grid.Col>
+              <Grid.Col span={5}>
+                <Textarea
+                  label="Bakside"
+                  placeholder="Skriv inn det som skal vises på baksiden"
+                  {...form.getInputProps(`views.${index}.back`)}
+                  autosize
+                  resize="vertical"
+                  minRows={4}
+                />
+              </Grid.Col>
+              <Grid.Col span={1}>
+                <Flex justify="center" align="center" style={{ height: "100%" }}>
+                  <ActionIcon onClick={() => form.setFieldValue('views', form.values.views.filter((_, i) => i !== index))} color="red" >
+                    <IconX stroke={1.5} />
+                  </ActionIcon>
+                </Flex>
+              </Grid.Col>
+            </Grid>
           ))}
         </Stack>
-        <Button onClick={() => form.setFieldValue('views', [...form.values.views, { front: '', back: '' }])}>Legg til nytt kort</Button>
+        <Group justify="center">
+          <Button onClick={() => form.setFieldValue('views', [...form.values.views, { front: '', back: '' }])}>Legg til nytt kort</Button>
+        </Group>
 
         <Group justify="flex-end" mt="md">
           <Button type="submit">Lag sett</Button>
