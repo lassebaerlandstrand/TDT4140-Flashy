@@ -16,7 +16,7 @@ import {
 } from "@firebase/firestore";
 import { ComboboxItem } from "@mantine/core";
 import { Session } from "next-auth";
-import { CreateFlashCardType, FlashcardComment, FlashcardFlagged, FlashcardSet, ShallowFlashcardSet, Visibility } from "../types/flashcard";
+import { CreateFlashCardType, EditFlashCardType, FlashcardComment, FlashcardFlagged, FlashcardSet, FlashcardView, ShallowFlashcardSet, Visibility } from "../types/flashcard";
 import { User } from "../types/user";
 import { convertDocumentRefToType, converter } from "./converter";
 
@@ -232,4 +232,80 @@ export async function createNewFlashcard(flashcard: CreateFlashCardType) {
     throw new Error("Feilet å opprette kortene for settet");
   });
 
+}
+
+export async function editFlashcard(actionUser: User, flashcard: FlashcardSet, updatedFlashcard: EditFlashCardType) {
+  if (actionUser.id !== flashcard.creator?.id && actionUser.role !== "admin") {
+    throw new Error("Du har ikke tilgang til å redigere dette settet");
+  }
+
+  const flashcardDoc = doc(firestore, "flashies", flashcard.id);
+  const flashcardData = await getDoc(flashcardDoc);
+
+  if (!flashcardData.exists()) {
+    throw new Error("Fant ikke flashcard settet");
+  }
+
+  // Currently you can only edit the visibility or the views
+  if (flashcard.visibility !== updatedFlashcard.visibility) {
+    await updateDoc(flashcardDoc, {
+      isPublic: updatedFlashcard.visibility === Visibility.Public,
+    });
+  }
+
+  const viewsCollection = collection(flashcardDoc, "views");
+
+  // Delete views
+  const deletedViews = flashcard.views.filter((view) => {
+    return !updatedFlashcard.views.some((updatedView) => updatedView.id === view.id);
+  });
+  await Promise.all(
+    deletedViews.map(async (view) => {
+      const viewDoc = doc(viewsCollection, view.id);
+      await deleteDoc(viewDoc);
+    })
+  ).catch(() => {
+    throw new Error("Feilet å slette kortene for settet")
+  });
+
+  // In order to return the correct id's
+  const resultingViews: FlashcardView[] = updatedFlashcard.views.filter((view) => {
+    return flashcard.views.some((flashcardView) => flashcardView.id === view.id);
+  }) as FlashcardView[];
+
+  // Add new views
+  const newViews = updatedFlashcard.views.filter((view) => view.id == null);
+  await Promise.all(
+    newViews.map(async (view) => {
+      const newView = await addDoc(viewsCollection, {
+        front: view.front,
+        back: view.back,
+      });
+      resultingViews.push({
+        id: newView.id,
+        front: view.front,
+        back: view.back,
+      });
+    })
+  ).catch(() => {
+    throw new Error("Feilet å opprette kortene for settet");
+  });
+
+  // Update existing views
+  const updatedViews = updatedFlashcard.views.filter((view) => {
+    return flashcard.views.some((flashcardView) => flashcardView.id === view.id);
+  });
+  await Promise.all(
+    updatedViews.map(async (view) => {
+      const viewDoc = doc(viewsCollection, view.id);
+      await updateDoc(viewDoc, {
+        front: view.front,
+        back: view.back,
+      });
+    })
+  ).catch(() => {
+    throw new Error("Feilet å oppdatere kortene for settet");
+  });
+
+  return resultingViews;
 }

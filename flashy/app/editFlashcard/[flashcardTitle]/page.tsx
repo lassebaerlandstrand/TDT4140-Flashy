@@ -46,7 +46,7 @@ export default function FlashcardEditForm({ params }: FlashcardEditFormType) {
         return <Loader color="blue" size={48} />;
     }
 
-    if (session.user.role != "admin" && flashcardSet?.creator?.id != session.user.id) {
+    if (session.user.role !== "admin" && flashcardSet?.creator?.id !== session.user.id) {
         return (
             <Stack>
                 <Title>Du har ikke tilgang til å redigere dette settet</Title>

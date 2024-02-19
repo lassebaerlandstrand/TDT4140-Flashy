@@ -1,8 +1,11 @@
 import { EditFlashCardType, FlashcardSet, Visibility } from "@/app/types/flashcard";
+import { editFlashcard } from "@/app/utils/firebase";
 import { ActionIcon, Button, Divider, Flex, Grid, Group, Select, Stack, Text, Textarea } from "@mantine/core";
 import { useForm } from "@mantine/form";
+import { notifications } from "@mantine/notifications";
 import { IconX } from "@tabler/icons-react";
 import { useSession } from "next-auth/react";
+import { useState } from "react";
 
 type EditFlashCardFormType = {
   flashcardSet: FlashcardSet;
@@ -10,6 +13,8 @@ type EditFlashCardFormType = {
 
 export const EditFlashCardForm = ({ flashcardSet }: EditFlashCardFormType) => {
   const { data: session } = useSession();
+  const [loading, setLoading] = useState(false);
+  const [prevFlashcardSet, setPrevFlashcardSet] = useState<FlashcardSet>(flashcardSet);
 
   const form = useForm<EditFlashCardType>({
     initialValues: {
@@ -20,12 +25,29 @@ export const EditFlashCardForm = ({ flashcardSet }: EditFlashCardFormType) => {
 
   const onSubmit = (values: typeof form.values) => {
     if (!session) { return; }
+    setLoading(true);
 
-    const flashcardSet: EditFlashCardType = {
+    const editedFlashcard: EditFlashCardType = {
       views: values.views,
       visibility: values.visibility,
     }
 
+    editFlashcard(session.user, prevFlashcardSet, editedFlashcard).then((newViews) => {
+      notifications.show({
+        title: "Settet er oppdatert",
+        message: "",
+        color: "green",
+      });
+      setPrevFlashcardSet({ ...prevFlashcardSet, views: newViews, visibility: editedFlashcard.visibility });
+      form.setInitialValues(editedFlashcard);
+      form.reset();
+    }).catch((error) => {
+      notifications.show({
+        title: 'Noe gikk galt',
+        message: error.message,
+        color: 'red',
+      })
+    }).finally(() => { setLoading(false); });
   }
 
   return (
@@ -86,7 +108,7 @@ export const EditFlashCardForm = ({ flashcardSet }: EditFlashCardFormType) => {
 
         <Group justify="flex-end" mt="md">
           <Button onClick={() => form.reset()} color="red" disabled={!form.isDirty()}>Reset</Button>
-          <Button type="submit" disabled={!form.isDirty()}>Lagre redigert sett</Button>
+          <Button type="submit" disabled={!form.isDirty()} loading={loading}>Lagre redigert sett</Button>
         </Group>
       </Stack>
     </form >

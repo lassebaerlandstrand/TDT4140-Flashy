@@ -7,10 +7,12 @@ import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import { IconX } from "@tabler/icons-react";
 import { useSession } from "next-auth/react";
+import { useState } from "react";
 
 
 export const CreateFlashCardForm = () => {
   const { data: session } = useSession();
+  const [loading, setLoading] = useState(false);
 
   const form = useForm<Omit<CreateFlashCardType, "creator">>({
     initialValues: {
@@ -28,6 +30,7 @@ export const CreateFlashCardForm = () => {
 
   const onSubmit = (values: typeof form.values) => {
     if (!session) { return; }
+    setLoading(true);
 
     const flashcardSet: CreateFlashCardType = {
       creator: session.user,
@@ -49,7 +52,7 @@ export const CreateFlashCardForm = () => {
         message: error.message,
         color: 'red',
       })
-    });
+    }).finally(() => { setLoading(false); });
   }
 
   return (
@@ -120,7 +123,7 @@ export const CreateFlashCardForm = () => {
         </Group>
 
         <Group justify="flex-end" mt="md">
-          <Button type="submit">Lag sett</Button>
+          <Button type="submit" loading={loading}>Lag sett</Button>
         </Group>
       </Stack>
     </form>
