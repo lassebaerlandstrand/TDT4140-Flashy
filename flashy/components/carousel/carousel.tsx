@@ -2,9 +2,10 @@
 
 import { FlashcardView } from "@/app/types/flashcard";
 import { Carousel } from "@mantine/carousel";
-import { Button, Checkbox, Container, Group, Paper, Stack, Text, Title, UnstyledButton } from "@mantine/core";
+import { Button, Container, Group, Stack, Title } from "@mantine/core";
 import { IconCheck, IconQuestionMark } from "@tabler/icons-react";
 import { useState } from "react";
+import Card from "./card";
 
 type CarouselCardProps = {
   views: FlashcardView[];
@@ -34,52 +35,6 @@ export default function CarouselCard({ views }: CarouselCardProps) {
     setCombinedViews([...currentViews, ...newDifficultViews]);
   };
 
-  function Card(view: FlashcardView) {
-    const [frontOrBack, setFrontOrBack] = useState("front");
-
-    const handleClick = () => {
-      if (frontOrBack === "front") {
-        setFrontOrBack("back");
-      } else {
-        setFrontOrBack("front");
-      }
-    };
-
-    return (
-      <>
-        <Paper
-          shadow="md"
-          p="xl"
-          radius="md"
-          style={{ height: "100%", width: "100%", backgroundColor: frontOrBack == "front" ? "orange" : "#7AD1DD" }}
-        >
-          <UnstyledButton style={{ width: "100%", height: "100%" }} onClick={() => handleClick()}>
-            <Stack align="center" style={{ width: "100%" }}>
-              <Title style={{ textAlign: "center" }}>{frontOrBack === "front" ? "Spørsmål" : "Fasit"}</Title>
-              <Text style={{ textAlign: "center" }} lineClamp={4} size="xl" p={10}>
-                {frontOrBack === "front" ? <>{view.front}</> : <>{view.back}</>}
-              </Text>
-            </Stack>
-          </UnstyledButton>
-          {view.isCopy ? (
-            <></>
-          ) : (
-            <Group justify="right">
-              <Checkbox
-                checked={difficultViews.some((card) => card.id === view.id + "copy")}
-                onClick={() => {
-                  toggleDifficult(view);
-                }}
-                labelPosition="left"
-                label="Vanskelig?"
-              />
-            </Group>
-          )}
-        </Paper>
-      </>
-    );
-  }
-
   // Shuffle function
   const shuffleViews = () => {
     let newCurrentViews = [...currentViews];
@@ -102,7 +57,12 @@ export default function CarouselCard({ views }: CarouselCardProps) {
   const slides = combinedViews.map((item, index) => (
     <Carousel.Slide key={item.id}>
       <Title style={{ position: "absolute", left: 10, top: 10 }}>{index + 1}</Title>
-      <Card {...item} />
+      <Card
+        view={item}
+        hasCopy={difficultViews.some((card) => card.id === item.id + "copy")}
+        toggleDifficult={(markedView: FlashcardView) => toggleDifficult(markedView)}
+        {...item}
+      />
     </Carousel.Slide>
   ));
 
