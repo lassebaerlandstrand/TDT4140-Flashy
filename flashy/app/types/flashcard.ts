@@ -1,3 +1,5 @@
+import { User } from "./user";
+
 export enum Visibility {
     Public = 'Offentlig',
     Private = 'Privat',
@@ -5,7 +7,7 @@ export enum Visibility {
 
 export type FlashcardSet = {
     id: string;
-    creator: User;
+    creator: User | undefined;
     title: string;
     numViews: number;
     numOfLikes: number;
@@ -14,6 +16,16 @@ export type FlashcardSet = {
     comments: FlashcardComment[];
     flagged: FlashcardFlagged;
     views: FlashcardView[];
+    visibility: Visibility;
+}
+
+// Used to save on read operations
+export type ShallowFlashcardSet = {
+    id: string;
+    creator: User | undefined;
+    title: string;
+    numViews: number;
+    numOfLikes: number;
     visibility: Visibility;
 }
 

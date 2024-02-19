@@ -1,19 +1,14 @@
 "use client";
 import { NextAuthProvider } from "@/lib/auth/providers/SessionProvider";
-import { Session } from "next-auth";
 import {
-  ActionIcon,
-  AppShell,
-  useComputedColorScheme,
-  useMantineColorScheme,
+  AppShell
 } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
-import { IconMoon, IconSun } from "@tabler/icons-react";
-import cx from "clsx";
+import { useDisclosure, useDocumentTitle } from "@mantine/hooks";
+import { Session } from "next-auth";
 
+import classes from "@/components/root/ApplicationShell.module.css";
 import "@mantine/core/styles.css";
 import { NavbarNested } from "../navigation/NavbarNested";
-import classes from "@/components/root/ApplicationShell.module.css";
 
 export const metadata = {
   title: "My Mantine app",
@@ -28,10 +23,7 @@ export default function ApplicationShell({
   session: Session;
 }) {
   const [opened, { toggle }] = useDisclosure();
-  const { setColorScheme, colorScheme } = useMantineColorScheme();
-  const computedColorScheme = useComputedColorScheme("light", {
-    getInitialValueInEffect: true,
-  });
+  useDocumentTitle("Flashy");
   return (
     <NextAuthProvider session={session!}>
       <AppShell
@@ -57,27 +49,6 @@ export default function ApplicationShell({
           <NavbarNested />
         </AppShell.Navbar>
         <AppShell.Main className={classes.main}>
-          <ActionIcon
-            onClick={() =>
-              setColorScheme(computedColorScheme === "light" ? "dark" : "light")
-            }
-            variant="default"
-            size="md"
-            aria-label="Toggle color scheme"
-            style={{ position: "absolute", top: 15, right: 15 }}
-          >
-            {colorScheme === "dark" ? (
-              <IconSun
-                className={cx(classes.icon, classes.light)}
-                stroke={1.5}
-              />
-            ) : (
-              <IconMoon
-                className={cx(classes.icon, classes.dark)}
-                stroke={1.5}
-              />
-            )}
-          </ActionIcon>
           {children}
         </AppShell.Main>
       </AppShell>

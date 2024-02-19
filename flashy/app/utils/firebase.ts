@@ -16,7 +16,8 @@ import {
 } from "@firebase/firestore";
 import { ComboboxItem } from "@mantine/core";
 import { Session } from "next-auth";
-import { CreateFlashCardType, FlashcardComment, FlashcardFlagged, FlashcardSet, Visibility } from "../types/flashcard";
+import { CreateFlashCardType, FlashcardComment, FlashcardFlagged, FlashcardSet, ShallowFlashcardSet, Visibility } from "../types/flashcard";
+import { User } from "../types/user";
 import { convertDocumentRefToType, converter } from "./converter";
 
 export async function getAllUsers(): Promise<User[]> {
@@ -47,11 +48,21 @@ async function getViews(flashcardDocument: DocumentReference) {
   });
 }
 
-export async function getAllPublicFlashCardSets(): Promise<FlashcardSet[]> {
+export async function getAllPublicFlashCardSets(): Promise<ShallowFlashcardSet[]> {
   const flashcardCollection = collection(firestore, "flashies");
   const querySelection = query(flashcardCollection, where("isPublic", "==", true));
   const flashcardDocs = await getDocs(querySelection);
-  return flashcardDocs.docs.map((doc) => doc.data()) as FlashcardSet[];
+
+  return Promise.all(flashcardDocs.docs.map(async (doc) => {
+    return {
+      id: doc.id,
+      creator: await convertDocumentRefToType<User>(doc.data().creator),
+      title: doc.data().title,
+      numViews: doc.data().numViews,
+      numOfLikes: await getNumberOfLikes(doc.ref),
+      visibility: doc.data().isPublic ? Visibility.Public : Visibility.Private,
+    }
+  }));
 }
 
 async function userHasLikedFlashcard(

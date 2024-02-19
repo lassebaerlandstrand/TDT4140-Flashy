@@ -1,6 +1,7 @@
 import { ActionIcon, Anchor, Avatar, Badge, ComboboxItem, Group, Select, Table, Text, rem } from "@mantine/core";
 import { IconPencil, IconTrash } from "@tabler/icons-react";
 
+import { User } from "@/app/types/user";
 import { setUpdateUserRoles } from "@/app/utils/firebase";
 import { useState } from "react";
 import { confirmationModal } from "../user/ConfirmationModal";

@@ -6,12 +6,12 @@ import { IconArrowRight, IconSearch } from "@tabler/icons-react";
 import { signIn, useSession } from "next-auth/react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { FlashcardSet } from "./types/flashcard";
+import { ShallowFlashcardSet } from "./types/flashcard";
 import { getAllPublicFlashCardSets } from "./utils/firebase";
 
 export default function Home() {
   const { data: session } = useSession();
-  const [flashcardSets, setFlashcardSets] = useState<FlashcardSet[]>();
+  const [flashcardSets, setFlashcardSets] = useState<ShallowFlashcardSet[]>();
   const theme = useMantineTheme();
 
   useEffect(() => {
