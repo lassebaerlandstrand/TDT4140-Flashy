@@ -29,7 +29,7 @@ export function NavbarNested() {
         <Container className={classes.header}>
           <Group justify="space-around">
             <UnstyledButton component={Link} href="/" style={{ display: "flex", alignItems: "center" }}>
-              <Image src="/logo/FlashyLogoHorizontal.png" alt="Flashy logo" width={128} height={30} />
+              <Image src="/logo/FlashyLogoHorizontal.png" alt="Flashy logo" width={128} height={30} priority={true} />
             </UnstyledButton>
             <Code fw={700}>V 0.1.0</Code>
           </Group>

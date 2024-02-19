@@ -8,7 +8,7 @@ export default function FlashcardCreationForm() {
     const { data: session } = useSession();
 
     if (!session) {
-        <Loader color="blue" size={48} />
+        return <Loader color="blue" size={48} />;
     }
 
     return (
