@@ -55,4 +55,5 @@ export type CreateFlashCardType = {
 export type CreateViewType = {
     front: string;
     back: string;
+    isCopy: boolean;
 }
