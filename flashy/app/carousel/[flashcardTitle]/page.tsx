@@ -2,6 +2,7 @@
 
 import { FlashcardSet } from "@/app/types/flashcard";
 import { getFlashcardSet } from "@/app/utils/firebase";
+import { SettingsButton } from "@/components/carousel/SettingsButton";
 import CarouselCard from "@/components/carousel/carousel";
 import { Button, Code, Loader, Stack, Text, Title } from "@mantine/core";
 import { useSession } from "next-auth/react";
@@ -54,6 +55,10 @@ export default function Flashcards({ params }: FlashcardsType) {
         by: <Code>{flashcardSet.creator ? flashcardSet.creator.name : "Slettet bruker"}</Code>
       </Text>
       <CarouselCard views={flashcardSet.views} />
+
+      {session?.user.role === "admin" || flashcardSet.creator?.id === session?.user.id ? (
+        <SettingsButton flashcard={flashcardSet} />
+      ) : null}
     </Stack>
   );
 }
