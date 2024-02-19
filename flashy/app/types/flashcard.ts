@@ -51,7 +51,13 @@ export type CreateFlashCardType = {
     visibility: Visibility;
 }
 
-export type CreateViewType = {
-    front: string;
-    back: string;
+export type CreateViewType = Pick<FlashcardView, "front" | "back">;
+
+export type EditFlashCardType = {
+    views: EditFlashcardView[];
+    visibility: Visibility;
 }
+
+export type EditFlashcardView = Pick<FlashcardView, "front" | "back"> & {
+    id?: string;
+};
