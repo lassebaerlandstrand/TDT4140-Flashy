@@ -39,20 +39,23 @@ type CarouselCardProps = {
 
 export default function CarouselCard({ views }: CarouselCardProps) {
   const [currentViews, setCurrentViews] = useState(views);
+  const [isShuffled, setIsShuffled] = useState(false);
   const originalViews = [...views];
 
   // Shuffle function
   const shuffleViews = () => {
-    let shuffled = [...currentViews];
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    if (isShuffled) {
+      setCurrentViews(originalViews);
+      setIsShuffled(!isShuffled);
+    } else {
+      let shuffled = [...currentViews];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      setIsShuffled(!isShuffled);
+      setCurrentViews(shuffled);
     }
-    setCurrentViews(shuffled);
-  };
-
-  const resetViews = () => {
-    setCurrentViews(originalViews);
   };
   const slides = currentViews.map((item, index) => (
     <Carousel.Slide key={item.id}>
@@ -64,11 +67,8 @@ export default function CarouselCard({ views }: CarouselCardProps) {
   return (
     <Stack align="center">
       <Group>
-        <Button onClick={shuffleViews} style={{ margin: 10 }}>
+        <Button onClick={shuffleViews} style={{ margin: 10 }} color={isShuffled ? "blue" : "gray"}>
           Shuffle
-        </Button>
-        <Button onClick={resetViews} style={{ margin: 10 }}>
-          Reset
         </Button>
       </Group>
       <Container style={{ width: "50vw" }}>
