@@ -82,8 +82,10 @@ export default function CarouselCard({ views }: CarouselCardProps) {
 
   // Shuffle function
   const shuffleViews = () => {
+    let newCurrentViews = [...currentViews];
     if (isShuffled) {
       setCurrentViews(originalViews);
+      newCurrentViews = originalViews;
       setIsShuffled(!isShuffled);
     } else {
       let shuffled = [...currentViews];
@@ -91,9 +93,11 @@ export default function CarouselCard({ views }: CarouselCardProps) {
         const j = Math.floor(Math.random() * (i + 1));
         [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
       }
-      setIsShuffled(!isShuffled);
       setCurrentViews(shuffled);
+      newCurrentViews = shuffled;
+      setIsShuffled(!isShuffled);
     }
+    setCombinedViews([...newCurrentViews, ...difficultViews]);
   };
   const slides = combinedViews.map((item, index) => (
     <Carousel.Slide key={item.id}>
