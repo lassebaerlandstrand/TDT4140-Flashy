@@ -19,21 +19,19 @@ export default function CarouselCard({ views }: CarouselCardProps) {
 
   const toggleDifficult = (markedView: FlashcardView) => {
     const markedViewCopy: FlashcardView = { ...markedView, id: markedView.id + "copy", isCopy: true };
+    let newDifficultViews = [...difficultViews];
+
     if (markedViewCopy) {
-      let found: boolean = false;
-      difficultViews.forEach((card) => {
-        if (card.id === markedViewCopy.id) {
-          found = true;
-        }
-      });
-      if (found) {
-        setDifficultViews(difficultViews.filter((view) => view.id !== markedViewCopy.id));
+      if (newDifficultViews.some((card) => card.id === markedView.id + "copy")) {
+        newDifficultViews = newDifficultViews.filter((view) => view.id !== markedViewCopy.id);
+        setDifficultViews(newDifficultViews);
       } else {
-        setDifficultViews([...difficultViews, markedViewCopy]); // TODO: bugga
+        newDifficultViews = [...difficultViews, markedViewCopy];
+        setDifficultViews(newDifficultViews);
       }
     }
-    setCombinedViews([...currentViews, ...difficultViews]); // TODO: bugga
-    console.log(difficultViews);
+
+    setCombinedViews([...currentViews, ...newDifficultViews]);
   };
 
   function Card(view: FlashcardView) {
@@ -68,6 +66,7 @@ export default function CarouselCard({ views }: CarouselCardProps) {
           ) : (
             <Group justify="right">
               <Checkbox
+                checked={difficultViews.some((card) => card.id === view.id + "copy")}
                 onClick={() => {
                   toggleDifficult(view);
                 }}
