@@ -70,7 +70,7 @@ export default function CarouselCard({ views }: CarouselCardProps) {
                 onClick={() => {
                   toggleDifficult(view);
                 }}
-                style={{ paddingBottom: 100 }}
+                labelPosition="left"
                 label="Vanskelig?"
               />
             </Group>
