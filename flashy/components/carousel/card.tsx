@@ -1,5 +1,5 @@
 import { FlashcardView } from "@/app/types/flashcard";
-import { Checkbox, Group, Paper, Stack, Text, Title, UnstyledButton } from "@mantine/core";
+import { Checkbox, Group, Paper, Stack, Text, Title, UnstyledButton, useMantineTheme } from "@mantine/core";
 import { useState } from "react";
 
 type CardProps = {
@@ -10,7 +10,7 @@ type CardProps = {
 
 export default function Card({ view, hasCopy, toggleDifficult }: CardProps) {
   const [frontOrBack, setFrontOrBack] = useState("front");
-
+  const theme = useMantineTheme();
   const handleClick = () => {
     if (frontOrBack === "front") {
       setFrontOrBack("back");
@@ -25,12 +25,24 @@ export default function Card({ view, hasCopy, toggleDifficult }: CardProps) {
         shadow="md"
         p="xl"
         radius="md"
-        style={{ height: "100%", width: "100%", backgroundColor: frontOrBack == "front" ? "orange" : "#7AD1DD" }}
+        style={{
+          height: "100%",
+          width: "100%",
+          backgroundColor: frontOrBack == "front" ? theme.colors.orange[5] : theme.colors.grape[5],
+          color: "black",
+        }}
       >
         <UnstyledButton style={{ width: "100%", height: "100%" }} onClick={() => handleClick()}>
           <Stack align="center" style={{ width: "100%" }}>
             <Title style={{ textAlign: "center" }}>{frontOrBack === "front" ? "Spørsmål" : "Fasit"}</Title>
-            <Text style={{ textAlign: "center" }} lineClamp={4} size="xl" p={10}>
+            <Text
+              style={{
+                textAlign: "center",
+              }}
+              lineClamp={4}
+              size="xl"
+              p={10}
+            >
               {frontOrBack === "front" ? <>{view.front}</> : <>{view.back}</>}
             </Text>
           </Stack>
