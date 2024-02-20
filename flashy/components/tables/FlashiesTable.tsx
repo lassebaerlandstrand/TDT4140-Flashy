@@ -1,4 +1,4 @@
-import { ShallowFlashcardSet } from "@/app/types/flashcard";
+import { FlashcardSet } from "@/app/types/flashcard";
 import classes from "@/components/tables/FlashiesTable.module.css";
 import { ScrollArea, Table, UnstyledButton } from "@mantine/core";
 import cx from "clsx";
@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useState } from "react";
 
 type FlashiesTableProps = {
-  flashies: ShallowFlashcardSet[];
+  flashies: FlashcardSet[];
 };
 
 export function FlashiesTable({ flashies }: FlashiesTableProps) {
@@ -24,7 +24,7 @@ export function FlashiesTable({ flashies }: FlashiesTableProps) {
       <Table.Td>{flashy.numViews}</Table.Td>
       <Table.Td>
         <UnstyledButton component={Link} href={`carousel/${flashy.title}`}>
-          Go to ↗️
+          Gå til ↗️
         </UnstyledButton>
       </Table.Td>
     </Table.Tr>
@@ -35,11 +35,11 @@ export function FlashiesTable({ flashies }: FlashiesTableProps) {
       <Table miw={700}>
         <Table.Thead className={cx(classes.header, { [classes.scrolled]: scrolled })}>
           <Table.Tr>
-            <Table.Th>Title</Table.Th>
-            <Table.Th>Creator 👨‍🎨</Table.Th>
-            <Table.Th>Likes ❤️</Table.Th>
-            <Table.Th>Views 👀</Table.Th>
-            <Table.Th>Link 🔗</Table.Th>
+            <Table.Th>Tittel</Table.Th>
+            <Table.Th>Utvikler 👨‍🎨</Table.Th>
+            <Table.Th>Likerklikk ❤️</Table.Th>
+            <Table.Th>visninger 👀</Table.Th>
+            <Table.Th>Lenke 🔗</Table.Th>
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>{rows}</Table.Tbody>

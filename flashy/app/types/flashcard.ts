@@ -11,12 +11,12 @@ export type FlashcardSet = {
     title: string;
     numViews: number;
     numOfLikes: number;
-    userHasLiked: boolean;
-    userHasFavorited: boolean;
-    comments: FlashcardComment[];
-    flagged: FlashcardFlagged;
-    views: FlashcardView[];
-    visibility: Visibility;
+    userHasLiked?: boolean;
+    userHasFavorited?: boolean;
+    comments?: FlashcardComment[];
+    flagged?: FlashcardFlagged;
+    views?: FlashcardView[];
+    visibility?: Visibility;
 }
 
 // Used to save on read operations

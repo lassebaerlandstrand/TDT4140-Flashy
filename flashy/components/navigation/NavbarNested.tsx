@@ -7,9 +7,9 @@ import Image from "next/image";
 import Link from "next/link";
 
 const data = [
-  { link: "/profile", label: "Profile", icon: IconUser, requiresAdmin: false },
-  { link: "/flashies", label: "My flashies", icon: IconCards, requiresAdmin: false },
-  { link: "/admin", label: "Administration", icon: IconUser, requiresAdmin: true },
+  { link: "/profile", label: "Profil", icon: IconUser, requiresAdmin: false },
+  { link: "/my-flashies", label: "Mine Flashies", icon: IconCards, requiresAdmin: false },
+  { link: "/admin", label: "Administrasjon", icon: IconUser, requiresAdmin: true },
 ];
 
 export function NavbarNested() {
