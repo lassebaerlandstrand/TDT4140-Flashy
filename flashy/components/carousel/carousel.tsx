@@ -56,7 +56,9 @@ export default function CarouselCard({ views }: CarouselCardProps) {
   };
   const slides = combinedViews.map((item, index) => (
     <Carousel.Slide key={item.id}>
-      <Title style={{ position: "absolute", left: 10, top: 10 }}>{index + 1}</Title>
+      <Title style={{ position: "absolute", left: 10, top: 10 }}>
+        {index + 1}/{combinedViews.length}
+      </Title>
       <Card
         view={item}
         hasCopy={difficultViews.some((card) => card.id === item.id + "copy")}
@@ -79,7 +81,7 @@ export default function CarouselCard({ views }: CarouselCardProps) {
         </Button>
       </Group>
       <Container style={{ width: "50vw" }}>
-        <Carousel height={400} slideGap="xl" withIndicators align="start">
+        <Carousel height={400} slideGap="xl" align="start">
           {slides}
         </Carousel>
       </Container>
