@@ -40,7 +40,7 @@ export type FlashcardComment = {
 
 export type FlashcardView = {
     id: string;
-    isCopy: boolean;
+    isCopy?: boolean;
     front: string;
     back: string;
 }
@@ -52,8 +52,13 @@ export type CreateFlashCardType = {
     visibility: Visibility;
 }
 
-export type CreateViewType = {
-    front: string;
-    back: string;
-    isCopy: boolean;
+export type CreateViewType = Pick<FlashcardView, "front" | "back">;
+
+export type EditFlashCardType = {
+    views: EditFlashcardView[];
+    visibility: Visibility;
 }
+
+export type EditFlashcardView = Pick<FlashcardView, "front" | "back"> & {
+    id?: string;
+};

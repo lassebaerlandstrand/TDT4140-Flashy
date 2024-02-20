@@ -8,11 +8,11 @@ export default function FlashcardCreationForm() {
     const { data: session } = useSession();
 
     if (!session) {
-        <Loader color="blue" size={48} />
+        return <Loader color="blue" size={48} />;
     }
 
     return (
-        <Stack gap="xl">
+        <Stack gap="xl" w={800}>
             <Title>Lag et nytt Flashy-sett</Title>
             <CreateFlashCardForm />
         </Stack>

@@ -1,30 +1,25 @@
-"use client";
-
-import { CreateFlashCardType, Visibility } from "@/app/types/flashcard";
-import { createNewFlashcard } from "@/app/utils/firebase";
-import { ActionIcon, Button, Divider, Flex, Grid, Group, Select, Stack, Text, TextInput, Textarea } from "@mantine/core";
+import { EditFlashCardType, FlashcardSet, Visibility } from "@/app/types/flashcard";
+import { editFlashcard } from "@/app/utils/firebase";
+import { ActionIcon, Button, Divider, Flex, Grid, Group, Select, Stack, Text, Textarea } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import { IconX } from "@tabler/icons-react";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
 
+type EditFlashCardFormType = {
+  flashcardSet: FlashcardSet;
+}
 
-export const CreateFlashCardForm = () => {
+export const EditFlashCardForm = ({ flashcardSet }: EditFlashCardFormType) => {
   const { data: session } = useSession();
   const [loading, setLoading] = useState(false);
+  const [prevFlashcardSet, setPrevFlashcardSet] = useState<FlashcardSet>(flashcardSet);
 
-  const form = useForm<Omit<CreateFlashCardType, "creator">>({
+  const form = useForm<EditFlashCardType>({
     initialValues: {
-      title: "",
-      views: [],
-      visibility: Visibility.Public,
-    },
-
-    validate: {
-      title: (value) => {
-        if (value.length < 3) return "Navnet må være minst 3 tegn";
-      },
+      views: flashcardSet.views,
+      visibility: flashcardSet.visibility,
     },
   });
 
@@ -32,25 +27,25 @@ export const CreateFlashCardForm = () => {
     if (!session) { return; }
     setLoading(true);
 
-    const flashcardSet: CreateFlashCardType = {
-      creator: session.user,
-      title: values.title,
+    const editedFlashcard: EditFlashCardType = {
       views: values.views,
       visibility: values.visibility,
-    };
+    }
 
-    createNewFlashcard(flashcardSet).then(() => {
+    editFlashcard(session.user, prevFlashcardSet, editedFlashcard).then((newViews) => {
       notifications.show({
-        title: "Settet er laget",
-        message: "Synligheten på settet er " + values.visibility + " og det er lagt til i din profil",
+        title: "Settet er oppdatert",
+        message: "",
         color: "green",
       });
+      setPrevFlashcardSet({ ...prevFlashcardSet, views: newViews, visibility: editedFlashcard.visibility });
+      form.setInitialValues(editedFlashcard);
       form.reset();
     }).catch((error) => {
       notifications.show({
-        title: "Noe gikk galt",
+        title: 'Noe gikk galt',
         message: error.message,
-        color: "red",
+        color: 'red',
       })
     }).finally(() => { setLoading(false); });
   }
@@ -59,23 +54,13 @@ export const CreateFlashCardForm = () => {
     <form onSubmit={form.onSubmit((values) => onSubmit(values))}>
       <Stack>
 
-        <Group justify="space-between">
-          <TextInput
-            withAsterisk
-            label="Navn på sett"
-            placeholder="Skriv inn navn på settet"
-            {...form.getInputProps("title")}
-            w={250}
-          />
-
-          <Select
-            label="Sett synlighet"
-            placeholder="Rediger synlighet"
-            data={Object.values(Visibility)}
-            {...form.getInputProps("visibility")}
-            maw={150}
-          />
-        </Group>
+        <Select
+          label="Sett synlighet"
+          placeholder="Rediger synlighet"
+          data={Object.values(Visibility)}
+          {...form.getInputProps('visibility')}
+          maw={150}
+        />
 
         <Divider />
 
@@ -109,7 +94,7 @@ export const CreateFlashCardForm = () => {
               </Grid.Col>
               <Grid.Col span={1}>
                 <Flex justify="center" align="center" style={{ height: "100%" }}>
-                  <ActionIcon onClick={() => form.setFieldValue("views", form.values.views.filter((_, i) => i !== index))} color="red" >
+                  <ActionIcon onClick={() => form.setFieldValue('views', form.values.views.filter((_, i) => i !== index))} color="red" >
                     <IconX stroke={1.5} />
                   </ActionIcon>
                 </Flex>
@@ -118,13 +103,15 @@ export const CreateFlashCardForm = () => {
           ))}
         </Stack>
         <Group justify="center">
-          <Button onClick={() => form.setFieldValue("views", [...form.values.views, { front: "", back: "" }])}>Legg til nytt kort</Button>
+          <Button onClick={() => form.setFieldValue('views', [...form.values.views, { front: '', back: '' }])}>Legg til nytt kort</Button>
         </Group>
 
         <Group justify="flex-end" mt="md">
-          <Button type="submit" loading={loading}>Lag sett</Button>
+          <Button onClick={() => form.reset()} color="red" disabled={!form.isDirty()}>Reset</Button>
+          <Button type="submit" disabled={!form.isDirty()} loading={loading}>Lagre redigert sett</Button>
         </Group>
       </Stack>
-    </form>
+    </form >
   );
-};
+
+}
