@@ -1,13 +1,36 @@
 import { FlashcardSet } from "@/app/types/flashcard";
+import { User } from "@/app/types/user";
+import { deleteFlashcard } from "@/app/utils/firebase";
 import { Button, Menu } from "@mantine/core";
-import { IconEdit, IconSettings } from "@tabler/icons-react";
+import { notifications } from "@mantine/notifications";
+import { IconEdit, IconSettings, IconTrash } from "@tabler/icons-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 type SettingsButtonType = {
+  user: User;
   flashcard: FlashcardSet;
 }
 
-export function SettingsButton({ flashcard }: SettingsButtonType) {
+export function SettingsButton({ user, flashcard }: SettingsButtonType) {
+  const router = useRouter();
+
+  const deleteFlashcardFunction = (user: User, flashcard: FlashcardSet) => {
+    deleteFlashcard(user, flashcard).then(() => {
+      router.push("/");
+      notifications.show({
+        title: "Settet er slettet",
+        message: "",
+        color: "green",
+      });
+    }).catch((error) => {
+      notifications.show({
+        title: 'Noe gikk galt',
+        message: error.message,
+        color: 'red',
+      });
+    });
+  }
 
   return (
     <Menu shadow="md">
@@ -18,6 +41,9 @@ export function SettingsButton({ flashcard }: SettingsButtonType) {
       <Menu.Dropdown>
         <Menu.Item leftSection={<IconEdit width={18} />} component={Link} href={`/editFlashcard/${flashcard.title}`}>
           Rediger flashy
+        </Menu.Item>
+        <Menu.Item leftSection={<IconTrash width={18} />} color="red" onClick={() => deleteFlashcardFunction(user, flashcard)}>
+          Slett flashy
         </Menu.Item>
       </Menu.Dropdown>
     </Menu>

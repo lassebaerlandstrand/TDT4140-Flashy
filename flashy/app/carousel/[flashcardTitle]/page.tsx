@@ -4,7 +4,7 @@ import { FlashcardSet } from "@/app/types/flashcard";
 import { getFlashcardSet } from "@/app/utils/firebase";
 import { SettingsButton } from "@/components/carousel/SettingsButton";
 import CarouselCard from "@/components/carousel/carousel";
-import { Button, Code, Loader, Stack, Text, Title } from "@mantine/core";
+import { Button, Code, Group, Loader, Stack, Text, Title } from "@mantine/core";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -45,7 +45,7 @@ export default function Flashcards({ params }: FlashcardsType) {
     );
   }
 
-  if (!flashcardSet) {
+  if (!session || !flashcardSet) {
     return <Loader color="blue" size={48} />;
   }
 
@@ -58,7 +58,9 @@ export default function Flashcards({ params }: FlashcardsType) {
       <CarouselCard views={flashcardSet.views ?? []} />
 
       {session?.user.role === "admin" || flashcardSet.creator?.id === session?.user.id ? (
-        <SettingsButton flashcard={flashcardSet} />
+        <Group pl="md" w={"100%"}>
+          <SettingsButton user={session.user} flashcard={flashcardSet} />
+        </Group>
       ) : null}
     </Stack>
   );
