@@ -32,7 +32,7 @@ export default function Home() {
           <Loader color="blue" size={48} />
         ) : (
           <>
-            <Title>All Flashies</Title>
+            <Title>Alle Flashies</Title>
             <Group justify="space-between">
               <TextInput
                 radius="xl"

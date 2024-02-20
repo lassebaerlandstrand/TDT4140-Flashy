@@ -32,7 +32,7 @@ export default function Home() {
           <Loader color="blue" size={48} />
         ) : (
           <>
-            <Title>{session.user.name}&apos;s Flashies</Title>
+            <Title>Mine Flashies</Title>
             <Group justify="space-between">
               <TextInput
                 radius="xl"

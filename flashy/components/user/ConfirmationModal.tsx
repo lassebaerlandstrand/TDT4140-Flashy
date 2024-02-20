@@ -11,7 +11,7 @@ export function confirmationModal({ user }: Session, ownUser: boolean) {
   modals.openConfirmModal({
     title: "Slett konto?",
     children: <Text size="sm">{text}</Text>,
-    labels: { confirm: "Confirm", cancel: "Cancel" },
+    labels: { confirm: "Bekreft", cancel: "Avbryt" },
     onConfirm: () => deleteUser(user, user.email),
   });
 }
