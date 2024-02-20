@@ -94,8 +94,8 @@ export function UsersTable({ actionUser, users }: UserTableProps) {
       <Table verticalSpacing="sm">
         <Table.Thead>
           <Table.Tr>
-            <Table.Th>Name</Table.Th>
-            <Table.Th>Role</Table.Th>
+            <Table.Th>Navn</Table.Th>
+            <Table.Th>Rolle</Table.Th>
             <Table.Th>Email</Table.Th>
             <Table.Th />
           </Table.Tr>

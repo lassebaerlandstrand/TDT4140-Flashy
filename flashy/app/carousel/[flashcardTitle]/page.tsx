@@ -38,10 +38,11 @@ export default function Flashcards({ params }: FlashcardsType) {
     return (
       <Stack>
         <Title>Fant ikke flashcard settet</Title>
-        <Button component={Link} href="/" >Gå til hjemmesiden</Button>
+        <Button component={Link} href="/">
+          Gå til hjemmesiden
+        </Button>
       </Stack>
     );
-
   }
 
   if (!flashcardSet) {
@@ -54,7 +55,7 @@ export default function Flashcards({ params }: FlashcardsType) {
       <Text>
         by: <Code>{flashcardSet.creator ? flashcardSet.creator.name : "Slettet bruker"}</Code>
       </Text>
-      <CarouselCard views={flashcardSet.views} />
+      <CarouselCard views={flashcardSet.views ?? []} />
 
       {session?.user.role === "admin" || flashcardSet.creator?.id === session?.user.id ? (
         <SettingsButton flashcard={flashcardSet} />

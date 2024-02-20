@@ -28,7 +28,7 @@ export default function Home() {
     <Stack align="center">
       {session?.user.role == "admin" ? (
         <Stack>
-          <Title>Welcome, {session.user?.name}</Title>
+          <Title>Velkommen, {session.user?.name}</Title>
           {users.length > 0 ? (
             <UsersTable actionUser={getCurrentActionUser(session.user?.email ?? "")} users={users} />
           ) : (

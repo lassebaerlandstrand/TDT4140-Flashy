@@ -16,7 +16,7 @@ import {
 } from "@firebase/firestore";
 import { ComboboxItem } from "@mantine/core";
 import { Session } from "next-auth";
-import { CreateFlashCardType, EditFlashCardType, FlashcardComment, FlashcardFlagged, FlashcardSet, FlashcardView, ShallowFlashcardSet, Visibility } from "../types/flashcard";
+import { CreateFlashCardType, EditFlashCardType, FlashcardComment, FlashcardFlagged, FlashcardSet, FlashcardView, Visibility } from "../types/flashcard";
 import { User } from "../types/user";
 import { convertDocumentRefToType, converter } from "./converter";
 
@@ -25,16 +25,6 @@ export async function getAllUsers(): Promise<User[]> {
   const userDocs = await getDocs(userCollection);
   return userDocs.docs.map((doc) => doc.data());
 }
-
-async function getUserByEmail(email: string): Promise<User | null> {
-  const usersRef = collection(firestore, "users").withConverter(converter<User>());
-  const querySelelction = query(usersRef, where("email", "==", email), limit(1));
-  const querySnapshot = await getDocs(querySelelction);
-
-  if (querySnapshot.docs.length != 0) return querySnapshot.docs[0].data();
-  return null;
-}
-
 async function getViews(flashcardDocument: DocumentReference) {
   const viewsCollection = collection(flashcardDocument, "views");
   const viewsDocs = await getDocs(viewsCollection);
@@ -49,7 +39,27 @@ async function getViews(flashcardDocument: DocumentReference) {
   });
 }
 
-export async function getAllPublicFlashCardSets(): Promise<ShallowFlashcardSet[]> {
+export async function getMyFlashies(user: User): Promise<FlashcardSet[]> {
+    const flashcardCollection = collection(firestore, "flashies");
+    const userDoc = doc(firestore, "users", user.id)
+    const querySelection = query(flashcardCollection, where("creator", "==", userDoc));
+    const flashcardDocs = await getDocs(querySelection);
+    return Promise.all(flashcardDocs.docs.map(async (doc) => {
+      return {
+        id: doc.id,
+        creator: await convertDocumentRefToType<User>(doc.data().creator),
+        title: doc.data().title,
+        numViews: doc.data().numViews,
+        numOfLikes: await getNumberOfLikes(doc.ref),
+        visibility: doc.data().isPublic ? Visibility.Public : Visibility.Private,
+      }
+    }));
+  }
+  
+
+
+
+export async function getAllPublicFlashCardSets(): Promise<FlashcardSet[]> {
   const flashcardCollection = collection(firestore, "flashies");
   const querySelection = query(flashcardCollection, where("isPublic", "==", true));
   const flashcardDocs = await getDocs(querySelection);
@@ -203,6 +213,20 @@ export const setUpdateUserRoles = async (
   }
 };
 
+
+export const setUpdateFlashySetVisibility = async (
+  actionUser: User,
+  flashy: FlashcardSet,
+  newVisibility: Visibility
+) => {
+  if (flashy.creator?.email == actionUser.email){ // TODO improve comparison.
+    const flashyDoc = doc(firestore, "flashies", flashy.id)
+    updateDoc(flashyDoc, {
+      isPublic: newVisibility === Visibility.Public,
+    })
+  }
+  }
+
 export async function createNewFlashcard(flashcard: CreateFlashCardType) {
   // Check if flashcard is available
   const flashcardDoc = doc(firestore, "flashies", flashcard.title);
@@ -258,21 +282,23 @@ export async function editFlashcard(actionUser: User, flashcard: FlashcardSet, u
   const viewsCollection = collection(flashcardDoc, "views");
 
   // Delete views
-  const deletedViews = flashcard.views.filter((view) => {
+  const deletedViews = flashcard.views?.filter((view) => {
     return !updatedFlashcard.views.some((updatedView) => updatedView.id === view.id);
   });
-  await Promise.all(
-    deletedViews.map(async (view) => {
-      const viewDoc = doc(viewsCollection, view.id);
-      await deleteDoc(viewDoc);
-    })
-  ).catch(() => {
-    throw new Error("Feilet å slette kortene for settet")
-  });
+  if (deletedViews){
+    await Promise.all(
+      deletedViews.map(async (view) => {
+        const viewDoc = doc(viewsCollection, view.id);
+        await deleteDoc(viewDoc);
+      })
+    ).catch(() => {
+      throw new Error("Feilet å slette kortene for settet")
+    });
+  }
 
   // In order to return the correct id's
   const resultingViews: FlashcardView[] = updatedFlashcard.views.filter((view) => {
-    return flashcard.views.some((flashcardView) => flashcardView.id === view.id);
+    return flashcard.views?.some((flashcardView) => flashcardView.id === view.id);
   }) as FlashcardView[];
 
   // Add new views
@@ -295,7 +321,7 @@ export async function editFlashcard(actionUser: User, flashcard: FlashcardSet, u
 
   // Update existing views
   const updatedViews = updatedFlashcard.views.filter((view) => {
-    return flashcard.views.some((flashcardView) => flashcardView.id === view.id);
+    return flashcard.views?.some((flashcardView) => flashcardView.id === view.id);
   });
   await Promise.all(
     updatedViews.map(async (view) => {
