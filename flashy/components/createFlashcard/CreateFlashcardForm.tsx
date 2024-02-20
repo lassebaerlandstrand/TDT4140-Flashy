@@ -16,16 +16,16 @@ export const CreateFlashCardForm = () => {
 
   const form = useForm<Omit<CreateFlashCardType, "creator">>({
     initialValues: {
-      title: '',
+      title: "",
       views: [],
       visibility: Visibility.Public,
     },
 
     validate: {
       title: (value) => {
-        if (value.length < 3) return 'Navnet må være minst 3 tegn';
+        if (value.length < 3) return "Navnet må være minst 3 tegn";
       },
-    }
+    },
   });
 
   const onSubmit = (values: typeof form.values) => {
@@ -37,7 +37,7 @@ export const CreateFlashCardForm = () => {
       title: values.title,
       views: values.views,
       visibility: values.visibility,
-    }
+    };
 
     createNewFlashcard(flashcardSet).then(() => {
       notifications.show({
@@ -48,15 +48,14 @@ export const CreateFlashCardForm = () => {
       form.reset();
     }).catch((error) => {
       notifications.show({
-        title: 'Noe gikk galt',
+        title: "Noe gikk galt",
         message: error.message,
-        color: 'red',
+        color: "red",
       })
     }).finally(() => { setLoading(false); });
   }
 
   return (
-
     <form onSubmit={form.onSubmit((values) => onSubmit(values))}>
       <Stack>
 
@@ -65,7 +64,7 @@ export const CreateFlashCardForm = () => {
             withAsterisk
             label="Navn på sett"
             placeholder="Skriv inn navn på settet"
-            {...form.getInputProps('title')}
+            {...form.getInputProps("title")}
             w={250}
           />
 
@@ -73,7 +72,7 @@ export const CreateFlashCardForm = () => {
             label="Sett synlighet"
             placeholder="Rediger synlighet"
             data={Object.values(Visibility)}
-            {...form.getInputProps('visibility')}
+            {...form.getInputProps("visibility")}
             maw={150}
           />
         </Group>
@@ -110,7 +109,7 @@ export const CreateFlashCardForm = () => {
               </Grid.Col>
               <Grid.Col span={1}>
                 <Flex justify="center" align="center" style={{ height: "100%" }}>
-                  <ActionIcon onClick={() => form.setFieldValue('views', form.values.views.filter((_, i) => i !== index))} color="red" >
+                  <ActionIcon onClick={() => form.setFieldValue("views", form.values.views.filter((_, i) => i !== index))} color="red" >
                     <IconX stroke={1.5} />
                   </ActionIcon>
                 </Flex>
@@ -119,7 +118,7 @@ export const CreateFlashCardForm = () => {
           ))}
         </Stack>
         <Group justify="center">
-          <Button onClick={() => form.setFieldValue('views', [...form.values.views, { front: '', back: '' }])}>Legg til nytt kort</Button>
+          <Button onClick={() => form.setFieldValue("views", [...form.values.views, { front: "", back: "" }])}>Legg til nytt kort</Button>
         </Group>
 
         <Group justify="flex-end" mt="md">
@@ -127,7 +126,5 @@ export const CreateFlashCardForm = () => {
         </Group>
       </Stack>
     </form>
-
   );
-
-}
+};

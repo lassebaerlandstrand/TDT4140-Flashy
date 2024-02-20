@@ -44,6 +44,7 @@ async function getViews(flashcardDocument: DocumentReference) {
       id: doc.id,
       front: doc.data().front,
       back: doc.data().back,
+      isCopy: doc.data().isCopy,
     };
   });
 }
@@ -53,16 +54,18 @@ export async function getAllPublicFlashCardSets(): Promise<ShallowFlashcardSet[]
   const querySelection = query(flashcardCollection, where("isPublic", "==", true));
   const flashcardDocs = await getDocs(querySelection);
 
-  return Promise.all(flashcardDocs.docs.map(async (doc) => {
-    return {
-      id: doc.id,
-      creator: await convertDocumentRefToType<User>(doc.data().creator),
-      title: doc.data().title,
-      numViews: doc.data().numViews,
-      numOfLikes: await getNumberOfLikes(doc.ref),
-      visibility: doc.data().isPublic ? Visibility.Public : Visibility.Private,
-    }
-  }));
+  return Promise.all(
+    flashcardDocs.docs.map(async (doc) => {
+      return {
+        id: doc.id,
+        creator: await convertDocumentRefToType<User>(doc.data().creator),
+        title: doc.data().title,
+        numViews: doc.data().numViews,
+        numOfLikes: await getNumberOfLikes(doc.ref),
+        visibility: doc.data().isPublic ? Visibility.Public : Visibility.Private,
+      };
+    })
+  );
 }
 
 async function userHasLikedFlashcard(
@@ -199,7 +202,6 @@ export const setUpdateUserRoles = async (
     });
   }
 };
-
 
 export async function createNewFlashcard(flashcard: CreateFlashCardType) {
   // Check if flashcard is available
