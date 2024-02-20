@@ -16,6 +16,11 @@ type UserTableProps = {
   users: User[];
 };
 
+const norwegianRoleNames: Record<string, string> = {
+  admin: "Admin",
+  user: "Bruker",
+};
+
 const deleteUserFromCollection = async (actionUser: User | undefined, deleteUser: User) => {
   confirmationModal({ user: deleteUser, expires: null }, actionUser == deleteUser);
 };
@@ -25,13 +30,13 @@ export function UsersTable({ actionUser, users }: UserTableProps) {
   const [userRoles, setUserRoles] = useState<Record<string, ComboboxItem | null>>(() => {
     const roles: Record<string, ComboboxItem | null> = {};
     users.forEach((user) => {
-      roles[user.email] = { value: user.role, label: user.role };
+      roles[user.email] = { value: user.role, label: norwegianRoleNames[user.role] };
     });
     return roles;
   });
 
   const roleOptions = [
-    { value: "user", label: "User" },
+    { value: "user", label: "Bruker" },
     { value: "admin", label: "Admin" },
   ];
 
