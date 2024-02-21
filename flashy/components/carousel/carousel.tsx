@@ -56,7 +56,7 @@ export default function CarouselCard({ views }: CarouselCardProps) {
   };
   const slides = combinedViews.map((item, index) => (
     <Carousel.Slide key={item.id}>
-      <Title style={{ position: "absolute", left: 10, top: 10 }}>
+      <Title style={{ position: "absolute", left: 10, top: 10, color: "black" }}>
         {index + 1}/{combinedViews.length}
       </Title>
       <Card
