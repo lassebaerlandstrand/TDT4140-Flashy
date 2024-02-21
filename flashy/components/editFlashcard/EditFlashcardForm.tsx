@@ -18,8 +18,8 @@ export const EditFlashCardForm = ({ flashcardSet }: EditFlashCardFormType) => {
 
   const form = useForm<EditFlashCardType>({
     initialValues: {
-      views: flashcardSet.views,
-      visibility: flashcardSet.visibility,
+      views: flashcardSet.views ?? [],
+      visibility: flashcardSet.visibility ?? Visibility.Private,
     },
   });
 

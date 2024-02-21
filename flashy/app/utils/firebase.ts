@@ -40,22 +40,22 @@ async function getViews(flashcardDocument: DocumentReference) {
 }
 
 export async function getMyFlashies(user: User): Promise<FlashcardSet[]> {
-    const flashcardCollection = collection(firestore, "flashies");
-    const userDoc = doc(firestore, "users", user.id)
-    const querySelection = query(flashcardCollection, where("creator", "==", userDoc));
-    const flashcardDocs = await getDocs(querySelection);
-    return Promise.all(flashcardDocs.docs.map(async (doc) => {
-      return {
-        id: doc.id,
-        creator: await convertDocumentRefToType<User>(doc.data().creator),
-        title: doc.data().title,
-        numViews: doc.data().numViews,
-        numOfLikes: await getNumberOfLikes(doc.ref),
-        visibility: doc.data().isPublic ? Visibility.Public : Visibility.Private,
-      }
-    }));
-  }
-  
+  const flashcardCollection = collection(firestore, "flashies");
+  const userDoc = doc(firestore, "users", user.id)
+  const querySelection = query(flashcardCollection, where("creator", "==", userDoc));
+  const flashcardDocs = await getDocs(querySelection);
+  return Promise.all(flashcardDocs.docs.map(async (doc) => {
+    return {
+      id: doc.id,
+      creator: await convertDocumentRefToType<User>(doc.data().creator),
+      title: doc.data().title,
+      numViews: doc.data().numViews,
+      numOfLikes: await getNumberOfLikes(doc.ref),
+      visibility: doc.data().isPublic ? Visibility.Public : Visibility.Private,
+    }
+  }));
+}
+
 
 
 
@@ -219,13 +219,13 @@ export const setUpdateFlashySetVisibility = async (
   flashy: FlashcardSet,
   newVisibility: Visibility
 ) => {
-  if (flashy.creator?.email == actionUser.email){ // TODO improve comparison.
+  if (flashy.creator?.email == actionUser.email) { // TODO improve comparison.
     const flashyDoc = doc(firestore, "flashies", flashy.id)
     updateDoc(flashyDoc, {
       isPublic: newVisibility === Visibility.Public,
     })
   }
-  }
+}
 
 export async function createNewFlashcard(flashcard: CreateFlashCardType) {
   // Check if flashcard is available
@@ -285,7 +285,7 @@ export async function editFlashcard(actionUser: User, flashcard: FlashcardSet, u
   const deletedViews = flashcard.views?.filter((view) => {
     return !updatedFlashcard.views.some((updatedView) => updatedView.id === view.id);
   });
-  if (deletedViews){
+  if (deletedViews) {
     await Promise.all(
       deletedViews.map(async (view) => {
         const viewDoc = doc(viewsCollection, view.id);
@@ -337,3 +337,31 @@ export async function editFlashcard(actionUser: User, flashcard: FlashcardSet, u
 
   return resultingViews;
 }
+
+export async function deleteFlashcard(actionUser: User, flashcard: FlashcardSet) {
+  if (actionUser.id !== flashcard.creator?.id && actionUser.role !== "admin") {
+    throw new Error("Du har ikke tilgang til å redigere dette settet");
+  }
+
+  // Delete outer document
+  const flashcardDoc = doc(firestore, "flashies", flashcard.id);
+  await deleteDoc(flashcardDoc);
+
+  // Delete all inner document (there is no deep-delete in Firebase :/)
+  const viewsCollection = collection(flashcardDoc, "views");
+  const viewsDocs = await getDocs(viewsCollection);
+  await Promise.all(viewsDocs.docs.map((doc) => deleteDoc(doc.ref)));
+
+  const likesCollection = collection(flashcardDoc, "likes");
+  const likesDocs = await getDocs(likesCollection);
+  await Promise.all(likesDocs.docs.map((doc) => deleteDoc(doc.ref)));
+
+  const commentsCollection = collection(flashcardDoc, "comments");
+  const commentsDocs = await getDocs(commentsCollection);
+  await Promise.all(commentsDocs.docs.map((doc) => deleteDoc(doc.ref)));
+
+  const favoritesCollection = collection(flashcardDoc, "favorites");
+  const favoritesDocs = await getDocs(favoritesCollection);
+  await Promise.all(favoritesDocs.docs.map((doc) => deleteDoc(doc.ref)));
+}
+

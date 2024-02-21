@@ -21,7 +21,8 @@ export const convertDocumentRefToType = async <T extends { [x: string]: any }>(
 ): Promise<T | undefined> => {
   const docSnap = await getDoc(ref.withConverter(converter<T>()));
   if (docSnap.exists()) {
-    return docSnap.data() as T;
+    const id = docSnap.id;
+    return { id, ...docSnap.data() } as T;
   }
   return undefined;
 };
