@@ -20,8 +20,8 @@ export function FlashiesTable({ flashies }: FlashiesTableProps) {
         </UnstyledButton>
       </Table.Td>
       <Table.Td>{flashy.creator ? flashy.creator.name : "Slettet bruker"}</Table.Td>
-      <Table.Td>{flashy.numOfLikes}</Table.Td>
-      <Table.Td>{flashy.numViews}</Table.Td>
+      {/* <Table.Td>{flashy.numOfLikes}</Table.Td>
+      <Table.Td>{flashy.numViews}</Table.Td> */}
       <Table.Td>
         <UnstyledButton component={Link} href={`carousel/${flashy.title}`}>
           Gå til ↗️
@@ -37,8 +37,8 @@ export function FlashiesTable({ flashies }: FlashiesTableProps) {
           <Table.Tr>
             <Table.Th>Tittel</Table.Th>
             <Table.Th>Utvikler 👨‍🎨</Table.Th>
-            <Table.Th>Likerklikk ❤️</Table.Th>
-            <Table.Th>visninger 👀</Table.Th>
+            {/* <Table.Th>Likerklikk ❤️</Table.Th> */}
+            {/* <Table.Th>visninger 👀</Table.Th> */}
             <Table.Th>Lenke 🔗</Table.Th>
           </Table.Tr>
         </Table.Thead>
