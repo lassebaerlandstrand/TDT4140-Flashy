@@ -26,19 +26,17 @@ export function UserFlashiesTable({ user, flashies }: UserFlashiesTableProps) {
   };
 
   const saveTitle = (flashy: FlashcardSet, newTitle: string) => {
-    console.log(`New title for ${newTitle}: ${editableTitle}`);
     setEditingTitleId(null);
   };
 
   const handleToggleVisibility = async (flashy: FlashcardSet) => {
     const newVisibility = flashy.visibility === Visibility.Public ? Visibility.Private : Visibility.Public;
-    console.log(`New visibility for ${flashy.title}: ${newVisibility}`);
     try {
       // Update the visibility in Firestore
       await setUpdateFlashySetVisibility(user, flashy, newVisibility);
-      flashies.find((flashy) => {
-        if (flashy.id === flashy.id) {
-          flashy.visibility = newVisibility;
+      flashies.forEach((flashyLoop) => {
+        if (flashyLoop.id === flashy.id) {
+          flashyLoop.visibility = newVisibility;
         }
       });
       notifications.show({
