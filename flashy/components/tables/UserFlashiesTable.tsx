@@ -78,8 +78,8 @@ export function UserFlashiesTable({ user, flashies }: UserFlashiesTableProps) {
           </Badge>
         </UnstyledButton>
       </Table.Td>
-      <Table.Td>{flashy.numOfLikes}</Table.Td>
-      <Table.Td>{flashy.numViews}</Table.Td>
+      {/* <Table.Td>{flashy.numOfLikes}</Table.Td>
+      <Table.Td>{flashy.numViews}</Table.Td> */}
       <Table.Td>
         <UnstyledButton component={Link} href={`carousel/${flashy.title}`}>
           Gå til ↗️
@@ -95,8 +95,8 @@ export function UserFlashiesTable({ user, flashies }: UserFlashiesTableProps) {
           <Table.Tr>
             <Table.Th>Tittel</Table.Th>
             <Table.Th>Synlighet</Table.Th>
-            <Table.Th>Likerklikk ❤️</Table.Th>
-            <Table.Th>Visning 👀</Table.Th>
+            {/* <Table.Th>Likerklikk ❤️</Table.Th> */}
+            {/* <Table.Th>Visning 👀</Table.Th> */}
             <Table.Th>Forhåndsvisning 🔗</Table.Th>
           </Table.Tr>
         </Table.Thead>
