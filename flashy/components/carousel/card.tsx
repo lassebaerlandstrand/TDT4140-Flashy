@@ -41,7 +41,7 @@ export default function Card({ view, hasCopy, toggleDifficult }: CardProps) {
           <Group justify="right">
             <Checkbox
               checked={hasCopy}
-              onClick={() => {
+              onChange={() => {
                 toggleDifficult(view);
               }}
               labelPosition="left"

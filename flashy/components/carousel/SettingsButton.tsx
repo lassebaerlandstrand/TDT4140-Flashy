@@ -3,7 +3,7 @@ import { User } from "@/app/types/user";
 import { deleteFlashcard } from "@/app/utils/firebase";
 import { Button, Menu } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
-import { IconEdit, IconSettings, IconTrash } from "@tabler/icons-react";
+import { IconPencil, IconSettings, IconTrash } from "@tabler/icons-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -39,7 +39,7 @@ export function SettingsButton({ user, flashcard }: SettingsButtonType) {
       </Menu.Target>
 
       <Menu.Dropdown>
-        <Menu.Item leftSection={<IconEdit width={18} />} component={Link} href={`/editFlashcard/${flashcard.title}`}>
+        <Menu.Item leftSection={<IconPencil width={18} />} component={Link} href={`/editFlashcard/${flashcard.title}`}>
           Rediger flashy
         </Menu.Item>
         <Menu.Item leftSection={<IconTrash width={18} />} color="red" onClick={() => deleteFlashcardFunction(user, flashcard)}>
