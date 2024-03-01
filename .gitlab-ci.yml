@@ -1,6 +1,12 @@
 default:
   image: node:21.6.1
 
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - node_modules/
+    - .next/cache/
+
 # List of stages for jobs, and their execution order
 stages:
     - install
