@@ -6,6 +6,9 @@ cache:
   paths:
     - flashy/node_modules/
 
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
 
 # List of stages for jobs, and their execution order
 stages:
