@@ -1,0 +1,47 @@
+default:
+  image: node:21.6.1
+
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+
+# List of stages for jobs, and their execution order
+stages:
+    - install
+    - lint
+    - build
+
+install:
+  stage: install
+  allow_failure: false
+  tags:
+    - docker
+
+  script: 
+    - echo "Running installing stage"
+    - "cd flashy"
+    - "npm install"
+
+lint:
+  stage: lint
+  allow_failure: false
+  needs: ["install"]
+  tags:
+    - docker
+
+  script: 
+    - echo "Running lint stage"
+    - "cd flashy"
+    - "npm run lint"
+
+build:
+  stage: build
+  allow_failure: false
+  needs: ["install"]
+  tags:
+    - docker
+
+  script: 
+    - echo "Running build stage"
+    - "cd flashy"
+    - "npm run build"
