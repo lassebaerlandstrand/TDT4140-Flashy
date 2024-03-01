@@ -1,87 +1,41 @@
-import {
-  Group,
-  Code,
-  ScrollArea,
-  rem,
-  Skeleton,
-  Container,
-  Flex,
-} from "@mantine/core";
-import {
-  IconNotes,
-  IconCalendarStats,
-  IconGauge,
-  IconPresentationAnalytics,
-  IconFileAnalytics,
-  IconAdjustments,
-  IconLock,
-} from "@tabler/icons-react";
-import { Logo } from "./Logo";
-import classes from "./NavbarNested.module.css";
-import { UserButton } from "../user/UserButton";
+import classes from "@/components/navigation/NavbarNested.module.css";
+import { UserButton } from "@/components/user/UserButton";
+import { Code, Container, Flex, Group, Space, Stack, Text, UnstyledButton } from "@mantine/core";
+import { IconCards, IconUser } from "@tabler/icons-react";
+import { useSession } from "next-auth/react";
+import Image from "next/image";
+import Link from "next/link";
 
-const mockdata = [
-  { label: "Dashboard", icon: IconGauge },
-  {
-    label: "Market news",
-    icon: IconNotes,
-    initiallyOpened: true,
-    links: [
-      { label: "Overview", link: "/" },
-      { label: "Forecasts", link: "/" },
-      { label: "Outlook", link: "/" },
-      { label: "Real time", link: "/" },
-    ],
-  },
-  {
-    label: "Releases",
-    icon: IconCalendarStats,
-    links: [
-      { label: "Upcoming releases", link: "/" },
-      { label: "Previous releases", link: "/" },
-      { label: "Releases schedule", link: "/" },
-    ],
-  },
-  { label: "Analytics", icon: IconPresentationAnalytics },
-  { label: "Contracts", icon: IconFileAnalytics },
-  { label: "Settings", icon: IconAdjustments },
-  {
-    label: "Security",
-    icon: IconLock,
-    links: [
-      { label: "Enable 2FA", link: "/" },
-      { label: "Change password", link: "/" },
-      { label: "Recovery codes", link: "/" },
-    ],
-  },
+const data = [
+  { link: "/profile", label: "Profil", icon: IconUser, requiresAdmin: false },
+  { link: "/my-flashies", label: "Mine Flashies", icon: IconCards, requiresAdmin: false },
+  { link: "/admin", label: "Administrasjon", icon: IconUser, requiresAdmin: true },
 ];
 
 export function NavbarNested() {
-  // const links = mockdata.map((item) => (
-  //   <LinksGroup {...item} key={item.label} />
-  // ));
+  const session = useSession();
+  const links = data
+    .filter((item) => session.data?.user?.role == "admin" || !item.requiresAdmin)
+    .map((item) => (
+      <UnstyledButton component={Link} className={classes.link} href={item.link} key={item.label}>
+        <item.icon className={classes.linkIcon} stroke={1.5} />
+        <Text>{item.label}</Text>
+      </UnstyledButton>
+    ));
 
   return (
     <nav className={classes.navbar}>
-      <Flex
-        direction="column"
-        justify="space-between"
-        style={{ height: "100%", width: "100%" }}
-      >
+      <Flex direction="column" justify="space-between" style={{ height: "100%", width: "100%" }}>
         <Container className={classes.header}>
-          <Group justify="space-between">
-            <Logo style={{ width: rem(120) }} />
-            <Code fw={700}>Flashy v.1.0</Code>
+          <Group justify="space-around">
+            <UnstyledButton component={Link} href="/" style={{ display: "flex", alignItems: "center" }}>
+              <Image src="/logo/FlashyLogoHorizontal.png" alt="Flashy logo" width={128} height={30} priority={true} />
+            </UnstyledButton>
+            <Code fw={700}>V 0.1.0</Code>
           </Group>
+          <Space h="md" />
+          <Stack>{links}</Stack>
         </Container>
-
-        <ScrollArea className={classes.links}>
-          {Array(5)
-            .fill(0)
-            .map((_, index) => (
-              <Skeleton key={index} h={28} mt="sm" animate={false} />
-            ))}
-        </ScrollArea>
 
         <Container className={classes.footer}>
           <UserButton />

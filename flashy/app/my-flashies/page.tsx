@@ -1,13 +1,13 @@
 "use client";
 
-import { FlashiesTable } from "@/components/tables/FlashiesTable";
+import { FlashcardSet } from "@/app/types/flashcard";
+import { getMyFlashies } from "@/app/utils/firebase";
+import { UserFlashiesTable } from "@/components/tables/UserFlashiesTable";
 import { ActionIcon, Button, Group, Loader, Stack, TextInput, Title, rem, useMantineTheme } from "@mantine/core";
 import { IconArrowRight, IconSearch } from "@tabler/icons-react";
 import { signIn, useSession } from "next-auth/react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { FlashcardSet } from "./types/flashcard";
-import { getAllPublicFlashCardSets } from "./utils/firebase";
 
 export default function Home() {
   const { data: session } = useSession();
@@ -18,8 +18,8 @@ export default function Home() {
     if (session == null) return;
 
     async function fetchFlashcardSet() {
-      if (session == null) return;
-      const flashcardSet = await getAllPublicFlashCardSets();
+      if (session === null) return;
+      const flashcardSet = await getMyFlashies(session.user);
       setFlashcardSets(flashcardSet);
     }
     fetchFlashcardSet();
@@ -32,7 +32,7 @@ export default function Home() {
           <Loader color="blue" size={48} />
         ) : (
           <>
-            <Title>Alle Flashies</Title>
+            <Title>Mine Flashies</Title>
             <Group justify="space-between">
               <TextInput
                 radius="xl"
@@ -51,7 +51,7 @@ export default function Home() {
                 Lag nytt sett
               </Button>
             </Group>
-            {<FlashiesTable flashies={flashcardSets ?? []} />}
+            {session.user && <UserFlashiesTable user={session.user} flashies={flashcardSets ?? []} />}
           </>
         )
       ) : (

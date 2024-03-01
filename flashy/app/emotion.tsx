@@ -1,19 +1,34 @@
-import { getServerSession } from "next-auth";
 import ApplicationShell from "@/components/root/ApplicationShell";
-import { ColorSchemeScript, MantineProvider } from "@mantine/core";
+import { authOptions } from "@/lib/auth/auth";
+import "@mantine/carousel/styles.css";
+import { ColorSchemeScript, MantineProvider, createTheme } from "@mantine/core";
+import { ModalsProvider } from "@mantine/modals";
+import { Notifications } from "@mantine/notifications";
+import '@mantine/notifications/styles.css';
+import { getServerSession } from "next-auth";
+
+const theme = createTheme({
+  fontFamily: "Open Sans, sans-serif",
+});
 
 export default async function RootStyleRegistry({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const session = await getServerSession();
+  const session = await getServerSession(authOptions);
+
   return (
     <html lang="en">
-      <body>
+      <head>
         <ColorSchemeScript />
-        <MantineProvider>
-          <ApplicationShell session={session!}>{children}</ApplicationShell>;
+      </head>
+      <body>
+        <MantineProvider theme={theme}>
+          <Notifications />
+          <ModalsProvider>
+            <ApplicationShell session={session!}>{children}</ApplicationShell>;
+          </ModalsProvider>
         </MantineProvider>
       </body>
     </html>
