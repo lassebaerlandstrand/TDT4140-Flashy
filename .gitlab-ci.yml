@@ -2,10 +2,9 @@ default:
   image: node:21.6.1
 
 cache:
-  key: ${CI_COMMIT_REF_SLUG}
   paths:
-    - node_modules/
-    - .next/cache/
+    - flashy/node_modules/
+
 
 # List of stages for jobs, and their execution order
 stages:
