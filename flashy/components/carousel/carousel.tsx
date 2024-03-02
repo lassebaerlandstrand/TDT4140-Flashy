@@ -1,10 +1,10 @@
 "use client";
 
 import { FlashcardView } from "@/app/types/flashcard";
-import { Carousel } from "@mantine/carousel";
-import { Button, Container, Group, Stack, Title } from "@mantine/core";
+import { Carousel, Embla } from "@mantine/carousel";
+import { Button, Container, Group, Progress, Stack } from "@mantine/core";
 import { IconCheck, IconQuestionMark } from "@tabler/icons-react";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Card from "./card";
 
 type CarouselCardProps = {
@@ -17,6 +17,8 @@ export default function CarouselCard({ views }: CarouselCardProps) {
   const originalViews = [...views];
   const [difficultViews, setDifficultViews] = useState([] as FlashcardView[]);
   const [combinedViews, setCombinedViews] = useState(currentViews);
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const [embla, setEmbla] = useState<Embla | null>(null);
 
   const toggleDifficult = (markedView: FlashcardView) => {
     const markedViewCopy: FlashcardView = { ...markedView, id: markedView.id + "copy", isCopy: true };
@@ -34,6 +36,20 @@ export default function CarouselCard({ views }: CarouselCardProps) {
 
     setCombinedViews([...currentViews, ...newDifficultViews]);
   };
+
+  const handleScroll = useCallback(() => {
+    if (!embla) return;
+    const progress = Math.max(0, Math.min(1, embla.scrollProgress()));
+    setScrollProgress(progress * 100);
+  }, [embla, setScrollProgress]);
+
+  useEffect(() => {
+    if (embla) {
+      embla.on('scroll', handleScroll);
+      handleScroll();
+    }
+  }, [embla]);
+
 
   // Shuffle function
   const shuffleViews = () => {
@@ -56,9 +72,6 @@ export default function CarouselCard({ views }: CarouselCardProps) {
   };
   const slides = combinedViews.map((item, index) => (
     <Carousel.Slide key={item.id}>
-      <Title style={{ position: "absolute", left: 10, top: 10, color: "black" }}>
-        {index + 1}/{combinedViews.length}
-      </Title>
       <Card
         view={item}
         hasCopy={difficultViews.some((card) => card.id === item.id + "copy")}
@@ -81,9 +94,21 @@ export default function CarouselCard({ views }: CarouselCardProps) {
         </Button>
       </Group>
       <Container style={{ width: "50vw" }}>
-        <Carousel height={400} slideGap="xl" align="start">
+        <Carousel
+          height={400}
+          slideGap="xl"
+          align="start"
+          getEmblaApi={setEmbla}
+        >
           {slides}
         </Carousel>
+        <Progress
+          value={scrollProgress}
+          size="sm"
+          mt="xl"
+          mx="auto"
+          style={{ maxWidth: 320 }}
+        />
       </Container>
     </Stack>
   );
