@@ -35,8 +35,10 @@ export type FlashcardFlagged = {
 }
 
 export type FlashcardComment = {
+    id: string;
     commentedBy: User | undefined;
     content: string;
+    createdAt: Date;
 }
 
 export type FlashcardView = {

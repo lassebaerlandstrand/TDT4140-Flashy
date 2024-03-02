@@ -148,9 +148,9 @@ export async function removeFavoriteFlashcard(flashcardId: FlashcardSet["id"], c
   const queryDocs = await getDocs(queryFavorites);
 
   if (!queryDocs.empty) {
-      queryDocs.forEach(async (doc) => {
-          await deleteDoc(doc.ref);
-      });
+    queryDocs.forEach(async (doc) => {
+      await deleteDoc(doc.ref);
+    });
   }
 }
 
@@ -173,14 +173,21 @@ async function getComments(flashcardDocument: DocumentReference): Promise<Flashc
 
   const comments = await Promise.all(
     commentsDocs.docs.map(async (doc) => {
-      return {
-        commentedBy: await convertDocumentRefToType<User>(doc.data().commentedBy),
-        content: doc.data().content,
-      };
+      try {
+        const comment = {
+          id: doc.id,
+          commentedBy: await convertDocumentRefToType<User>(doc.data().commentedBy),
+          content: doc.data().content,
+          createdAt: doc.data().createdAt.toDate(),
+        };
+        return comment;
+      } catch (e) {
+        console.log(`[DocId: ${doc.id}]`, e);
+      }
     })
   );
 
-  return comments;
+  return comments.filter((comment) => comment != null) as FlashcardComment[];
 }
 
 /*
