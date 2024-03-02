@@ -45,29 +45,8 @@ export async function getMyFlashies(user: User): Promise<FlashcardSet[]> {
   const userDoc = doc(firestore, "users", user.id)
   const querySelection = query(flashcardCollection, where("creator", "==", userDoc));
   const flashcardDocs = await getDocs(querySelection);
-  return Promise.all(flashcardDocs.docs.map(async (doc) => {
-    return {
-      id: doc.id,
-      creator: await convertDocumentRefToType<User>(doc.data().creator),
-      title: doc.data().title,
-      numViews: doc.data().numViews,
-      numOfLikes: await getNumberOfLikes(doc.ref),
-      visibility: doc.data().isPublic ? Visibility.Public : Visibility.Private,
-      createdAt: doc.data().createdAt.toDate(),
-    }
-  }));
-}
-
-
-
-
-export async function getAllPublicFlashCardSets(): Promise<FlashcardSet[]> {
-  const flashcardCollection = collection(firestore, "flashies");
-  const querySelection = query(flashcardCollection, where("isPublic", "==", true));
-  const flashcardDocs = await getDocs(querySelection);
-
-  return Promise.all(
-    flashcardDocs.docs.map(async (doc) => {
+  const allFlashcardSets = Promise.all(flashcardDocs.docs.map(async (doc) => {
+    try {
       return {
         id: doc.id,
         creator: await convertDocumentRefToType<User>(doc.data().creator),
@@ -76,9 +55,45 @@ export async function getAllPublicFlashCardSets(): Promise<FlashcardSet[]> {
         numOfLikes: await getNumberOfLikes(doc.ref),
         visibility: doc.data().isPublic ? Visibility.Public : Visibility.Private,
         createdAt: doc.data().createdAt.toDate(),
-      };
+      }
+    } catch (e) {
+      console.log(`[DocId: ${doc.id}]`, e);
+    }
+    return null;
+  }));
+
+  return (await allFlashcardSets).filter((flashcard) => flashcard != null) as FlashcardSet[];
+}
+
+
+
+
+export async function getAllPublicFlashCardSets(): Promise<(FlashcardSet)[]> {
+  const flashcardCollection = collection(firestore, "flashies");
+  const querySelection = query(flashcardCollection, where("isPublic", "==", true));
+  const flashcardDocs = await getDocs(querySelection);
+
+  const allFlashcardSets = Promise.all(
+    flashcardDocs.docs.map(async (doc) => {
+      try {
+        const flashcardSet = {
+          id: doc.id,
+          creator: await convertDocumentRefToType<User>(doc.data().creator),
+          title: doc.data().title,
+          numViews: doc.data().numViews,
+          numOfLikes: await getNumberOfLikes(doc.ref),
+          visibility: doc.data().isPublic ? Visibility.Public : Visibility.Private,
+          createdAt: doc.data().createdAt.toDate(),
+        };
+        return flashcardSet;
+      } catch (e) {
+        console.log(`[DocId: ${doc.id}]`, e);
+      }
+      return null;
     })
   );
+
+  return (await allFlashcardSets).filter((flashcard) => flashcard != null) as FlashcardSet[];
 }
 
 async function userHasLikedFlashcard(
@@ -184,7 +199,7 @@ export async function getFlashcardSet(flashcardId: string, currentUserId: User["
     return flashcard;
 
   } catch (e) {
-    console.log(e);
+    console.log(`[DocId: ${flashcardDoc.id}]`, e);
   }
 
   return null;
