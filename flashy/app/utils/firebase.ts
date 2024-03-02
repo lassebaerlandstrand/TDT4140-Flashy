@@ -72,7 +72,7 @@ export async function getMyFlashies(user: User): Promise<FlashcardSet[]> {
 
 
 
-export async function getAllPublicFlashCardSets(): Promise<(FlashcardSet)[]> {
+export async function getAllPublicFlashCardSets(currentUser: Session["user"]): Promise<(FlashcardSet)[]> {
   const flashcardCollection = collection(firestore, "flashies");
   const querySelection = query(flashcardCollection, where("isPublic", "==", true));
   const flashcardDocs = await getDocs(querySelection);
@@ -80,8 +80,9 @@ export async function getAllPublicFlashCardSets(): Promise<(FlashcardSet)[]> {
   const allFlashcardSets = Promise.all(
     flashcardDocs.docs.map(async (doc) => {
       try {
-        const flashcardSet = {
+        const flashcardSet: FlashcardSet = {
           id: doc.id,
+          userHasFavorited: await getHasFavoritedFlashcard(doc.ref, currentUser.id),
           creator: await convertDocumentRefToType<User>(doc.data().creator),
           title: doc.data().title,
           numViews: doc.data().numViews,
@@ -118,6 +119,42 @@ async function getNumberOfLikes(flashcardDocument: DocumentReference): Promise<n
   return numOfLikes.data().count;
 }
 
+export async function setFavoriteFlashcard(flashcardId: FlashcardSet["id"], currentUserId: User["id"]) {
+  console.log("Setting favorite");
+
+  const flashcardCollection = collection(firestore, "flashies");
+  const flashcardDocument = doc(flashcardCollection, flashcardId);
+  const currentUserRef = doc(firestore, "users", currentUserId);
+  const favoritesCollection = collection(flashcardDocument, "favorites");
+
+  const queryFavorites = query(favoritesCollection, where("favoritedBy", "==", currentUserRef));
+  const querySnapshot = await getDocs(queryFavorites);
+
+  if (querySnapshot.empty) {
+    await addDoc(favoritesCollection, { favoritedBy: currentUserRef });
+  } else {
+    console.log("Flashcard is already in favorites");
+  }
+}
+
+
+export async function removeFavoriteFlashcard(flashcardId: FlashcardSet["id"], currentUserId: User["id"]) {
+  console.log("Removing favorite");
+  const flashcardCollection = collection(firestore, "flashies");
+  const flashcardDocument = doc(flashcardCollection, flashcardId);
+  const currentUserRef = doc(firestore, "users", currentUserId);
+  const favoritesCollection = collection(flashcardDocument, "favorites");
+  const queryFavorites = query(favoritesCollection, where("favoritedBy", "==", currentUserRef));
+  const queryDocs = await getDocs(queryFavorites);
+
+  if (!queryDocs.empty) {
+      queryDocs.forEach(async (doc) => {
+          await deleteDoc(doc.ref);
+      });
+  }
+}
+
+
 async function getHasFavoritedFlashcard(
   flashcardDocument: DocumentReference,
   currentUserId: User["id"]
@@ -126,6 +163,7 @@ async function getHasFavoritedFlashcard(
   const favoritesCollection = collection(flashcardDocument, "favorites");
   const queryFavorites = query(favoritesCollection, where("favoritedBy", "==", currentUserRef), limit(1));
   const queryDocs = await getDocs(queryFavorites);
+  console.log(queryDocs)
   return !queryDocs.empty;
 }
 

@@ -1,15 +1,16 @@
 import classes from "@/components/navigation/NavbarNested.module.css";
 import { UserButton } from "@/components/user/UserButton";
 import { Code, Container, Flex, Group, Space, Stack, Text, UnstyledButton } from "@mantine/core";
-import { IconCards, IconUser } from "@tabler/icons-react";
+import { IconCards, IconCardsFilled, IconCircleKey, IconUser } from "@tabler/icons-react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 
 const data = [
   { link: "/profile", label: "Profil", icon: IconUser, requiresAdmin: false },
-  { link: "/my-flashies", label: "Mine Flashies", icon: IconCards, requiresAdmin: false },
-  { link: "/admin", label: "Administrasjon", icon: IconUser, requiresAdmin: true },
+  { link: "/my-flashies", label: "Mine Flashies", icon: IconCardsFilled, requiresAdmin: false },
+  { link: "/", label: "Alle flashies", icon: IconCards, requiresAdmin: false },
+  { link: "/admin", label: "Administrasjon", icon: IconCircleKey, requiresAdmin: true },
 ];
 
 export function NavbarNested() {

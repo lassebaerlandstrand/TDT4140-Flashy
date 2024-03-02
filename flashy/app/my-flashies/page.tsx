@@ -1,9 +1,10 @@
 "use client";
 
 import { FlashcardSet } from "@/app/types/flashcard";
-import { getMyFlashies } from "@/app/utils/firebase";
+import { getAllPublicFlashCardSets, getMyFlashies } from "@/app/utils/firebase";
+import { ArticleCardsGrid } from "@/components/articleView/ArticleCardsGrid";
 import { UserFlashiesTable } from "@/components/tables/UserFlashiesTable";
-import { ActionIcon, Button, Group, Loader, Stack, TextInput, Title, rem, useMantineTheme } from "@mantine/core";
+import { ActionIcon, Button, Group, Loader, Stack, Text, TextInput, Title, rem, useMantineTheme } from "@mantine/core";
 import { IconArrowRight, IconSearch } from "@tabler/icons-react";
 import levenshtein from "fast-levenshtein";
 import { signIn, useSession } from "next-auth/react";
@@ -15,17 +16,24 @@ export default function Home() {
 
   const { data: session } = useSession();
   const [flashcardSets, setFlashcardSets] = useState<FlashcardSet[]>();
+  const [favoriteFlashcards, setFavoriteFlashcards] = useState<FlashcardSet[]>();
+
   const theme = useMantineTheme();
 
   useEffect(() => {
     if (session == null) return;
 
-    async function fetchFlashcardSet() {
+    async function fetchData() {
       if (session === null) return;
       const flashcardSet = await getMyFlashies(session.user);
       setFlashcardSets(flashcardSet);
+
+      const favoriteCards = (await getAllPublicFlashCardSets(session.user)).filter(
+        (flashcardSet) => flashcardSet.userHasFavorited
+      );
+      setFavoriteFlashcards(favoriteCards);
     }
-    fetchFlashcardSet();
+    fetchData();
   }, [session]);
 
   const filteredFlashcardSets = useMemo(() => {
@@ -55,7 +63,7 @@ export default function Home() {
                 onChange={(event) => setSearchQuery(event.target.value)}
                 radius="xl"
                 size="md"
-                placeholder="Søk etter flashies etter tittel"
+                placeholder="Søk i mine flashies"
                 rightSectionWidth={42}
                 width="100%"
                 leftSection={<IconSearch style={{ width: rem(18), height: rem(18) }} stroke={1.5} />}
@@ -69,7 +77,18 @@ export default function Home() {
                 Lag nytt sett
               </Button>
             </Group>
-            {session.user && <UserFlashiesTable user={session.user} flashies={filteredFlashcardSets} />}
+            {<UserFlashiesTable user={session.user} flashies={filteredFlashcardSets} />}
+
+            {favoriteFlashcards && (
+              <Stack align="center">
+                <Title>Mine favoritter</Title>
+                {favoriteFlashcards.length === 0 ? (
+                  <Text>Du har ingen favoritter enda... 🙊</Text>
+                ) : (
+                  <ArticleCardsGrid user={session.user} flashcards={favoriteFlashcards ?? []} />
+                )}
+              </Stack>
+            )}
           </>
         )
       ) : (
