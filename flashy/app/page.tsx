@@ -22,7 +22,7 @@ export default function Home() {
 
     async function fetchFlashcardSet() {
       if (session == null) return;
-      const flashcardSet = await getAllPublicFlashCardSets();
+      const flashcardSet = await getAllPublicFlashCardSets(session.user);
       setFlashcardSets(flashcardSet);
     }
     fetchFlashcardSet();
@@ -69,7 +69,7 @@ export default function Home() {
                 Lag nytt sett
               </Button>
             </Group>
-            {<ArticleCardsGrid flashcards={filteredFlashcardSets ?? []} />}
+            {<ArticleCardsGrid user={session.user} flashcards={filteredFlashcardSets ?? []} />}
           </>
         )
       ) : (

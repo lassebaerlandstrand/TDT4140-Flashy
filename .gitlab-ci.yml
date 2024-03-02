@@ -29,13 +29,13 @@ install:
 lint:
   stage: lint
   allow_failure: false
-  needs: ["install"]
   tags:
     - docker
 
   script: 
     - echo "Running lint stage"
     - "cd flashy"
+    - "npm install" # There are some cases where install is not run...
     - "npm run lint"
 
 

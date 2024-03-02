@@ -1,11 +1,13 @@
 "use client";
 
 import { FlashcardSet } from "@/app/types/flashcard";
-import { getFlashcardSet } from "@/app/utils/firebase";
+import { getFlashcardSet, removeFavoriteFlashcard, setFavoriteFlashcard } from "@/app/utils/firebase";
 import { LikeButton } from "@/components/carousel/LikeButton";
 import { SettingsButton } from "@/components/carousel/SettingsButton";
 import CarouselCard from "@/components/carousel/carousel";
-import { Button, Code, Group, Loader, Stack, Text, Title } from "@mantine/core";
+import { ActionIcon, Button, Code, Group, Loader, Stack, Text, Title, useMantineTheme } from "@mantine/core";
+import { notifications } from "@mantine/notifications";
+import { IconStarFilled } from "@tabler/icons-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -18,6 +20,55 @@ export default function Flashcards({ params }: FlashcardsType) {
   const [flashcardSet, setFlashcardSet] = useState<FlashcardSet | null>();
   const [failedToFetch, setFailedToFetch] = useState(false);
   const { data: session } = useSession();
+
+  const theme = useMantineTheme();
+  const favoriteColor = theme.colors.yellow[5];
+  const notFavoriteColor = theme.colors.cyan[5];
+  const [color, setColor] = useState(flashcardSet?.userHasFavorited ? favoriteColor : notFavoriteColor);
+
+  const handleToggleSetFavourite = async () => {
+    if (!session?.user.id || !flashcardSet?.id) {
+      notifications.show({
+        title: "Noe gikk galt",
+        message: "Kunne ikke legge til flashcard i favoritter",
+        color: "red",
+      });
+      return;
+    }
+    if (color === favoriteColor) {
+      try {
+        await removeFavoriteFlashcard(flashcardSet?.id!, session?.user.id);
+        setColor(notFavoriteColor);
+        notifications.show({
+          title: "Fjernet fra favoritter",
+          message: "Flashcard fjernet fra favoritter 😶‍🌫️",
+          color: "cyan",
+        });
+      } catch (error) {
+        notifications.show({
+          title: "Noe gikk galt",
+          message: "Kunne ikke fjerne flashcard fra favoritter",
+          color: "red",
+        });
+      }
+    } else {
+      try {
+        await setFavoriteFlashcard(flashcardSet.id, session.user.id);
+        setColor(favoriteColor);
+        notifications.show({
+          title: "Lagt til i favoritter",
+          message: "Flashcard lagt til i favoritter 🌟",
+          color: "yellow",
+        });
+      } catch (error) {
+        notifications.show({
+          title: "Noe gikk galt",
+          message: "Kunne ikke legge til flashcard i favoritter",
+          color: "red",
+        });
+      }
+    }
+  };
 
   useEffect(() => {
     if (session == null) return;
@@ -52,9 +103,19 @@ export default function Flashcards({ params }: FlashcardsType) {
 
   return (
     <Stack align="center">
-      <Title>{flashcardSet.title}</Title>
+      <Group gap="lg">
+        <Title>{flashcardSet.title}</Title>
+        <ActionIcon
+          variant="filled"
+          color={color}
+          onClick={handleToggleSetFavourite}
+          disabled={session.user.id === flashcardSet.creator?.id}
+        >
+          <IconStarFilled size={20} />
+        </ActionIcon>
+      </Group>
       <Text>
-        by: <Code>{flashcardSet.creator ? flashcardSet.creator.name : "Slettet bruker"}</Code>
+        by: <Code>{flashcardSet.creator ? flashcardSet.creator.name : "Slettet bruker"}</Code>{" "}
       </Text>
       <CarouselCard views={flashcardSet.views ?? []} />
 

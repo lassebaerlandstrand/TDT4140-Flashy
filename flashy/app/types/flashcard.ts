@@ -15,7 +15,6 @@ export type FlashcardSet = {
     userHasLiked?: boolean;
     userHasFavorited?: boolean;
     comments?: FlashcardComment[];
-    flagged?: FlashcardFlagged;
     views?: FlashcardView[];
     visibility?: Visibility;
     createdAt: Date;
@@ -53,6 +52,7 @@ export type CreateFlashCardType = {
     views: CreateViewType[];
     visibility: Visibility;
     createdAt: Date;
+    image?: File;
 }
 
 export type CreateViewType = Pick<FlashcardView, "front" | "back">;
