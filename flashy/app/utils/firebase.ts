@@ -80,13 +80,16 @@ export async function getAllPublicFlashCardSets(currentUser: Session["user"]): P
   const allFlashcardSets = Promise.all(
     flashcardDocs.docs.map(async (doc) => {
       try {
+        const { numOfFavorites, numOfLikes, numOfComments } = await getNumOfFavouritesLikesComments(doc.ref);
         const flashcardSet: FlashcardSet = {
           id: doc.id,
           userHasFavorited: await getHasFavoritedFlashcard(doc.ref, currentUser.id),
           creator: await convertDocumentRefToType<User>(doc.data().creator),
           title: doc.data().title,
           numViews: doc.data().numViews,
-          numOfLikes: await getNumberOfLikes(doc.ref),
+          numOfLikes: numOfLikes,
+          numOfFavorites: numOfFavorites,
+          numOfComments: numOfComments,
           visibility: doc.data().isPublic ? Visibility.Public : Visibility.Private,
           createdAt: doc.data().createdAt.toDate(),
           coverImage: doc.data().image,
@@ -100,6 +103,14 @@ export async function getAllPublicFlashCardSets(currentUser: Session["user"]): P
   );
 
   return (await allFlashcardSets).filter((flashcard) => flashcard != null) as FlashcardSet[];
+}
+
+export function setIncrementFlashcardViews(flashcard: FlashcardSet) {
+  const flashcardCollection = collection(firestore, "flashies");
+  const flashcardDocument = doc(flashcardCollection, flashcard.id);
+  updateDoc(flashcardDocument, {
+    numViews: flashcard.numViews + 1,
+  });
 }
 
 async function userHasLikedFlashcard(
@@ -117,6 +128,23 @@ async function getNumberOfLikes(flashcardDocument: DocumentReference): Promise<n
   const likesCollection = collection(flashcardDocument, "likes");
   const numOfLikes = await getCountFromServer(likesCollection);
   return numOfLikes.data().count;
+}
+
+type NumOfFavoritesLikesComments = {
+  numOfFavorites: number;
+  numOfLikes: number;
+  numOfComments: number;
+};
+
+export async function getNumOfFavouritesLikesComments(flashcardDocument: DocumentReference): Promise<NumOfFavoritesLikesComments> {
+  const favoritesCollection = collection(flashcardDocument, "favorites");
+  const likesCollection = collection(flashcardDocument, "likes");
+  const commentCollection = collection(flashcardDocument, "comments");
+  const numOfFavorites = await getCountFromServer(favoritesCollection);
+  const numOfLikes = await getCountFromServer(likesCollection);
+  const numOfComments = await getCountFromServer(commentCollection);
+
+  return { numOfFavorites: numOfFavorites.data().count, numOfLikes: numOfLikes.data().count, numOfComments: numOfComments.data().count };
 }
 
 export async function setFavoriteFlashcard(flashcardId: FlashcardSet["id"], currentUserId: User["id"]) {
@@ -163,7 +191,6 @@ async function getHasFavoritedFlashcard(
   const favoritesCollection = collection(flashcardDocument, "favorites");
   const queryFavorites = query(favoritesCollection, where("favoritedBy", "==", currentUserRef), limit(1));
   const queryDocs = await getDocs(queryFavorites);
-
   return !queryDocs.empty;
 }
 
@@ -209,7 +236,7 @@ export async function getFlashcardSet(flashcardId: string, currentUserId: User["
 
   const views = await getViews(flashcardDocument);
   const userHasLiked = await userHasLikedFlashcard(flashcardDocument, currentUserId);
-  const numOfLikes = await getNumberOfLikes(flashcardDocument);
+  const { numOfFavorites, numOfLikes, numOfComments } = await getNumOfFavouritesLikesComments(flashcardDocument);
   const userHasFavorited = await getHasFavoritedFlashcard(flashcardDocument, currentUserId);
   const comments = await getComments(flashcardDocument);
   const visibility = flashcardData.isPublic ? Visibility.Public : Visibility.Private;
@@ -221,6 +248,8 @@ export async function getFlashcardSet(flashcardId: string, currentUserId: User["
       title: flashcardData.title,
       numViews: flashcardData.numViews,
       numOfLikes: numOfLikes,
+      numOfFavorites: numOfFavorites,
+      numOfComments: numOfComments,
       userHasLiked: userHasLiked,
       userHasFavorited: userHasFavorited,
       comments: comments,
