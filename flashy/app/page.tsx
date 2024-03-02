@@ -1,15 +1,18 @@
 "use client";
 
-import { FlashiesTable } from "@/components/tables/FlashiesTable";
+import { ArticleCardsGrid } from "@/components/articleView/ArticleCardsGrid";
 import { ActionIcon, Button, Group, Loader, Stack, TextInput, Title, rem, useMantineTheme } from "@mantine/core";
 import { IconArrowRight, IconSearch } from "@tabler/icons-react";
+import levenshtein from "fast-levenshtein";
 import { signIn, useSession } from "next-auth/react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { FlashcardSet } from "./types/flashcard";
 import { getAllPublicFlashCardSets } from "./utils/firebase";
 
 export default function Home() {
+  const [searchQuery, setSearchQuery] = useState("");
+
   const { data: session } = useSession();
   const [flashcardSets, setFlashcardSets] = useState<FlashcardSet[]>();
   const theme = useMantineTheme();
@@ -25,6 +28,19 @@ export default function Home() {
     fetchFlashcardSet();
   }, [session]);
 
+  const filteredFlashcardSets = useMemo(() => {
+    if (!flashcardSets) return [];
+
+    return flashcardSets
+      .filter((flashcardSet) => flashcardSet.title.toLowerCase().includes(searchQuery.toLowerCase()))
+      .sort((a, b) => {
+        // Use Levenshtein distance for sorting
+        const distanceA = levenshtein.get(a.title.toLowerCase(), searchQuery.toLowerCase());
+        const distanceB = levenshtein.get(b.title.toLowerCase(), searchQuery.toLowerCase());
+        return distanceA - distanceB; // Sort in ascending order of distance
+      });
+  }, [flashcardSets, searchQuery]);
+
   return (
     <Stack align="center">
       {session ? (
@@ -35,6 +51,8 @@ export default function Home() {
             <Title>Alle Flashies</Title>
             <Group justify="space-between">
               <TextInput
+                value={searchQuery}
+                onChange={(event) => setSearchQuery(event.target.value)}
                 radius="xl"
                 size="md"
                 placeholder="Søk etter flashies etter tittel"
@@ -51,7 +69,7 @@ export default function Home() {
                 Lag nytt sett
               </Button>
             </Group>
-            {<FlashiesTable flashies={flashcardSets ?? []} />}
+            {<ArticleCardsGrid flashcards={filteredFlashcardSets ?? []} />}
           </>
         )
       ) : (
