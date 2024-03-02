@@ -1,5 +1,6 @@
 import { Avatar, Badge, Button, Card, Group, Stack, Text, useMantineTheme } from "@mantine/core";
 import { Session } from "next-auth";
+import { signOut } from "next-auth/react";
 import { confirmationModal } from "./ConfirmationModal";
 import classes from "./UserCard.module.css";
 
@@ -8,6 +9,29 @@ const stats = [
   { value: "287", label: "Kommentarer" },
   { value: "20", label: "Flashies" },
 ];
+
+export const DangerZone = ({ user }: Session) => {
+  const theme = useMantineTheme();
+  const { colors, spacing } = theme;
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    confirmationModal({ user, expires: null }, true);
+  };
+  return (
+    <div className={classes.dangerZone}>
+      <Text size="lg" style={{ color: colors.red[6] }}>
+        Danger Zone
+      </Text>
+      <Group justify="space-between" style={{ marginTop: spacing.md, alignItems: "center" }}>
+        <Text size="sm" style={{ color: colors.gray[6] }}>
+          Når du sletter denne kontoen, er det ingen veg tilbake. Vær sikker før denne operasjonen.
+        </Text>
+        <Button onClick={handleClick} fullWidth color="red" variant="light" size="lg">
+          Slett Konto
+        </Button>
+      </Group>
+    </div>
+  );
+};
 
 export function UserCard({ user }: Session) {
   const theme = useMantineTheme();
@@ -21,10 +45,6 @@ export function UserCard({ user }: Session) {
       </Text>
     </div>
   ));
-
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    confirmationModal({ user, expires: null }, true);
-  };
 
   return (
     <Card withBorder padding="xl" radius="md" className={classes.card}>
@@ -44,8 +64,8 @@ export function UserCard({ user }: Session) {
         <Group mt="md" justify="center" gap={30}>
           {items}
         </Group>
-        <Button onClick={handleClick} fullWidth color="red" radius="md" mt="xl" size="md" variant="default">
-          Slett Konto
+        <Button onClick={() => signOut()} fullWidth color="orange" variant="light" size="lg">
+          Logg ut
         </Button>
       </Stack>
     </Card>
