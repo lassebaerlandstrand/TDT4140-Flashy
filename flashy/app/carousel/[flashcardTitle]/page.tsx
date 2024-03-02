@@ -2,6 +2,7 @@
 
 import { FlashcardSet } from "@/app/types/flashcard";
 import { getFlashcardSet, removeFavoriteFlashcard, setFavoriteFlashcard } from "@/app/utils/firebase";
+import { LikeButton } from "@/components/carousel/LikeButton";
 import { SettingsButton } from "@/components/carousel/SettingsButton";
 import CarouselCard from "@/components/carousel/carousel";
 import { ActionIcon, Button, Code, Group, Loader, Stack, Text, Title, useMantineTheme } from "@mantine/core";
@@ -119,8 +120,9 @@ export default function Flashcards({ params }: FlashcardsType) {
       <CarouselCard views={flashcardSet.views ?? []} />
 
       {session?.user.role === "admin" || flashcardSet.creator?.id === session?.user.id ? (
-        <Group pl="md" w={"100%"} justify="space-between">
+        <Group px="md" justify="space-between" w={"100%"}>
           <SettingsButton user={session.user} flashcard={flashcardSet} />
+          <LikeButton user={session.user} flashcard={flashcardSet} />
         </Group>
       ) : null}
     </Stack>
