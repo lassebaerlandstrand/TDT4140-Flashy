@@ -26,8 +26,8 @@ export function ArticleCard({ flashcard }: ArticleCardProps) {
         <AspectRatio ratio={1920 / 1080}>
           <Image
             style={{ borderRadius: 5 }}
-            src={flashcard.coverImage ?? "https://picsum.photos/300?grayscale"}
-            alt="Flashy logo"
+            src={flashcard.coverImage || "https://picsum.photos/300?grayscale"}
+            alt="Forsidebilde for Flashy"
             width={200}
             height={100}
             priority={true}
