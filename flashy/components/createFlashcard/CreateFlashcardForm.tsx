@@ -9,6 +9,7 @@ import { IconX } from "@tabler/icons-react";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
 
+const regexLettersAndNumbers = new RegExp("^[a-zA-Z0-9æøåÆØÅ\\s]+$");
 
 export const CreateFlashCardForm = () => {
   const { data: session } = useSession();
@@ -19,11 +20,13 @@ export const CreateFlashCardForm = () => {
       title: "",
       views: [],
       visibility: Visibility.Public,
+      createdAt: new Date(),
     },
 
     validate: {
       title: (value) => {
         if (value.length < 3) return "Navnet må være minst 3 tegn";
+        if (!regexLettersAndNumbers.test(value)) return "Navnet kan bare inneholde bokstaver og tall";
       },
     },
   });
@@ -37,6 +40,7 @@ export const CreateFlashCardForm = () => {
       title: values.title,
       views: values.views,
       visibility: values.visibility,
+      createdAt: new Date(),
     };
 
     createNewFlashcard(flashcardSet).then(() => {
