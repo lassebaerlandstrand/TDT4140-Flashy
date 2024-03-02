@@ -204,6 +204,25 @@ export async function getFlashcardSet(flashcardId: string, currentUserId: User["
 
 }
 
+export const toggleLike = async (currentUser: User, flashcard: FlashcardSet) => {
+  const currentUserRef = doc(firestore, "users", currentUser.id);
+  const flashcardDocument = doc(firestore, "flashies", flashcard.id);
+  const likesCollection = collection(flashcardDocument, "likes");
+
+  const queryLikes = query(likesCollection, where("likedBy", "==", currentUserRef), limit(1));
+  const queryDocs = await getDocs(queryLikes);
+
+  if (queryDocs.empty) {
+    await addDoc(likesCollection, {
+      likedBy: currentUserRef,
+    });
+    return true;
+  } else {
+    await deleteDoc(queryDocs.docs[0].ref);
+    return false;
+  }
+}
+
 export const deleteUser = async (actionUser: User | Session["user"], deleteUserEmail: string) => {
   const userCollection = collection(firestore, "users");
   const docs = getDocs(userCollection);
