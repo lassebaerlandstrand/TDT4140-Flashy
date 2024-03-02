@@ -53,6 +53,7 @@ export type CreateFlashCardType = {
     views: CreateViewType[];
     visibility: Visibility;
     createdAt: Date;
+    image?: File;
 }
 
 export type CreateViewType = Pick<FlashcardView, "front" | "back">;

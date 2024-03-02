@@ -2,7 +2,7 @@
 
 import { CreateFlashCardType, Visibility } from "@/app/types/flashcard";
 import { createNewFlashcard } from "@/app/utils/firebase";
-import { ActionIcon, Button, Divider, Flex, Grid, Group, Select, Stack, Text, TextInput, Textarea } from "@mantine/core";
+import { ActionIcon, Button, Divider, FileButton, Flex, Grid, Group, Select, Stack, Text, TextInput, Textarea } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import { IconX } from "@tabler/icons-react";
@@ -21,6 +21,7 @@ export const CreateFlashCardForm = () => {
       views: [],
       visibility: Visibility.Public,
       createdAt: new Date(),
+      image: undefined
     },
 
     validate: {
@@ -41,6 +42,7 @@ export const CreateFlashCardForm = () => {
       views: values.views,
       visibility: values.visibility,
       createdAt: new Date(),
+      image: values.image
     };
 
     createNewFlashcard(flashcardSet).then(() => {
@@ -80,7 +82,16 @@ export const CreateFlashCardForm = () => {
             maw={150}
           />
         </Group>
-
+        <Group justify="center">
+          <FileButton onChange={(file) => form.setFieldValue("image", file || undefined)} accept="image/png, image/jpeg">
+            {(props) => <Button {...props}>Last opp bilde</Button>}
+          </FileButton>
+        </Group>
+        {form.getInputProps("image") && (
+          <Text size="sm" ta="center" mt="sm">
+            Picked file: {form.getInputProps("image").value?.name || "No file picked"}
+          </Text>
+        )}
         <Divider />
 
         <Stack gap="xl">
@@ -132,3 +143,4 @@ export const CreateFlashCardForm = () => {
     </form>
   );
 };
+

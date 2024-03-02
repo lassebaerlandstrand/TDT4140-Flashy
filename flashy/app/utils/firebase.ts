@@ -84,6 +84,7 @@ export async function getAllPublicFlashCardSets(): Promise<(FlashcardSet)[]> {
           numOfLikes: await getNumberOfLikes(doc.ref),
           visibility: doc.data().isPublic ? Visibility.Public : Visibility.Private,
           createdAt: doc.data().createdAt.toDate(),
+          coverImage: doc.data().image,
         };
         return flashcardSet;
       } catch (e) {
@@ -254,6 +255,16 @@ export const setUpdateFlashySetVisibility = async (
   }
 }
 
+function ConvertToBase64(image: File) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(image);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = (error) => reject(error);
+    console.log(reader.result);
+  });
+}
+
 export async function createNewFlashcard(flashcard: CreateFlashCardType) {
   // Check if flashcard is available
   const flashcardDoc = doc(firestore, "flashies", flashcard.title);
@@ -269,6 +280,7 @@ export async function createNewFlashcard(flashcard: CreateFlashCardType) {
     numViews: 0,
     isPublic: flashcard.visibility === Visibility.Public,
     createdAt: flashcard.createdAt,
+    image: flashcard.image ? await ConvertToBase64(flashcard.image) : "",
   };
 
   await setDoc(flashcardDoc, docData).catch(() => {
