@@ -7,7 +7,7 @@ export enum Visibility {
 
 export type FlashcardSet = {
     id: string;
-    creator: User | undefined;
+    creator?: User;
     title: string;
     numViews: number;
     numOfLikes: number;
