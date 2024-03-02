@@ -42,10 +42,9 @@ export default function Home() {
     return flashcardSets
       .filter((flashcardSet) => flashcardSet.title.toLowerCase().includes(searchQuery.toLowerCase()))
       .sort((a, b) => {
-        // Use Levenshtein distance for sorting
         const distanceA = levenshtein.get(a.title.toLowerCase(), searchQuery.toLowerCase());
         const distanceB = levenshtein.get(b.title.toLowerCase(), searchQuery.toLowerCase());
-        return distanceA - distanceB; // Sort in ascending order of distance
+        return distanceA - distanceB;
       });
   }, [flashcardSets, searchQuery]);
 
@@ -78,7 +77,6 @@ export default function Home() {
               </Button>
             </Group>
             {<UserFlashiesTable user={session.user} flashies={filteredFlashcardSets} />}
-
             {favoriteFlashcards && (
               <Stack align="center">
                 <Title>Mine favoritter</Title>

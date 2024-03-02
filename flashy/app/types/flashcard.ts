@@ -12,6 +12,8 @@ export type FlashcardSet = {
     title: string;
     numViews: number;
     numOfLikes: number;
+    numOfFavorites: number;
+    numOfComments?: number;
     userHasLiked?: boolean;
     userHasFavorited?: boolean;
     comments?: FlashcardComment[];
