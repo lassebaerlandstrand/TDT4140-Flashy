@@ -67,3 +67,8 @@ export type EditFlashCardType = {
 export type EditFlashcardView = Pick<FlashcardView, "front" | "back"> & {
     id?: string;
 };
+
+export type CreateNewCommentType = {
+    commentedBy: User;
+    content: string;
+};

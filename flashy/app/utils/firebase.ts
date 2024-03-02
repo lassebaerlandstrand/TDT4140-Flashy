@@ -16,7 +16,7 @@ import {
 } from "@firebase/firestore";
 import { ComboboxItem } from "@mantine/core";
 import { Session } from "next-auth";
-import { CreateFlashCardType, EditFlashCardType, FlashcardComment, FlashcardSet, FlashcardView, Visibility } from "../types/flashcard";
+import { CreateFlashCardType, CreateNewCommentType, EditFlashCardType, FlashcardComment, FlashcardSet, FlashcardView, Visibility } from "../types/flashcard";
 import { User } from "../types/user";
 import { convertDocumentRefToType, converter } from "./converter";
 
@@ -163,7 +163,7 @@ async function getHasFavoritedFlashcard(
   const favoritesCollection = collection(flashcardDocument, "favorites");
   const queryFavorites = query(favoritesCollection, where("favoritedBy", "==", currentUserRef), limit(1));
   const queryDocs = await getDocs(queryFavorites);
-  console.log(queryDocs)
+
   return !queryDocs.empty;
 }
 
@@ -236,7 +236,6 @@ export async function getFlashcardSet(flashcardId: string, currentUserId: User["
   }
 
   return null;
-
 }
 
 export const toggleLike = async (currentUser: User, flashcard: FlashcardSet) => {
@@ -457,3 +456,16 @@ export async function deleteFlashcard(actionUser: User, flashcard: FlashcardSet)
   await Promise.all(favoritesDocs.docs.map((doc) => deleteDoc(doc.ref)));
 }
 
+
+export const commentOnSet = async (flashcard: FlashcardSet, comment: CreateNewCommentType) => {
+  const flashcardDoc = doc(firestore, "flashies", flashcard.id);
+  const commentsCollection = collection(flashcardDoc, "comments");
+
+  const data = {
+    commentedBy: doc(firestore, "users", comment.commentedBy.id),
+    content: comment.content,
+    createdAt: new Date(),
+  };
+
+  await addDoc(commentsCollection, data);
+}

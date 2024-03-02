@@ -2,7 +2,7 @@
 
 import { FlashcardSet } from "@/app/types/flashcard";
 import { getFlashcardSet, removeFavoriteFlashcard, setFavoriteFlashcard } from "@/app/utils/firebase";
-import { CommentSection } from "@/components/carousel/CommenSection";
+import { CommentSection } from "@/components/carousel/CommentSection";
 import { LikeButton } from "@/components/carousel/LikeButton";
 import { SettingsButton } from "@/components/carousel/SettingsButton";
 import CarouselCard from "@/components/carousel/carousel";
@@ -127,7 +127,7 @@ export default function Flashcards({ params }: FlashcardsType) {
         </Group>
       ) : null}
 
-      {flashcardSet.comments && <CommentSection comments={flashcardSet.comments} />}
+      {flashcardSet.comments && <CommentSection flashcard={flashcardSet} comments={flashcardSet.comments} actionUser={session.user} />}
     </Stack>
   );
 }

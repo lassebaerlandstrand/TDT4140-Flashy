@@ -1,24 +1,27 @@
-import { FlashcardComment } from "@/app/types/flashcard";
-import { Button, Group, Stack, Text } from "@mantine/core";
-import { useState } from "react";
+import { FlashcardComment, FlashcardSet } from "@/app/types/flashcard";
+import { User } from "@/app/types/user";
+import { Divider, Group, Stack, Text } from "@mantine/core";
 import { Comment } from "./Comment";
+import { NewComment } from "./NewComment";
 
 
 type CommentSectionType = {
+  flashcard: FlashcardSet;
+  actionUser: User;
   comments: FlashcardComment[];
 }
 
 
 
-export const CommentSection = ({ comments }: CommentSectionType) => {
-  const [showCreateNewComment, setShowCreateNewComment] = useState(false);
+export const CommentSection = ({ flashcard, actionUser, comments }: CommentSectionType) => {
 
   return (
     <Stack w={"100%"} px="sm" mt="xl">
       <Group justify="space-between">
         <Text fw="bold" size="xl">Kommentarer</Text>
-        <Button size="xs" onClick={() => setShowCreateNewComment((prev) => !prev)}>Ny kommentar</Button>
       </Group>
+      <NewComment flashcard={flashcard} actionUser={actionUser} />
+      <Divider my="xl" />
       <Stack gap="xl">
         {comments.map((comment) => {
           return (
@@ -32,6 +35,6 @@ export const CommentSection = ({ comments }: CommentSectionType) => {
           )
         })}
       </Stack>
-    </Stack>
+    </Stack >
   )
 }
