@@ -16,11 +16,15 @@ import {
 } from "@firebase/firestore";
 import { ComboboxItem } from "@mantine/core";
 import { Session } from "next-auth";
-import { CreateFlashCardType, EditFlashCardType, FlashcardComment, FlashcardFlagged, FlashcardSet, FlashcardView, Visibility } from "../types/flashcard";
+import { CreateFlashCardType, EditFlashCardType, FlashcardComment, FlashcardSet, FlashcardView, Visibility } from "../types/flashcard";
 import { User } from "../types/user";
 import { convertDocumentRefToType, converter } from "./converter";
 
-export async function getAllUsers(): Promise<User[]> {
+export async function getAllUsers(actionUser: User): Promise<User[]> {
+  if (actionUser.role !== "admin") {
+    throw new Error("Du har ikke tilgang til å se alle brukere");
+  }
+
   const userCollection = collection(firestore, "users").withConverter(converter<User>());
   const userDocs = await getDocs(userCollection);
   return userDocs.docs.map((doc) => doc.data());
@@ -140,19 +144,6 @@ async function getComments(flashcardDocument: DocumentReference): Promise<Flashc
   return comments;
 }
 
-async function getFlaggedCards(
-  flashcardDocument: DocumentReference,
-  currentUserId: User["id"]
-): Promise<FlashcardFlagged> {
-  const usersFlagged = collection(flashcardDocument, "usersFlagged");
-  const flaggedDoc = doc(usersFlagged, currentUserId).withConverter(converter<FlashcardFlagged>());
-  const flagged = await getDoc(flaggedDoc);
-
-  if (flagged.exists()) {
-    return flagged.data();
-  }
-  return { cardsFlagged: [] };
-}
 /*
  Here are some ideas if we want to reduce the number of read operations further:
  - Convert creator field into a string
@@ -175,7 +166,6 @@ export async function getFlashcardSet(flashcardId: string, currentUserId: User["
   const numOfLikes = await getNumberOfLikes(flashcardDocument);
   const userHasFavorited = await getHasFavoritedFlashcard(flashcardDocument, currentUserId);
   const comments = await getComments(flashcardDocument);
-  const flagged = await getFlaggedCards(flashcardDocument, currentUserId);
   const visibility = flashcardData.isPublic ? Visibility.Public : Visibility.Private;
 
   try {
@@ -188,7 +178,6 @@ export async function getFlashcardSet(flashcardId: string, currentUserId: User["
       userHasLiked: userHasLiked,
       userHasFavorited: userHasFavorited,
       comments: comments,
-      flagged: flagged,
       views: views,
       visibility: visibility,
       createdAt: flashcardData.createdAt.toDate(),
@@ -221,21 +210,22 @@ export const deleteUser = async (actionUser: User | Session["user"], deleteUserE
 
 export const setUpdateUserRoles = async (
   actionUser: User | undefined,
-  updateEmail: string,
+  updateId: string,
   newRole: ComboboxItem | null
 ) => {
-  const userCollection = collection(firestore, "users");
-  const docs = getDocs(userCollection);
-  if (actionUser && actionUser.role === "admin") {
-    (await docs).forEach((doc) => {
-      const docData = doc.data();
-      if (docData.email == updateEmail) {
-        updateDoc(doc.ref, {
-          role: newRole?.value,
-        });
-      }
-    });
+  const userDoc = doc(firestore, "users", updateId);
+
+  if (actionUser?.role !== "admin") {
+    throw new Error("Du har ikke tilgang til å endre roller");
   }
+
+  if (newRole == null) {
+    throw new Error("Ugyldig rolle");
+  }
+
+  updateDoc(userDoc, {
+    role: newRole.value,
+  });
 };
 
 
@@ -244,7 +234,7 @@ export const setUpdateFlashySetVisibility = async (
   flashy: FlashcardSet,
   newVisibility: Visibility
 ) => {
-  if (flashy.creator?.email == actionUser.email) { // TODO improve comparison.
+  if (flashy.creator?.id == actionUser.id) {
     const flashyDoc = doc(firestore, "flashies", flashy.id)
     updateDoc(flashyDoc, {
       isPublic: newVisibility === Visibility.Public,
