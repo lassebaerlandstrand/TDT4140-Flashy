@@ -212,21 +212,22 @@ export const deleteUser = async (actionUser: User | Session["user"], deleteUserE
 
 export const setUpdateUserRoles = async (
   actionUser: User | undefined,
-  updateEmail: string,
+  updateId: string,
   newRole: ComboboxItem | null
 ) => {
-  const userCollection = collection(firestore, "users");
-  const docs = getDocs(userCollection);
-  if (actionUser && actionUser.role === "admin") {
-    (await docs).forEach((doc) => {
-      const docData = doc.data();
-      if (docData.email == updateEmail) {
-        updateDoc(doc.ref, {
-          role: newRole?.value,
-        });
-      }
-    });
+  const userDoc = doc(firestore, "users", updateId);
+
+  if (actionUser?.role !== "admin") {
+    throw new Error("Du har ikke tilgang til å endre roller");
   }
+
+  if (newRole == null) {
+    throw new Error("Ugyldig rolle");
+  }
+
+  updateDoc(userDoc, {
+    role: newRole.value,
+  });
 };
 
 
@@ -235,7 +236,7 @@ export const setUpdateFlashySetVisibility = async (
   flashy: FlashcardSet,
   newVisibility: Visibility
 ) => {
-  if (flashy.creator?.email == actionUser.email) { // TODO improve comparison.
+  if (flashy.creator?.id == actionUser.id) {
     const flashyDoc = doc(firestore, "flashies", flashy.id)
     updateDoc(flashyDoc, {
       isPublic: newVisibility === Visibility.Public,

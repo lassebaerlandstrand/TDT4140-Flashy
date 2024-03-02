@@ -12,20 +12,13 @@ export default function Home() {
   const [users, setUsers] = useState<User[]>([]);
 
   useEffect(() => {
-    if (!session) return;
-
+    if (!session || session.user.role !== "admin") return;
     async function getUserTable() {
       const users = await getAllUsers(session?.user);
       return setUsers(users);
     }
-
     getUserTable();
   }, []);
-
-  const getCurrentActionUser = (actionUserEmail: string | undefined) => {
-    if (!actionUserEmail) return;
-    return users.find((user) => user.email === actionUserEmail);
-  };
 
   return (
     <Stack align="center">
@@ -33,7 +26,7 @@ export default function Home() {
         <Stack>
           <Title>Velkommen, {session.user?.name}</Title>
           {users.length > 0 ? (
-            <UsersTable actionUser={getCurrentActionUser(session.user?.email ?? "")} users={users} />
+            <UsersTable users={users} />
           ) : (
             <Stack>
               <LoadingOverlay visible />
