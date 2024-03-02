@@ -12,10 +12,13 @@ export default function Home() {
   const [users, setUsers] = useState<User[]>([]);
 
   useEffect(() => {
+    if (!session) return;
+
     async function getUserTable() {
-      const users = await getAllUsers();
+      const users = await getAllUsers(session?.user);
       return setUsers(users);
     }
+
     getUserTable();
   }, []);
 

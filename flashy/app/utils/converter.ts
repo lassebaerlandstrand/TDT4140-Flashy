@@ -6,23 +6,23 @@ import {
   WithFieldValue,
   getDoc
 } from "@firebase/firestore";
-export const converter = <T extends { [x: string]: any }>(): FirestoreDataConverter<T> => ({
+export const converter = <T extends { id: string;[x: string]: any }>(): FirestoreDataConverter<T> => ({
   toFirestore: (data: WithFieldValue<T>): DocumentData => {
     return data;
   },
   fromFirestore: (snap: QueryDocumentSnapshot): T => {
-    return snap.data() as T;
+    const id = snap.id;
+    return { id, ...snap.data() } as T;
   },
 });
 
 
-export const convertDocumentRefToType = async <T extends { [x: string]: any }>(
+export const convertDocumentRefToType = async <T extends { id: string;[x: string]: any }>(
   ref: DocumentReference
 ): Promise<T | undefined> => {
   const docSnap = await getDoc(ref.withConverter(converter<T>()));
   if (docSnap.exists()) {
-    const id = docSnap.id;
-    return { id, ...docSnap.data() } as T;
+    return docSnap.data() as T;
   }
   return undefined;
 };

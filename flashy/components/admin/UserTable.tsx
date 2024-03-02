@@ -45,8 +45,9 @@ export function UsersTable({ actionUser, users }: UserTableProps) {
     setUserRoles((prevRoles) => ({ ...prevRoles, [email]: newRole }));
     setEditingUserId(null);
   };
+
   const rows = users.map((user) => (
-    <Table.Tr key={user.name}>
+    <Table.Tr key={user.id}>
       <Table.Td>
         <Group gap="sm">
           <Avatar size={30} src={user.image} radius={30} />

@@ -15,7 +15,6 @@ export type FlashcardSet = {
     userHasLiked?: boolean;
     userHasFavorited?: boolean;
     comments?: FlashcardComment[];
-    flagged?: FlashcardFlagged;
     views?: FlashcardView[];
     visibility?: Visibility;
     createdAt: Date;
