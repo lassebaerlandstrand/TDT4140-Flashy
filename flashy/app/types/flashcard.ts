@@ -17,6 +17,7 @@ export type FlashcardSet = {
     flagged?: FlashcardFlagged;
     views?: FlashcardView[];
     visibility?: Visibility;
+    createdAt: Date;
 }
 
 // Used to save on read operations
@@ -50,6 +51,7 @@ export type CreateFlashCardType = {
     title: string;
     views: CreateViewType[];
     visibility: Visibility;
+    createdAt: Date;
 }
 
 export type CreateViewType = Pick<FlashcardView, "front" | "back">;

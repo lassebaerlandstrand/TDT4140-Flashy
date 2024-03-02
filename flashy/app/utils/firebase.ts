@@ -25,6 +25,7 @@ export async function getAllUsers(): Promise<User[]> {
   const userDocs = await getDocs(userCollection);
   return userDocs.docs.map((doc) => doc.data());
 }
+
 async function getViews(flashcardDocument: DocumentReference) {
   const viewsCollection = collection(flashcardDocument, "views");
   const viewsDocs = await getDocs(viewsCollection);
@@ -52,6 +53,7 @@ export async function getMyFlashies(user: User): Promise<FlashcardSet[]> {
       numViews: doc.data().numViews,
       numOfLikes: await getNumberOfLikes(doc.ref),
       visibility: doc.data().isPublic ? Visibility.Public : Visibility.Private,
+      createdAt: doc.data().createdAt.toDate(),
     }
   }));
 }
@@ -73,6 +75,7 @@ export async function getAllPublicFlashCardSets(): Promise<FlashcardSet[]> {
         numViews: doc.data().numViews,
         numOfLikes: await getNumberOfLikes(doc.ref),
         visibility: doc.data().isPublic ? Visibility.Public : Visibility.Private,
+        createdAt: doc.data().createdAt.toDate(),
       };
     })
   );
@@ -162,21 +165,30 @@ export async function getFlashcardSet(flashcardId: string, currentUserId: User["
   const flagged = await getFlaggedCards(flashcardDocument, currentUserId);
   const visibility = flashcardData.isPublic ? Visibility.Public : Visibility.Private;
 
-  const flashcard: FlashcardSet = {
-    id: flashcardDoc.id,
-    creator: creator,
-    title: flashcardData.title,
-    numViews: flashcardData.numViews,
-    numOfLikes: numOfLikes,
-    userHasLiked: userHasLiked,
-    userHasFavorited: userHasFavorited,
-    comments: comments,
-    flagged: flagged,
-    views: views,
-    visibility: visibility,
-  };
+  try {
+    const flashcard: FlashcardSet = {
+      id: flashcardDoc.id,
+      creator: creator,
+      title: flashcardData.title,
+      numViews: flashcardData.numViews,
+      numOfLikes: numOfLikes,
+      userHasLiked: userHasLiked,
+      userHasFavorited: userHasFavorited,
+      comments: comments,
+      flagged: flagged,
+      views: views,
+      visibility: visibility,
+      createdAt: flashcardData.createdAt.toDate(),
+    };
 
-  return flashcard;
+    return flashcard;
+
+  } catch (e) {
+    console.log(e);
+  }
+
+  return null;
+
 }
 
 export const deleteUser = async (actionUser: User | Session["user"], deleteUserEmail: string) => {
@@ -241,6 +253,7 @@ export async function createNewFlashcard(flashcard: CreateFlashCardType) {
     title: flashcard.title,
     numViews: 0,
     isPublic: flashcard.visibility === Visibility.Public,
+    createdAt: flashcard.createdAt,
   };
 
   await setDoc(flashcardDoc, docData).catch(() => {

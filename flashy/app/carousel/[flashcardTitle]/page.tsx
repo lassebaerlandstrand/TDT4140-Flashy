@@ -14,7 +14,7 @@ type FlashcardsType = {
 };
 
 export default function Flashcards({ params }: FlashcardsType) {
-  const [flashcardSet, setFlashcardSet] = useState<FlashcardSet>();
+  const [flashcardSet, setFlashcardSet] = useState<FlashcardSet | null>();
   const [failedToFetch, setFailedToFetch] = useState(false);
   const { data: session } = useSession();
 

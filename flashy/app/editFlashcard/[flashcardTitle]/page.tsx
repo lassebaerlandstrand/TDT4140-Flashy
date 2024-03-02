@@ -14,7 +14,7 @@ type FlashcardEditFormType = {
 
 export default function FlashcardEditForm({ params }: FlashcardEditFormType) {
     const { data: session } = useSession();
-    const [flashcardSet, setFlashcardSet] = useState<FlashcardSet>();
+    const [flashcardSet, setFlashcardSet] = useState<FlashcardSet | null>();
     const [failedToFetch, setFailedToFetch] = useState(false);
 
     useEffect(() => {
