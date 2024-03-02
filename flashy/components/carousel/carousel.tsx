@@ -98,7 +98,7 @@ export default function CarouselCard({ views }: CarouselCardProps) {
           height={400}
           slideGap="xl"
           align="start"
-          getEmblaApi={setEmbla} // Set Embla API
+          getEmblaApi={setEmbla}
         >
           {slides}
         </Carousel>
@@ -107,7 +107,7 @@ export default function CarouselCard({ views }: CarouselCardProps) {
           size="sm"
           mt="xl"
           mx="auto"
-          style={{ maxWidth: 320 }} // Ensure the correct styling for the progress bar
+          style={{ maxWidth: 320 }}
         />
       </Container>
     </Stack>
