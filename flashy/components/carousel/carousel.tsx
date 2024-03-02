@@ -45,11 +45,10 @@ export default function CarouselCard({ views }: CarouselCardProps) {
 
   useEffect(() => {
     if (embla) {
-      embla.on('scroll', handleScroll);
+      embla.on("scroll", handleScroll);
       handleScroll();
     }
-  }, [embla]);
-
+  }, [embla, handleScroll]);
 
   // Shuffle function
   const shuffleViews = () => {
@@ -94,21 +93,10 @@ export default function CarouselCard({ views }: CarouselCardProps) {
         </Button>
       </Group>
       <Container style={{ width: "50vw" }}>
-        <Carousel
-          height={400}
-          slideGap="xl"
-          align="start"
-          getEmblaApi={setEmbla}
-        >
+        <Carousel height={400} slideGap="xl" align="start" getEmblaApi={setEmbla}>
           {slides}
         </Carousel>
-        <Progress
-          value={scrollProgress}
-          size="sm"
-          mt="xl"
-          mx="auto"
-          style={{ maxWidth: 320 }}
-        />
+        <Progress value={scrollProgress} size="sm" mt="xl" mx="auto" style={{ maxWidth: 320 }} />
       </Container>
     </Stack>
   );
