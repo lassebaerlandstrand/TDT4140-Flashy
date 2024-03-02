@@ -170,8 +170,6 @@ export async function getFlashcardSet(flashcardId: string, currentUserId: User["
 
   const creator = await convertDocumentRefToType<User>(flashcardData.creator);
 
-  if (creator == null) throw new Error("Creator not found");
-
   const views = await getViews(flashcardDocument);
   const userHasLiked = await userHasLikedFlashcard(flashcardDocument, currentUserId);
   const numOfLikes = await getNumberOfLikes(flashcardDocument);
