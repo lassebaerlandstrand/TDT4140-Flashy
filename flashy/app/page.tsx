@@ -74,8 +74,8 @@ export default function Home() {
         )
       ) : (
         <>
-          <Title>Sign in to continue</Title>
-          <Button onClick={() => signIn()}>Sign in</Button>
+          <Title>Logg inn for å fortsette</Title>
+          <Button onClick={() => signIn()}>Logg inn</Button>
         </>
       )}
     </Stack>
