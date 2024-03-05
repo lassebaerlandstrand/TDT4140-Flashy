@@ -16,7 +16,7 @@ export const Comment = ({ commentedBy, content, createdAt }: FlashcardComment) =
           <Text size="sm">{formatDistance(createdAt, new Date(), { addSuffix: true, locale: nb })}</Text>
         </Group>
         <Divider />
-        <Text size="sm">{content}</Text>
+        <Text size="sm" style={{ wordBreak: "break-word" }}>{content}</Text>
       </Stack>
     </Paper>
   );
