@@ -12,7 +12,7 @@ import {
   query,
   setDoc,
   updateDoc,
-  where,
+  where
 } from "@firebase/firestore";
 import { ComboboxItem } from "@mantine/core";
 import { Session } from "next-auth";
@@ -28,6 +28,10 @@ export async function getAllUsers(actionUser: User): Promise<User[]> {
   const userCollection = collection(firestore, "users").withConverter(converter<User>());
   const userDocs = await getDocs(userCollection);
   return userDocs.docs.map((doc) => doc.data());
+}
+
+function calculatePopularityScore(numOfViews: number, numOfFavorites: number, numOfLikes: number, numOfComments: number) {
+  return numOfViews * 0.2 + numOfLikes * 0.3 + numOfComments * 0.1 + numOfFavorites * 0.4;
 }
 
 async function getViews(flashcardDocument: DocumentReference) {
@@ -51,15 +55,20 @@ export async function getMyFlashies(user: User): Promise<FlashcardSet[]> {
   const flashcardDocs = await getDocs(querySelection);
   const allFlashcardSets = Promise.all(flashcardDocs.docs.map(async (doc) => {
     try {
-      return {
+      const { numOfFavorites, numOfLikes, numOfComments } = await getNumOfFavouritesLikesComments(doc.ref);
+      const flashcardSet: FlashcardSet = {
         id: doc.id,
         creator: await convertDocumentRefToType<User>(doc.data().creator),
         title: doc.data().title,
         numViews: doc.data().numViews,
-        numOfLikes: await getNumberOfLikes(doc.ref),
+        numOfLikes: numOfLikes,
+        numOfComments: numOfComments,
+        numOfFavorites: numOfFavorites,
         visibility: doc.data().isPublic ? Visibility.Public : Visibility.Private,
         createdAt: doc.data().createdAt.toDate(),
+        popularityScore: calculatePopularityScore(doc.data().numViews, numOfFavorites, numOfLikes, numOfComments),
       }
+      return flashcardSet;
     } catch (e) {
       console.log(`[DocId: ${doc.id}]`, e);
     }
@@ -93,6 +102,7 @@ export async function getAllPublicFlashCardSets(currentUser: Session["user"]): P
           visibility: doc.data().isPublic ? Visibility.Public : Visibility.Private,
           createdAt: doc.data().createdAt.toDate(),
           coverImage: doc.data().image,
+          popularityScore: calculatePopularityScore(doc.data().numViews, numOfFavorites, numOfLikes, numOfComments),
         };
         return flashcardSet;
       } catch (e) {
@@ -240,6 +250,7 @@ export async function getFlashcardSet(flashcardId: string, currentUserId: User["
   const userHasFavorited = await getHasFavoritedFlashcard(flashcardDocument, currentUserId);
   const comments = await getComments(flashcardDocument);
   const visibility = flashcardData.isPublic ? Visibility.Public : Visibility.Private;
+  const popularityScore = calculatePopularityScore(flashcardData.numViews, numOfFavorites, numOfLikes, numOfComments);
 
   try {
     const flashcard: FlashcardSet = {
@@ -256,6 +267,7 @@ export async function getFlashcardSet(flashcardId: string, currentUserId: User["
       views: views,
       visibility: visibility,
       createdAt: flashcardData.createdAt.toDate(),
+      popularityScore: popularityScore,
     };
 
     return flashcard;

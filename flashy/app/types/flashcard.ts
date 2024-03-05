@@ -20,6 +20,7 @@ export type FlashcardSet = {
     views?: FlashcardView[];
     visibility?: Visibility;
     createdAt: Date;
+    popularityScore: number;
 }
 
 // Used to save on read operations
