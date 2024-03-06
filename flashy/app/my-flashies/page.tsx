@@ -3,7 +3,6 @@
 import { FlashcardSet } from "@/app/types/flashcard";
 import { getAllPublicFlashCardSets, getMyFlashies } from "@/app/utils/firebase";
 import { ArticleCardsGrid } from "@/components/articleView/ArticleCardsGrid";
-import { UserFlashiesTable } from "@/components/tables/UserFlashiesTable";
 import { ActionIcon, Button, Group, Loader, Stack, Text, TextInput, Title, rem, useMantineTheme } from "@mantine/core";
 import { IconArrowRight, IconSearch } from "@tabler/icons-react";
 import levenshtein from "fast-levenshtein";
@@ -28,9 +27,7 @@ export default function Home() {
       const flashcardSet = await getMyFlashies(session.user);
       setFlashcardSets(flashcardSet);
 
-      const favoriteCards = (await getAllPublicFlashCardSets(session.user)).filter(
-        (flashcardSet) => flashcardSet.userHasFavorited
-      );
+      const favoriteCards = (await getAllPublicFlashCardSets(session.user)).filter((flashcardSet) => flashcardSet.userHasFavorited);
       setFavoriteFlashcards(favoriteCards);
     }
     fetchData();
@@ -76,15 +73,11 @@ export default function Home() {
                 Lag nytt sett
               </Button>
             </Group>
-            {<UserFlashiesTable user={session.user} flashies={filteredFlashcardSets} />}
+            {<ArticleCardsGrid user={session.user} flashcards={filteredFlashcardSets} />}
             {favoriteFlashcards && (
               <Stack align="center">
                 <Title>Mine favoritter</Title>
-                {favoriteFlashcards.length === 0 ? (
-                  <Text>Du har ingen favoritter enda... 🙊</Text>
-                ) : (
-                  <ArticleCardsGrid user={session.user} flashcards={favoriteFlashcards ?? []} />
-                )}
+                {favoriteFlashcards.length === 0 ? <Text>Du har ingen favoritter enda... 🙊</Text> : <ArticleCardsGrid user={session.user} flashcards={favoriteFlashcards ?? []} />}
               </Stack>
             )}
           </>
