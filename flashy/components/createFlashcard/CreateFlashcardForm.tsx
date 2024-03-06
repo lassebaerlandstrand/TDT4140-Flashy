@@ -4,7 +4,7 @@ import { CreateFlashCardType, Visibility } from "@/app/types/flashcard";
 import { createNewFlashcard } from "@/app/utils/firebase";
 import { ActionIcon, Button, Divider, FileButton, Flex, Grid, Group, Select, Stack, Text, TextInput, Textarea } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { modals } from '@mantine/modals';
+import { modals } from "@mantine/modals";
 import { notifications } from "@mantine/notifications";
 import { IconX } from "@tabler/icons-react";
 import { useSession } from "next-auth/react";
@@ -41,7 +41,7 @@ export const CreateFlashCardForm = () => {
     }
     setLoading(true);
 
-    const emptyInputs = values.views.some(view => view.front.trim() === '' || view.back.trim() === '');
+    const emptyInputs = values.views.some((view) => view.front.trim() === "" || view.back.trim() === "");
 
     if (emptyInputs) {
       notifications.show({
@@ -85,22 +85,19 @@ export const CreateFlashCardForm = () => {
         });
         form.reset();
       })
-    }).finally(() => { setLoading(false); });
-  }
+      .finally(() => {
+        setLoading(false);
+      });
+  };
   const openDeleteModal = () =>
     modals.openConfirmModal({
-      title: 'Slett settet',
+      title: "Slett settet",
       centered: true,
-      children: (
-        <Text size="sm">
-          Sikker på at du vil slette settet?
-          Alle kortene på dette settet vil da forsvinne for godt.
-        </Text>
-      ),
-      labels: { confirm: 'Slett settet', cancel: "Ikke slett" },
-      confirmProps: { color: 'red' },
-      onCancel: () => console.log('Cancel'),
-      onConfirm: () =>form.reset()
+      children: <Text size="sm">Sikker på at du vil slette settet? Alle kortene på dette settet vil da forsvinne for godt.</Text>,
+      labels: { confirm: "Slett settet", cancel: "Ikke slett" },
+      confirmProps: { color: "red" },
+      onCancel: () => console.log("Cancel"),
+      onConfirm: () => form.reset(),
     });
   return (
     <form onSubmit={form.onSubmit((values) => onSubmit(values))}>
@@ -172,8 +169,12 @@ export const CreateFlashCardForm = () => {
           <Button onClick={() => form.setFieldValue("views", [...form.values.views, { front: "", back: "" }])}>Legg til nytt kort</Button>
         </Group>
         <Group justify="space-between">
-          <Button type="button" onClick={openDeleteModal} disabled={loading} color="red">Slett settet</Button>
-          <Button type="submit" loading={loading}>Lag sett</Button>
+          <Button type="button" onClick={openDeleteModal} disabled={loading} color="red">
+            Slett settet
+          </Button>
+          <Button type="submit" loading={loading}>
+            Lag sett
+          </Button>
         </Group>
       </Stack>
     </form>
