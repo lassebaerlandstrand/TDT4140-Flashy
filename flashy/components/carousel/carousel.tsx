@@ -33,7 +33,11 @@ export default function CarouselCard({ views }: CarouselCardProps) {
       }
     }
     setCombinedViews([...currentViews, ...newDifficultViews]);
-    if (embla) handleScroll();
+    setTimeout(() => {
+      if (embla) {
+        handleScroll();
+      }
+    }, 0);
   };
 
   const handleScroll = useCallback(() => {
