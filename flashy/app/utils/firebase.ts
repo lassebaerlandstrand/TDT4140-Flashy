@@ -31,7 +31,7 @@ export async function getAllUsers(actionUser: User): Promise<User[]> {
 }
 
 function calculatePopularityScore(numOfViews: number, numOfFavorites: number, numOfLikes: number, numOfComments: number) {
-  return numOfViews * 0.2 + numOfLikes * 0.3 + numOfComments * 0.1 + numOfFavorites * 0.4;
+  return numOfViews * 1 + numOfLikes * 3 + numOfComments * 2 + numOfFavorites * 4;
 }
 
 async function getViews(flashcardDocument: DocumentReference) {

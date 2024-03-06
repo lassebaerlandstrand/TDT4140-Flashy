@@ -1,6 +1,7 @@
 "use client";
 
 import { ArticleCardsGrid } from "@/components/articleView/ArticleCardsGrid";
+import { CarouselArticle } from "@/components/articleView/CarouselArticle";
 import { ActionIcon, Button, Group, Loader, Stack, TextInput, Title, rem, useMantineTheme } from "@mantine/core";
 import { IconArrowRight, IconSearch } from "@tabler/icons-react";
 import levenshtein from "fast-levenshtein";
@@ -41,6 +42,14 @@ export default function Home() {
       });
   }, [flashcardSets, searchQuery]);
 
+  const popularFlashcardSets = useMemo(() => {
+    if (!flashcardSets) return [];
+
+    return flashcardSets
+      .sort((a, b) => b.popularityScore - a.popularityScore)
+      .slice(0, 5);
+  }, [flashcardSets]);
+
   return (
     <Stack align="center">
       {session ? (
@@ -69,6 +78,8 @@ export default function Home() {
                 Lag nytt sett
               </Button>
             </Group>
+
+            {<CarouselArticle user={session.user} flashcards={popularFlashcardSets ?? []} />}
             {<ArticleCardsGrid user={session.user} flashcards={filteredFlashcardSets ?? []} />}
           </>
         )
