@@ -16,7 +16,7 @@ export const CarouselArticle = ({ flashcards, user }: CarouselArticleProps) => {
     });
 
     return (
-        <Carousel>
+        <Carousel align="start">
             {cards}
         </Carousel>
     );

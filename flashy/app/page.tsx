@@ -46,7 +46,7 @@ export default function Home() {
     if (!flashcardSets) return [];
 
     return flashcardSets
-      .sort((a, b) => b.popularityScore - a.popularityScore)
+      .sort((a, b) => b.numOfLikes - a.numOfLikes)
       .slice(0, 5);
   }, [flashcardSets]);
 
@@ -57,8 +57,13 @@ export default function Home() {
           <Loader color="blue" size={48} />
         ) : (
           <>
-            <Title>Alle Flashies</Title>
-            <Group justify="space-between">
+            <Group >
+              <Title style={{ marginTop: '30px' }}>Populære flashies</Title>
+            </Group>
+
+            {<CarouselArticle user={session.user} flashcards={popularFlashcardSets ?? []} />}
+            <Title>Alle flashies</Title>
+            <Group>
               <TextInput
                 value={searchQuery}
                 onChange={(event) => setSearchQuery(event.target.value)}
@@ -79,7 +84,6 @@ export default function Home() {
               </Button>
             </Group>
 
-            {<CarouselArticle user={session.user} flashcards={popularFlashcardSets ?? []} />}
             {<ArticleCardsGrid user={session.user} flashcards={filteredFlashcardSets ?? []} />}
           </>
         )
