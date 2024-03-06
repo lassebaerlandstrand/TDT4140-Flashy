@@ -53,7 +53,7 @@ export default function Flashcards({ params }: FlashcardsType) {
   }
 
   return (
-    <Stack align="center" maw={800}>
+    <Stack align="center" w={800}>
       <Group gap="lg">
         <Title>{flashcardSet.title}</Title>
       </Group>
