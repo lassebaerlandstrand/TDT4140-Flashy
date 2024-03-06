@@ -18,7 +18,7 @@ export default function Home() {
       return setUsers(users);
     }
     getUserTable();
-  }, []);
+  }, [session]);
 
   return (
     <Stack align="center">

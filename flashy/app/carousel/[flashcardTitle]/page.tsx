@@ -53,7 +53,7 @@ export default function Flashcards({ params }: FlashcardsType) {
   }
 
   return (
-    <Stack align="center">
+    <Stack align="center" w={800}>
       <Group gap="lg">
         <Title>{flashcardSet.title}</Title>
       </Group>
@@ -72,7 +72,10 @@ export default function Flashcards({ params }: FlashcardsType) {
         </Group>
       ) : null}
 
-      {flashcardSet.comments && <CommentSection flashcard={flashcardSet} comments={flashcardSet.comments} actionUser={session.user} />}
+
+      {flashcardSet.comments &&
+        <CommentSection flashcard={flashcardSet} comments={flashcardSet.comments} actionUser={session.user} />
+      }
     </Stack>
   );
 }

@@ -21,8 +21,8 @@ export function ArticleCard({ flashcard }: ArticleCardProps) {
   };
 
   return (
-    <Card key={flashcard.title} p="md" shadow="sm" radius="md" component="a" className={classes.card}>
-      <UnstyledButton onClick={() => handleClickCarousel()}>
+    <Card key={flashcard.title} p="0" shadow="sm" radius="md" component="a" className={classes.card}>
+      <UnstyledButton p="md" onClick={() => handleClickCarousel()}>
         <AspectRatio ratio={1920 / 1080}>
           <Image
             style={{ borderRadius: 5 }}
@@ -33,38 +33,38 @@ export function ArticleCard({ flashcard }: ArticleCardProps) {
             priority={true}
           />
         </AspectRatio>
-      </UnstyledButton>
-      <Space h={10} />
-      <Stack align="left" w={"100%"}>
-        <Text c="dimmed" size="xs" tt="uppercase" fw={700}>
-          👨‍🎨 {flashcard.creator?.name ?? "slettet bruker"}
-          <Text tt="capitalize" fw={600} size="xl">
-            {flashcard.title}
+        <Space h={10} />
+        <Stack align="left" w={"100%"}>
+          <Text c="dimmed" size="xs" tt="uppercase" fw={700}>
+            👨‍🎨 {flashcard.creator?.name ?? "slettet bruker"}
+            <Text tt="capitalize" fw={600} size="xl">
+              {flashcard.title}
+            </Text>
           </Text>
-        </Text>
-        <Group justify="space-between" w={"100%"}>
-          <Container style={{ display: "flex", alignItems: "center" }}>
-            <Text size="xl" fw={700} style={{ paddingRight: 2 }}>
-              {flashcard.numOfLikes ?? 0}
-            </Text>
-            <IconThumbUp />
-          </Container>
-          <Divider orientation="vertical" />
-          <Container style={{ display: "flex", alignItems: "center" }}>
-            <Text size="xl" fw={700} style={{ paddingRight: 2 }}>
-              {flashcard.numViews ?? 0}
-            </Text>
-            <IconEyeUp />
-          </Container>
-          <Divider orientation="vertical" />
-          <Container style={{ display: "flex", alignItems: "center" }}>
-            <Text size="xl" fw={700} style={{ paddingRight: 2 }}>
-              {flashcard.numOfComments ?? 0}
-            </Text>
-            <IconBrandHipchat />
-          </Container>
-        </Group>
-      </Stack>
+          <Group justify="space-between" w={"100%"}>
+            <Container style={{ display: "flex", alignItems: "center" }}>
+              <Text size="xl" fw={700} style={{ paddingRight: 2 }}>
+                {flashcard.numOfLikes ?? 0}
+              </Text>
+              <IconThumbUp />
+            </Container>
+            <Divider orientation="vertical" />
+            <Container style={{ display: "flex", alignItems: "center" }}>
+              <Text size="xl" fw={700} style={{ paddingRight: 2 }}>
+                {flashcard.numViews ?? 0}
+              </Text>
+              <IconEyeUp />
+            </Container>
+            <Divider orientation="vertical" />
+            <Container style={{ display: "flex", alignItems: "center" }}>
+              <Text size="xl" fw={700} style={{ paddingRight: 2 }}>
+                {flashcard.numOfComments ?? 0}
+              </Text>
+              <IconBrandHipchat />
+            </Container>
+          </Group>
+        </Stack>
+      </UnstyledButton>
     </Card>
   );
 }
