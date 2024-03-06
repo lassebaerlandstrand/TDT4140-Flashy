@@ -7,11 +7,13 @@ import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import { IconX } from "@tabler/icons-react";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 const regexLettersAndNumbers = new RegExp("^[a-zA-Z0-9æøåÆØÅ\\s]+$");
 
 export const CreateFlashCardForm = () => {
+  const router = useRouter();
   const { data: session } = useSession();
   const [loading, setLoading] = useState(false);
 
@@ -21,7 +23,7 @@ export const CreateFlashCardForm = () => {
       views: [],
       visibility: Visibility.Public,
       createdAt: new Date(),
-      image: undefined
+      image: undefined,
     },
 
     validate: {
@@ -33,7 +35,9 @@ export const CreateFlashCardForm = () => {
   });
 
   const onSubmit = (values: typeof form.values) => {
-    if (!session) { return; }
+    if (!session) {
+      return;
+    }
     setLoading(true);
 
     const flashcardSet: CreateFlashCardType = {
@@ -42,45 +46,42 @@ export const CreateFlashCardForm = () => {
       views: values.views,
       visibility: values.visibility,
       createdAt: new Date(),
-      image: values.image
+      image: values.image,
     };
 
-    createNewFlashcard(flashcardSet).then(() => {
-      notifications.show({
-        title: "Settet er laget",
-        message: "Synligheten på settet er " + values.visibility + " og det er lagt til i din profil",
-        color: "green",
-      });
-      form.reset();
-    }).catch((error) => {
-      notifications.show({
-        title: "Noe gikk galt",
-        message: error.message,
-        color: "red",
+    createNewFlashcard(flashcardSet)
+      .then(() => {
+        notifications.show({
+          title: "Settet er laget",
+          message: "Synligheten på settet er " + values.visibility.toLowerCase + " og det er lagt til i din profil",
+          color: "green",
+          onClick: () => {
+            router.push("/carousel/" + flashcardSet.title);
+            notifications.clean();
+          },
+          style: { cursor: "pointer" },
+        });
+        form.reset();
       })
-    }).finally(() => { setLoading(false); });
-  }
+      .catch((error) => {
+        notifications.show({
+          title: "Noe gikk galt",
+          message: error.message,
+          color: "red",
+        });
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
 
   return (
     <form onSubmit={form.onSubmit((values) => onSubmit(values))}>
       <Stack>
-
         <Group justify="space-between">
-          <TextInput
-            withAsterisk
-            label="Navn på sett"
-            placeholder="Skriv inn navn på settet"
-            {...form.getInputProps("title")}
-            w={250}
-          />
+          <TextInput withAsterisk label="Navn på sett" placeholder="Skriv inn navn på settet" {...form.getInputProps("title")} w={250} />
 
-          <Select
-            label="Sett synlighet"
-            placeholder="Rediger synlighet"
-            data={Object.values(Visibility)}
-            {...form.getInputProps("visibility")}
-            maw={150}
-          />
+          <Select label="Sett synlighet" placeholder="Rediger synlighet" data={Object.values(Visibility)} {...form.getInputProps("visibility")} maw={150} />
         </Group>
         <Group justify="center">
           <FileButton onChange={(file) => form.setFieldValue("image", file || undefined)} accept="image/png, image/jpeg">
@@ -124,7 +125,15 @@ export const CreateFlashCardForm = () => {
               </Grid.Col>
               <Grid.Col span={1}>
                 <Flex justify="center" align="center" style={{ height: "100%" }}>
-                  <ActionIcon onClick={() => form.setFieldValue("views", form.values.views.filter((_, i) => i !== index))} color="red" >
+                  <ActionIcon
+                    onClick={() =>
+                      form.setFieldValue(
+                        "views",
+                        form.values.views.filter((_, i) => i !== index)
+                      )
+                    }
+                    color="red"
+                  >
                     <IconX stroke={1.5} />
                   </ActionIcon>
                 </Flex>
@@ -137,10 +146,11 @@ export const CreateFlashCardForm = () => {
         </Group>
 
         <Group justify="flex-end" mt="md">
-          <Button type="submit" loading={loading}>Lag sett</Button>
+          <Button type="submit" loading={loading}>
+            Lag sett
+          </Button>
         </Group>
       </Stack>
     </form>
   );
 };
-
