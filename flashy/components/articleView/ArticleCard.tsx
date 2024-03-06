@@ -36,12 +36,12 @@ export function ArticleCard({ flashcard }: ArticleCardProps) {
       </UnstyledButton>
       <Space h={10} />
       <Stack align="left" w={"100%"}>
-        <Text c="dimmed" size="xs" tt="uppercase" fw={700}>
-          👨‍🎨 {flashcard.creator?.name ?? "slettet bruker"}
-          <Text tt="capitalize" fw={600} size="xl">
+        <Stack gap={0}>
+          <Text c="dimmed" size="xs" tt="uppercase" fw={700}>👨‍🎨 {flashcard.creator?.name ?? "slettet bruker"}</Text>
+          <Text c="dimmed" tt="capitalize" fw={600} size="xl">
             {flashcard.title}
           </Text>
-        </Text>
+        </Stack>
         <Group justify="space-between" w={"100%"}>
           <Container style={{ display: "flex", alignItems: "center" }}>
             <Text size="xl" fw={700} style={{ paddingRight: 2 }}>
