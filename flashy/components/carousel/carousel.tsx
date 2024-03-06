@@ -44,7 +44,6 @@ export default function CarouselCard({ views }: CarouselCardProps) {
     if (!embla) return;
     const progress = Math.max(0, Math.min(1, embla.scrollProgress()));
     setScrollProgress(progress * 100);
-    console.log("hei");
   }, [embla, setScrollProgress]);
 
   useEffect(() => {
