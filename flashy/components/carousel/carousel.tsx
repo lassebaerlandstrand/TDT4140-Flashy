@@ -23,7 +23,6 @@ export default function CarouselCard({ views }: CarouselCardProps) {
   const toggleDifficult = (markedView: FlashcardView) => {
     const markedViewCopy: FlashcardView = { ...markedView, id: markedView.id + "copy", isCopy: true };
     let newDifficultViews = [...difficultViews];
-
     if (markedViewCopy) {
       if (newDifficultViews.some((card) => card.id === markedView.id + "copy")) {
         newDifficultViews = newDifficultViews.filter((view) => view.id !== markedViewCopy.id);
@@ -33,14 +32,15 @@ export default function CarouselCard({ views }: CarouselCardProps) {
         setDifficultViews(newDifficultViews);
       }
     }
-
     setCombinedViews([...currentViews, ...newDifficultViews]);
+    if (embla) handleScroll();
   };
 
   const handleScroll = useCallback(() => {
     if (!embla) return;
     const progress = Math.max(0, Math.min(1, embla.scrollProgress()));
     setScrollProgress(progress * 100);
+    console.log("hei");
   }, [embla, setScrollProgress]);
 
   useEffect(() => {
