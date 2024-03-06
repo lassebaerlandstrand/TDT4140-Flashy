@@ -46,7 +46,6 @@ export default function FavoriteButton({ user, flashcard }: FavoriteButtonParams
       }
     } else {
       try {
-        console.log("flashcard", flashcard, "user", user);
         await setFavoriteFlashcard(flashcard.id, user.id);
         setColor(favoriteColor);
         notifications.show({
@@ -65,12 +64,7 @@ export default function FavoriteButton({ user, flashcard }: FavoriteButtonParams
   };
 
   return (
-    <ActionIcon
-      variant="filled"
-      color={color}
-      onClick={handleToggleSetFavourite}
-      disabled={user.id === flashcard.creator?.id}
-    >
+    <ActionIcon variant="filled" color={color} onClick={handleToggleSetFavourite} disabled={user.id === flashcard.creator?.id}>
       <IconStar size={20} />
     </ActionIcon>
   );

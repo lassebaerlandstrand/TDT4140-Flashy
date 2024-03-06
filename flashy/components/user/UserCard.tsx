@@ -1,7 +1,8 @@
 import { Avatar, Badge, Button, Card, Group, Stack, Text, useMantineTheme } from "@mantine/core";
 import { Session } from "next-auth";
 import { signOut } from "next-auth/react";
-import { confirmationModal } from "./ConfirmationModal";
+import { useRouter } from "next/navigation";
+import { ConfirmDeleteUser } from "./ConfirmationModal";
 import classes from "./UserCard.module.css";
 
 const stats = [
@@ -11,10 +12,11 @@ const stats = [
 ];
 
 export const DangerZone = ({ user }: Session) => {
+  const router = useRouter();
   const theme = useMantineTheme();
   const { colors, spacing } = theme;
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    confirmationModal({ user, expires: null }, true);
+    ConfirmDeleteUser({ user, expires: null }, true, router);
   };
   return (
     <div className={classes.dangerZone}>
