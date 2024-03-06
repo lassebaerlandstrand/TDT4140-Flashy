@@ -75,7 +75,7 @@ export const CreateFlashCardForm = () => {
       .then(() => {
         notifications.show({
           title: "Settet er laget",
-          message: "Synligheten på settet er " + values.visibility.toLowerCase + " og det er lagt til i din profil",
+          message: "Synligheten på settet er " + values.visibility.toLowerCase() + " og det er lagt til i din profil",
           color: "green",
           onClick: () => {
             router.push("/carousel/" + flashcardSet.title);
