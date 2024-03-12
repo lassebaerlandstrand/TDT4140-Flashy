@@ -8,11 +8,12 @@ import {
   getCountFromServer,
   getDoc,
   getDocs,
+  increment,
   limit,
   query,
   setDoc,
   updateDoc,
-  where,
+  where
 } from "@firebase/firestore";
 import { ComboboxItem } from "@mantine/core";
 import { Session } from "next-auth";
@@ -109,7 +110,7 @@ export function setIncrementFlashcardViews(flashcard: FlashcardSet) {
   const flashcardCollection = collection(firestore, "flashies");
   const flashcardDocument = doc(flashcardCollection, flashcard.id);
   updateDoc(flashcardDocument, {
-    numViews: flashcard.numViews + 1,
+    numViews: increment(1),
   });
 }
 
