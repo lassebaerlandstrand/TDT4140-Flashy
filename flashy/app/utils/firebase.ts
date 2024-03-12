@@ -10,6 +10,7 @@ import {
   getDocs,
   increment,
   limit,
+  orderBy,
   query,
   setDoc,
   updateDoc,
@@ -185,7 +186,8 @@ async function getHasFavoritedFlashcard(flashcardDocument: DocumentReference, cu
 
 async function getComments(flashcardDocument: DocumentReference): Promise<FlashcardComment[]> {
   const commentsCollection = collection(flashcardDocument, "comments");
-  const commentsDocs = await getDocs(commentsCollection);
+  const sortedComments = query(commentsCollection, orderBy("createdAt", "desc"));
+  const commentsDocs = await getDocs(sortedComments);
 
   const comments = await Promise.all(
     commentsDocs.docs.map(async (doc) => {
