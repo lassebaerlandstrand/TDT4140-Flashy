@@ -1,5 +1,21 @@
 import { firestore } from "@/lib/firestore";
-import { DocumentReference, addDoc, collection, deleteDoc, doc, getCountFromServer, getDoc, getDocs, limit, query, setDoc, updateDoc, where } from "@firebase/firestore";
+import {
+  DocumentReference,
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  getCountFromServer,
+  getDoc,
+  getDocs,
+  increment,
+  limit,
+  orderBy,
+  query,
+  setDoc,
+  updateDoc,
+  where
+} from "@firebase/firestore";
 import { ComboboxItem } from "@mantine/core";
 import { Session } from "next-auth";
 import { CreateFlashCardType, CreateNewCommentType, EditFlashCardType, FlashcardComment, FlashcardSet, FlashcardView, Visibility } from "../types/flashcard";
@@ -94,7 +110,7 @@ export function setIncrementFlashcardViews(flashcard: FlashcardSet) {
   const flashcardCollection = collection(firestore, "flashies");
   const flashcardDocument = doc(flashcardCollection, flashcard.id);
   updateDoc(flashcardDocument, {
-    numViews: flashcard.numViews + 1,
+    numViews: increment(1),
   });
 }
 
@@ -170,7 +186,8 @@ async function getHasFavoritedFlashcard(flashcardDocument: DocumentReference, cu
 
 async function getComments(flashcardDocument: DocumentReference): Promise<FlashcardComment[]> {
   const commentsCollection = collection(flashcardDocument, "comments");
-  const commentsDocs = await getDocs(commentsCollection);
+  const sortedComments = query(commentsCollection, orderBy("createdAt", "desc"));
+  const commentsDocs = await getDocs(sortedComments);
 
   const comments = await Promise.all(
     commentsDocs.docs.map(async (doc) => {

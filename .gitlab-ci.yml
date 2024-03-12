@@ -10,46 +10,20 @@ workflow:
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
 
-# List of stages for jobs, and their execution order
 stages:
-    - install
-    - lint
+    - lintAndTest
 
-install:
-  stage: install
+lintAndTest:
+  stage: lintAndTest
   allow_failure: false
   tags:
     - docker
 
   script: 
+    - "cd flashy" 
     - echo "Running installing stage"
-    - "cd flashy"
     - "npm install"
-
-lint:
-  stage: lint
-  allow_failure: false
-  tags:
-    - docker
-
-  script: 
-    - echo "Running lint stage"
-    - "cd flashy"
-    - "npm install" # There are some cases where install is not run...
+    - echo "Running linting stage"
     - "npm run lint"
-
-
-# Cannot run build without environment variables.
-# Since we do not have maintainer roles, we cannot protect environment variables, so they would not be secret
-# Therefore this section has been commented out
-#build:
-#  stage: build
-#  allow_failure: false
-#  needs: ["install"]
-#  tags:
-#    - docker
-#
-#  script: 
-#    - echo "Running build stage"
-#    - "cd flashy"
-#    - "npm run build"
+    - echo "Running testing stage"
+    - "npm run test"
