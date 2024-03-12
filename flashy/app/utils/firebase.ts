@@ -47,33 +47,32 @@ async function getViews(flashcardDocument: DocumentReference) {
 
 export async function getMyFlashies(user: User): Promise<FlashcardSet[]> {
   const flashcardCollection = collection(firestore, "flashies");
-  const userDoc = doc(firestore, "users", user.id)
+  const userDoc = doc(firestore, "users", user.id);
   const querySelection = query(flashcardCollection, where("creator", "==", userDoc));
   const flashcardDocs = await getDocs(querySelection);
-  const allFlashcardSets = Promise.all(flashcardDocs.docs.map(async (doc) => {
-    try {
-      return {
-        id: doc.id,
-        creator: await convertDocumentRefToType<User>(doc.data().creator),
-        title: doc.data().title,
-        numViews: doc.data().numViews,
-        numOfLikes: await getNumberOfLikes(doc.ref),
-        visibility: doc.data().isPublic ? Visibility.Public : Visibility.Private,
-        createdAt: doc.data().createdAt.toDate(),
+  const allFlashcardSets = Promise.all(
+    flashcardDocs.docs.map(async (doc) => {
+      try {
+        return {
+          id: doc.id,
+          creator: await convertDocumentRefToType<User>(doc.data().creator),
+          title: doc.data().title,
+          numViews: doc.data().numViews,
+          numOfLikes: await getNumberOfLikes(doc.ref),
+          visibility: doc.data().isPublic ? Visibility.Public : Visibility.Private,
+          createdAt: doc.data().createdAt.toDate(),
+        };
+      } catch (e) {
+        console.log(`[DocId: ${doc.id}]`, e);
       }
-    } catch (e) {
-      console.log(`[DocId: ${doc.id}]`, e);
-    }
-    return null;
-  }));
+      return null;
+    })
+  );
 
   return (await allFlashcardSets).filter((flashcard) => flashcard != null) as FlashcardSet[];
 }
 
-
-
-
-export async function getAllPublicFlashCardSets(currentUser: Session["user"]): Promise<(FlashcardSet)[]> {
+export async function getAllPublicFlashCardSets(currentUser: Session["user"]): Promise<FlashcardSet[]> {
   const flashcardCollection = collection(firestore, "flashies");
   const querySelection = query(flashcardCollection, where("isPublic", "==", true));
   const flashcardDocs = await getDocs(querySelection);
@@ -114,10 +113,7 @@ export function setIncrementFlashcardViews(flashcard: FlashcardSet) {
   });
 }
 
-async function userHasLikedFlashcard(
-  flashcardDocument: DocumentReference,
-  currentUserId: User["id"]
-): Promise<boolean> {
+async function userHasLikedFlashcard(flashcardDocument: DocumentReference, currentUserId: User["id"]): Promise<boolean> {
   const currentUserRef = doc(firestore, "users", currentUserId);
   const likesCollection = collection(flashcardDocument, "likes");
   const queryLikes = query(likesCollection, where("likedBy", "==", currentUserRef), limit(1));
@@ -149,8 +145,6 @@ export async function getNumOfFavouritesLikesComments(flashcardDocument: Documen
 }
 
 export async function setFavoriteFlashcard(flashcardId: FlashcardSet["id"], currentUserId: User["id"]) {
-  console.log("Setting favorite");
-
   const flashcardCollection = collection(firestore, "flashies");
   const flashcardDocument = doc(flashcardCollection, flashcardId);
   const currentUserRef = doc(firestore, "users", currentUserId);
@@ -166,9 +160,7 @@ export async function setFavoriteFlashcard(flashcardId: FlashcardSet["id"], curr
   }
 }
 
-
 export async function removeFavoriteFlashcard(flashcardId: FlashcardSet["id"], currentUserId: User["id"]) {
-  console.log("Removing favorite");
   const flashcardCollection = collection(firestore, "flashies");
   const flashcardDocument = doc(flashcardCollection, flashcardId);
   const currentUserRef = doc(firestore, "users", currentUserId);
@@ -183,11 +175,7 @@ export async function removeFavoriteFlashcard(flashcardId: FlashcardSet["id"], c
   }
 }
 
-
-async function getHasFavoritedFlashcard(
-  flashcardDocument: DocumentReference,
-  currentUserId: User["id"]
-): Promise<boolean> {
+async function getHasFavoritedFlashcard(flashcardDocument: DocumentReference, currentUserId: User["id"]): Promise<boolean> {
   const currentUserRef = doc(firestore, "users", currentUserId);
   const favoritesCollection = collection(flashcardDocument, "favorites");
   const queryFavorites = query(favoritesCollection, where("favoritedBy", "==", currentUserRef), limit(1));
@@ -260,7 +248,6 @@ export async function getFlashcardSet(flashcardId: string, currentUserId: User["
     };
 
     return flashcard;
-
   } catch (e) {
     console.log(`[DocId: ${flashcardDoc.id}]`, e);
   }
@@ -285,7 +272,7 @@ export const toggleLike = async (currentUser: User, flashcard: FlashcardSet) => 
     await deleteDoc(queryDocs.docs[0].ref);
     return false;
   }
-}
+};
 
 export const deleteUser = async (actionUser: User | Session["user"], deleteUserEmail: string) => {
   const userCollection = collection(firestore, "users");
@@ -302,11 +289,7 @@ export const deleteUser = async (actionUser: User | Session["user"], deleteUserE
   });
 };
 
-export const setUpdateUserRoles = async (
-  actionUser: User | undefined,
-  updateId: string,
-  newRole: ComboboxItem | null
-) => {
+export const setUpdateUserRoles = async (actionUser: User | undefined, updateId: string, newRole: ComboboxItem | null) => {
   const userDoc = doc(firestore, "users", updateId);
 
   if (actionUser?.role !== "admin") {
@@ -322,19 +305,14 @@ export const setUpdateUserRoles = async (
   });
 };
 
-
-export const setUpdateFlashySetVisibility = async (
-  actionUser: User,
-  flashy: FlashcardSet,
-  newVisibility: Visibility
-) => {
+export const setUpdateFlashySetVisibility = async (actionUser: User, flashy: FlashcardSet, newVisibility: Visibility) => {
   if (flashy.creator?.id == actionUser.id) {
-    const flashyDoc = doc(firestore, "flashies", flashy.id)
+    const flashyDoc = doc(firestore, "flashies", flashy.id);
     updateDoc(flashyDoc, {
       isPublic: newVisibility === Visibility.Public,
-    })
+    });
   }
-}
+};
 
 function ConvertToBase64(image: File) {
   return new Promise((resolve, reject) => {
@@ -342,7 +320,6 @@ function ConvertToBase64(image: File) {
     reader.readAsDataURL(image);
     reader.onload = () => resolve(reader.result);
     reader.onerror = (error) => reject(error);
-    console.log(reader.result);
   });
 }
 
@@ -378,7 +355,6 @@ export async function createNewFlashcard(flashcard: CreateFlashCardType) {
   ).catch(() => {
     throw new Error("Feilet å opprette kortene for settet");
   });
-
 }
 
 export async function editFlashcard(actionUser: User, flashcard: FlashcardSet, updatedFlashcard: EditFlashCardType) {
@@ -413,7 +389,7 @@ export async function editFlashcard(actionUser: User, flashcard: FlashcardSet, u
         await deleteDoc(viewDoc);
       })
     ).catch(() => {
-      throw new Error("Feilet å slette kortene for settet")
+      throw new Error("Feilet å slette kortene for settet");
     });
   }
 
@@ -459,7 +435,7 @@ export async function editFlashcard(actionUser: User, flashcard: FlashcardSet, u
   return resultingViews;
 }
 
-export async function deleteFlashcard(actionUser: User, flashcard: FlashcardSet) {
+export async function deleteFlashcardSet(actionUser: User, flashcard: FlashcardSet) {
   if (actionUser.id !== flashcard.creator?.id && actionUser.role !== "admin") {
     throw new Error("Du har ikke tilgang til å redigere dette settet");
   }
@@ -486,7 +462,6 @@ export async function deleteFlashcard(actionUser: User, flashcard: FlashcardSet)
   await Promise.all(favoritesDocs.docs.map((doc) => deleteDoc(doc.ref)));
 }
 
-
 export const commentOnSet = async (flashcard: FlashcardSet, comment: CreateNewCommentType) => {
   const flashcardDoc = doc(firestore, "flashies", flashcard.id);
   const commentsCollection = collection(flashcardDoc, "comments");
@@ -498,4 +473,4 @@ export const commentOnSet = async (flashcard: FlashcardSet, comment: CreateNewCo
   };
 
   await addDoc(commentsCollection, data);
-}
+};
