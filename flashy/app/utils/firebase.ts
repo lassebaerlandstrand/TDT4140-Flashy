@@ -62,6 +62,7 @@ export async function getMyFlashies(user: User): Promise<FlashcardSet[]> {
           numOfLikes: await getNumberOfLikes(doc.ref),
           visibility: doc.data().isPublic ? Visibility.Public : Visibility.Private,
           createdAt: doc.data().createdAt.toDate(),
+          coverImage: doc.data().image,
         };
       } catch (e) {
         console.log(`[DocId: ${doc.id}]`, e);
@@ -247,6 +248,7 @@ export async function getFlashcardSet(flashcardId: string, currentUserId: User["
       views: views,
       visibility: visibility,
       createdAt: flashcardData.createdAt.toDate(),
+      coverImage: flashcardData.image,
     };
 
     return flashcard;
