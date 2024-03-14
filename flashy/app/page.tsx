@@ -1,22 +1,42 @@
 "use client";
 
 import { ArticleCardsGrid } from "@/components/articleView/ArticleCardsGrid";
-import { CarouselArticle } from "@/components/articleView/CarouselArticle";
-import { ActionIcon, Button, Group, Loader, Stack, TextInput, Title, rem, useMantineTheme } from "@mantine/core";
+import { ActionIcon, Button, Group, Loader, Select, Stack, TextInput, Title, rem, useMantineTheme } from "@mantine/core";
 import { IconArrowRight, IconSearch } from "@tabler/icons-react";
-import levenshtein from "fast-levenshtein";
 import { signIn, useSession } from "next-auth/react";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { FlashcardSet } from "./types/flashcard";
 import { getAllPublicFlashCardSets } from "./utils/firebase";
 
+const sortByLikedSets = (flashcardSets: FlashcardSet[]) => {
+  if (!flashcardSets) return [];
+  return flashcardSets
+    .sort((a, b) => b.numOfLikes - a.numOfLikes)
+};
+const sortByFavoredSets = (flashcardSets: FlashcardSet[]) => {
+  if (!flashcardSets) return [];
+  return flashcardSets
+    .sort((a, b) => b.numOfFavorites - a.numOfFavorites)
+};
+const sortByNewestDateSets = (flashcardSets: FlashcardSet[]) => {
+  if (!flashcardSets) return [];
+  return flashcardSets
+    .sort((a, b) => b.createdAt.valueOf() - a.createdAt.valueOf())
+};
+
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
-
+  const [selectedOption, setSelectedOption] = useState<string | null>("");
   const { data: session } = useSession();
   const [flashcardSets, setFlashcardSets] = useState<FlashcardSet[]>();
   const theme = useMantineTheme();
+
+  const options = [
+    { value: "most-liked", label: "Mest likte" },
+    { value: "most-favored", label: "Mest favoriserte" },
+    { value: "newest", label: "Nyeste" }
+  ]
 
   useEffect(() => {
     if (session == null) return;
@@ -29,26 +49,28 @@ export default function Home() {
     fetchFlashcardSet();
   }, [session]);
 
-  const filteredFlashcardSets = useMemo(() => {
+  const sortedFlashcardSets = useMemo(() => {
     if (!flashcardSets) return [];
 
-    return flashcardSets
-      .filter((flashcardSet) => flashcardSet.title.toLowerCase().includes(searchQuery.toLowerCase()))
-      .sort((a, b) => {
-        // Use Levenshtein distance for sorting
-        const distanceA = levenshtein.get(a.title.toLowerCase(), searchQuery.toLowerCase());
-        const distanceB = levenshtein.get(b.title.toLowerCase(), searchQuery.toLowerCase());
-        return distanceA - distanceB; // Sort in ascending order of distance
-      });
-  }, [flashcardSets, searchQuery]);
+    let result = [...flashcardSets];
 
-  const popularFlashcardSets = useMemo(() => {
-    if (!flashcardSets) return [];
+    if (selectedOption === "most-liked") {
+      return sortByLikedSets(result);
+    } else if (selectedOption === "most-favored") {
+      return sortByFavoredSets(result);
+    } else if (selectedOption === "newest") {
+      return sortByNewestDateSets(result);
+    }
 
-    return flashcardSets
-      .sort((a, b) => b.numOfLikes - a.numOfLikes)
-      .slice(0, 5);
-  }, [flashcardSets]);
+    return result;
+
+  }, [flashcardSets, selectedOption]);
+
+  const searchAndFilterFlashcardSets = useMemo(() => {
+    if (!sortedFlashcardSets) return [];
+    return sortedFlashcardSets.filter((flashcardSets) =>
+      flashcardSets.title.toLowerCase().includes(searchQuery.toLowerCase()));
+  }, [sortedFlashcardSets, searchQuery]);
 
   return (
     <Stack align="center">
@@ -61,7 +83,6 @@ export default function Home() {
               <Title style={{ marginTop: '30px' }}>Populære flashies</Title>
             </Group>
 
-            {<CarouselArticle user={session.user} flashcards={popularFlashcardSets ?? []} />}
             <Title>Alle flashies</Title>
             <Group>
               <TextInput
@@ -82,9 +103,16 @@ export default function Home() {
               <Button component={Link} href="/createFlashcard">
                 Lag nytt sett
               </Button>
+              <Select
+                // label="Sorter"
+                placeholder="Sorter flashies"
+                data={options}
+                value={selectedOption}
+                onChange={(value) => setSelectedOption(value)}
+              />
             </Group>
-
-            {<ArticleCardsGrid user={session.user} flashcards={filteredFlashcardSets ?? []} />}
+            {<ArticleCardsGrid user={session.user} flashcards={searchAndFilterFlashcardSets ?? []} />}
+            {/* {<ArticleCardsGrid user={session.user} flashcards={filteredFlashcardSets ?? []} />} */}
           </>
         )
       ) : (
