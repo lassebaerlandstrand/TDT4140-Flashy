@@ -24,6 +24,16 @@ const sortByNewestDateSets = (flashcardSets: FlashcardSet[]) => {
   return flashcardSets
     .sort((a, b) => b.createdAt.valueOf() - a.createdAt.valueOf())
 };
+const sortByViewedSets = (flashcardSets: FlashcardSet[]) => {
+  if (!flashcardSets) return [];
+  return flashcardSets
+    .sort((a, b) => b.numViews - a.numViews)
+};
+const sortByPopularityValueSets = (flashcardSets: FlashcardSet[]) => {
+  if (!flashcardSets) return [];
+  return flashcardSets
+    .sort((a, b) => b.popularityScore - a.popularityScore)
+};
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -35,7 +45,9 @@ export default function Home() {
   const options = [
     { value: "most-liked", label: "Mest likte" },
     { value: "most-favored", label: "Mest favoriserte" },
-    { value: "newest", label: "Nyeste" }
+    { value: "newest", label: "Nyeste" },
+    { value: "views", label: "Mest sett" },
+    { value: "popularity", label: "Mest populære" }
   ]
 
   useEffect(() => {
@@ -60,6 +72,10 @@ export default function Home() {
       return sortByFavoredSets(result);
     } else if (selectedOption === "newest") {
       return sortByNewestDateSets(result);
+    } else if (selectedOption === "views") {
+      return sortByViewedSets(result);
+    } else if (selectedOption === "popularity") {
+      return sortByPopularityValueSets(result);
     }
 
     return result;
@@ -73,17 +89,16 @@ export default function Home() {
   }, [sortedFlashcardSets, searchQuery]);
 
   return (
-    <Stack align="center">
+    <Stack>
       {session ? (
         !flashcardSets ? (
           <Loader color="blue" size={48} />
         ) : (
           <>
-            <Group >
+            <Group style={{ justifyContent: 'center' }}>
               <Title style={{ marginTop: '30px' }}>Populære flashies</Title>
             </Group>
 
-            <Title>Alle flashies</Title>
             <Group>
               <TextInput
                 value={searchQuery}
@@ -103,6 +118,8 @@ export default function Home() {
               <Button component={Link} href="/createFlashcard">
                 Lag nytt sett
               </Button>
+            </Group >
+            <Group style={{ justifyContent: 'flex-end' }}>
               <Select
                 // label="Sorter"
                 placeholder="Sorter flashies"
@@ -112,7 +129,6 @@ export default function Home() {
               />
             </Group>
             {<ArticleCardsGrid user={session.user} flashcards={searchAndFilterFlashcardSets ?? []} />}
-            {/* {<ArticleCardsGrid user={session.user} flashcards={filteredFlashcardSets ?? []} />} */}
           </>
         )
       ) : (
