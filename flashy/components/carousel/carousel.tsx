@@ -84,7 +84,7 @@ export default function CarouselCard({ views }: CarouselCardProps) {
   ));
 
   return (
-    <Stack align="center" w="100%">
+    <Stack align="center" w="150%">
       <Group>
         <Button
           onClick={shuffleViews}
