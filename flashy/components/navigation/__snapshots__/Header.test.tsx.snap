@@ -1,0 +1,67 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Header Snapshot Test Check if snapshot matches 1`] = `
+<DocumentFragment>
+  <style
+    data-mantine-styles="classes"
+  >
+    @media (max-width: 35.99375em) {.mantine-visible-from-xs {display: none !important;}}@media (min-width: 36em) {.mantine-hidden-from-xs {display: none !important;}}@media (max-width: 47.99375em) {.mantine-visible-from-sm {display: none !important;}}@media (min-width: 48em) {.mantine-hidden-from-sm {display: none !important;}}@media (max-width: 61.99375em) {.mantine-visible-from-md {display: none !important;}}@media (min-width: 62em) {.mantine-hidden-from-md {display: none !important;}}@media (max-width: 74.99375em) {.mantine-visible-from-lg {display: none !important;}}@media (min-width: 75em) {.mantine-hidden-from-lg {display: none !important;}}@media (max-width: 87.99375em) {.mantine-visible-from-xl {display: none !important;}}@media (min-width: 88em) {.mantine-hidden-from-xl {display: none !important;}}
+  </style>
+  <header>
+    <style
+      data-mantine-styles="inline"
+    >
+      .__m__-r0{--sg-spacing-x:var(--mantine-spacing-md);--sg-spacing-y:var(--mantine-spacing-md);--sg-cols:2;}
+    </style>
+    <div
+      class="m-2415a157 mantine-SimpleGrid-root __m__-r0"
+    >
+      <div
+        class="m-7485cace mantine-Container-root"
+      >
+        <h1
+          class="m-8a5d1357 mantine-Title-root"
+          data-order="1"
+          style="--title-fw: var(--mantine-h1-font-weight); --title-lh: var(--mantine-h1-line-height); --title-fz: var(--mantine-h1-font-size);"
+        >
+          Hello
+        </h1>
+      </div>
+      <div
+        class="m-7485cace mantine-Container-root"
+      >
+        <div
+          class="m-6d731127 mantine-Stack-root"
+          style="--stack-gap: var(--mantine-spacing-md); --stack-align: stretch; --stack-justify: flex-start;"
+        >
+          <button
+            class="mantine-focus-auto mantine-active m-77c9d27d mantine-Button-root m-87cf2631 mantine-UnstyledButton-root"
+            data-size="large"
+            style="--button-height: var(--button-height-large); --button-padding-x: var(--button-padding-x-large); --button-fz: var(--mantine-font-size-large); --button-color: var(--mantine-color-white);"
+            type="button"
+          >
+            <span
+              aria-hidden="true"
+              class="m-a25b86ee mantine-Button-loader"
+            >
+              <span
+                class="m-b34414df m-5ae2e3c mantine-Loader-root"
+                style="--loader-size: calc(var(--button-height) / 1.8); --loader-color: var(--button-color);"
+              />
+            </span>
+            <span
+              class="m-80f1301b mantine-Button-inner"
+            >
+              <span
+                class="m-811560b9 mantine-Button-label"
+              >
+                Logg ut
+              </span>
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+</DocumentFragment>
+`;
