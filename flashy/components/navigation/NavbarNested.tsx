@@ -17,7 +17,6 @@ const data = [
 export function NavbarNested() {
   const session = useSession();
   const pathname = usePathname();
-  console.log(pathname);
   const links = data
     .filter((item) => session.data?.user?.role == "admin" || !item.requiresAdmin)
     .map((item) => (

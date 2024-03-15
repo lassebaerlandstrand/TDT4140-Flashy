@@ -1,11 +1,13 @@
-
 // Overrides/Mocks router to prevent errors in tests
 jest.mock("next/navigation", () => ({
-    useRouter() {
-        return {
-            prefetch: () => null
-        };
-    }
+  useRouter() {
+    return {
+      prefetch: () => null,
+    };
+  },
+  usePathname() {
+    return "/";
+  },
 }));
 
 // Mocks useSession hook
@@ -13,5 +15,4 @@ jest.mock("next/navigation", () => ({
 //     useSession: jest.fn(() => ({ data: { user: dummyAdmin } }))
 // }));
 
-export { };
-
+export {};
