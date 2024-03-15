@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Divider, Stack, Title } from "@mantine/core";
+import { Button, Stack, Title } from "@mantine/core";
 import { signIn, useSession } from "next-auth/react";
 // import { getAllFlashcards } from "@/app/utils/firebase";
 import { DangerZone, UserCard } from "@/components/user/UserCard";
@@ -14,13 +14,6 @@ export default function Home() {
         <>
           <Title>Hei {session.user?.name}</Title>
           <UserCard user={session.user} expires={""} />
-          <Divider
-            style={{ paddingTop: 100, paddingBottom: 100 }}
-            my="md"
-            size="xl"
-            label="Danger Zone"
-            labelPosition="center"
-          />
           <DangerZone user={session.user} expires={undefined} />
         </>
       ) : (
