@@ -32,6 +32,10 @@ export async function getAllUsers(actionUser: User): Promise<User[]> {
   return userDocs.docs.map((doc) => doc.data());
 }
 
+function calculatePopularityScore(numOfViews: number, numOfFavorites: number, numOfLikes: number, numOfComments: number) {
+  return numOfViews * 1 + numOfLikes * 3 + numOfComments * 2 + numOfFavorites * 4;
+}
+
 async function getViews(flashcardDocument: DocumentReference) {
   const viewsCollection = collection(flashcardDocument, "views");
   const viewsDocs = await getDocs(viewsCollection);
@@ -51,25 +55,28 @@ export async function getMyFlashies(user: User): Promise<FlashcardSet[]> {
   const userDoc = doc(firestore, "users", user.id);
   const querySelection = query(flashcardCollection, where("creator", "==", userDoc));
   const flashcardDocs = await getDocs(querySelection);
-  const allFlashcardSets = Promise.all(
-    flashcardDocs.docs.map(async (doc) => {
-      try {
-        return {
-          id: doc.id,
-          creator: await convertDocumentRefToType<User>(doc.data().creator),
-          title: doc.data().title,
-          numViews: doc.data().numViews,
-          numOfLikes: await getNumberOfLikes(doc.ref),
-          visibility: doc.data().isPublic ? Visibility.Public : Visibility.Private,
-          createdAt: doc.data().createdAt.toDate(),
-          coverImage: doc.data().image,
-        };
-      } catch (e) {
-        console.log(`[DocId: ${doc.id}]`, e);
+  const allFlashcardSets = Promise.all(flashcardDocs.docs.map(async (doc) => {
+    try {
+      const { numOfFavorites, numOfLikes, numOfComments } = await getNumOfFavouritesLikesComments(doc.ref);
+      const flashcardSet: FlashcardSet = {
+        id: doc.id,
+        creator: await convertDocumentRefToType<User>(doc.data().creator),
+        title: doc.data().title,
+        numViews: doc.data().numViews,
+        numOfLikes: numOfLikes,
+        numOfComments: numOfComments,
+        numOfFavorites: numOfFavorites,
+        visibility: doc.data().isPublic ? Visibility.Public : Visibility.Private,
+        createdAt: doc.data().createdAt.toDate(),
+        popularityScore: calculatePopularityScore(doc.data().numViews, numOfFavorites, numOfLikes, numOfComments),
+        coverImage: doc.data().image,
       }
-      return null;
-    })
-  );
+      return flashcardSet;
+    } catch (e) {
+      console.log(`[DocId: ${doc.id}]`, e);
+    }
+    return null;
+  }));
 
   return (await allFlashcardSets).filter((flashcard) => flashcard != null) as FlashcardSet[];
 }
@@ -95,6 +102,7 @@ export async function getAllPublicFlashCardSets(currentUser: Session["user"]): P
           visibility: doc.data().isPublic ? Visibility.Public : Visibility.Private,
           createdAt: doc.data().createdAt.toDate(),
           coverImage: doc.data().image,
+          popularityScore: calculatePopularityScore(doc.data().numViews, numOfFavorites, numOfLikes, numOfComments),
         };
         return flashcardSet;
       } catch (e) {
@@ -232,6 +240,7 @@ export async function getFlashcardSet(flashcardId: string, currentUserId: User["
   const userHasFavorited = await getHasFavoritedFlashcard(flashcardDocument, currentUserId);
   const comments = await getComments(flashcardDocument);
   const visibility = flashcardData.isPublic ? Visibility.Public : Visibility.Private;
+  const popularityScore = calculatePopularityScore(flashcardData.numViews, numOfFavorites, numOfLikes, numOfComments);
 
   try {
     const flashcard: FlashcardSet = {
@@ -248,6 +257,7 @@ export async function getFlashcardSet(flashcardId: string, currentUserId: User["
       views: views,
       visibility: visibility,
       createdAt: flashcardData.createdAt.toDate(),
+      popularityScore: popularityScore,
       coverImage: flashcardData.image,
     };
 
