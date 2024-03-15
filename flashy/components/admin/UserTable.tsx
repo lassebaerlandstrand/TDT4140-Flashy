@@ -94,7 +94,7 @@ export function UsersTable({ users }: UserTableProps) {
       </Table.Td>
       <Table.Td w={200}>
         {editingUserId === user.email ? (
-          <Select data={roleOptions} value={userRoles[user.id].value} onChange={(value) => handleRoleChange(user, value ? { value, label: value } : null)} />
+          <Select data={roleOptions} value={userRoles[user.id].value} onChange={(value) => handleRoleChange(user, value ? { value, label: norwegianRoleNames[value] } : null)} />
         ) : (
           <Badge color={jobColors[userRoles[user.id]?.value || user.role]} variant="light">
             {userRoles[user.id]?.label || user.role}
@@ -108,11 +108,11 @@ export function UsersTable({ users }: UserTableProps) {
       </Table.Td>
       <Table.Td>
         <Group gap={0} justify="flex-end">
-          <ActionIcon variant="subtle" color="gray">
-            <IconPencil style={{ width: rem(16), height: rem(16) }} stroke={1.5} onClick={() => setEditingUserId(user.email)} />
+          <ActionIcon variant="subtle" color="gray" onClick={() => setEditingUserId(user.email)}>
+            <IconPencil style={{ width: rem(16), height: rem(16) }} stroke={1.5} />
           </ActionIcon>
-          <ActionIcon variant="subtle" color="red">
-            <IconTrash style={{ width: rem(16), height: rem(16) }} stroke={1.5} onClick={() => deleteUserFromCollection(actionUser, user, router)} />
+          <ActionIcon variant="subtle" color="red" onClick={() => deleteUserFromCollection(actionUser, user, router)}>
+            <IconTrash style={{ width: rem(16), height: rem(16) }} stroke={1.5} />
           </ActionIcon>
         </Group>
       </Table.Td>
