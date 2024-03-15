@@ -6,7 +6,7 @@ import { ActionIcon, Button, Divider, FileButton, Flex, Grid, Group, Select, Sta
 import { useForm } from "@mantine/form";
 import { modals } from "@mantine/modals";
 import { notifications } from "@mantine/notifications";
-import { IconX } from "@tabler/icons-react";
+import { IconPhoto, IconX } from "@tabler/icons-react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -136,6 +136,18 @@ export const CreateFlashCardForm = () => {
                   resize="vertical"
                   minRows={4}
                 />
+                <FileButton onChange={(file) => form.setFieldValue(`views.${index}.image`, file || undefined)} accept="image/png, image/jpeg">
+                  
+            {(props) => 
+             <ActionIcon {...props} color="lime.4" variant="filled">
+             <IconPhoto size={20} />
+             {form.getInputProps(`views.${index}.image`) && (
+          <Text size="sm" ta="center" mt="sm">
+            Picked file: {form.getInputProps(`views.${index}.image`).value?.name || "No file picked"}
+          </Text>
+        )}
+           </ActionIcon>}
+          </FileButton>
               </Grid.Col>
               <Grid.Col span={5}>
                 <Textarea

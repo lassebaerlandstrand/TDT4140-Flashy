@@ -364,10 +364,16 @@ export async function createNewFlashcard(flashcard: CreateFlashCardType) {
 
   await Promise.all(
     flashcard.views.map(async (view) => {
-      return await addDoc(viewsCollection, view);
+      //const maybeFormattedView = {image: view.image ? await ConvertToBase64(view.image) : { front: view.front, back: view.back }}
+      const formattedView = {
+        image: view.image ? await ConvertToBase64(view.image) : "",
+        front: view.front,
+        back: view.back,
+      };
+      return await addDoc(viewsCollection, formattedView);
     })
-  ).catch(() => {
-    throw new Error("Feilet å opprette kortene for settet");
+  ).catch((e) => {
+    throw new Error("Feilet å opprette kortene for settet\n"+e);
   });
 }
 

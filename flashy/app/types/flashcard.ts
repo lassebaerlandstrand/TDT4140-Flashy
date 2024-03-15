@@ -49,6 +49,7 @@ export type FlashcardView = {
     isCopy?: boolean;
     front: string;
     back: string;
+    image?: File;
 }
 
 export type CreateFlashCardType = {
@@ -60,7 +61,7 @@ export type CreateFlashCardType = {
     image?: File;
 }
 
-export type CreateViewType = Pick<FlashcardView, "front" | "back">;
+export type CreateViewType = Pick<FlashcardView, "front" | "back" | "image">;
 
 export type EditFlashCardType = {
     views: EditFlashcardView[];
