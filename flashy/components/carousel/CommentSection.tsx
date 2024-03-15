@@ -9,14 +9,15 @@ type CommentSectionType = {
   flashcard: FlashcardSet;
   actionUser: User;
   comments: FlashcardComment[];
+  w: number;
 }
 
 
 
-export const CommentSection = ({ flashcard, actionUser, comments }: CommentSectionType) => {
+export const CommentSection = ({ flashcard, actionUser, comments, w }: CommentSectionType) => {
 
   return (
-    <Stack w={"100%"} px="sm" mt="xl">
+    <Stack w={w} px="sm" mt="xl">
       <Group justify="space-between">
         <Text fw="bold" size="xl">Kommentarer</Text>
       </Group>

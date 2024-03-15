@@ -84,7 +84,7 @@ export default function CarouselCard({ views }: CarouselCardProps) {
   ));
 
   return (
-    <Stack align="center" w="150%">
+    <Stack align="center" w="1200px">
       <Group>
         <Button
           onClick={shuffleViews}
@@ -95,8 +95,8 @@ export default function CarouselCard({ views }: CarouselCardProps) {
           Shuffle{isShuffled ? "d" : ""}
         </Button>
       </Group>
-      <Container w="100%">
-        <Carousel height={400} slideGap="xl" align="start" getEmblaApi={setEmbla}>
+      <Container w="100%" fluid>
+        <Carousel height={400} slideGap="xl" align="start" getEmblaApi={setEmbla} controlsOffset={120} controlSize={42}>
           {slides}
         </Carousel>
         <Progress value={scrollProgress} size="sm" mt="xl" mx="auto" style={{ maxWidth: 320 }} />

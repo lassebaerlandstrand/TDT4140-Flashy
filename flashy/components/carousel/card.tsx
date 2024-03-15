@@ -1,5 +1,5 @@
 import { FlashcardView } from "@/app/types/flashcard";
-import { Checkbox, Group, Paper, Stack, Text, Title, useMantineTheme } from "@mantine/core";
+import { Checkbox, Group, Stack, Text, Title, useMantineTheme } from "@mantine/core";
 import { a, useSpring } from '@react-spring/web';
 import { useState } from "react";
 
@@ -30,65 +30,57 @@ export default function Card({ view, hasCopy, toggleDifficult }: CardProps) {
 
   return (
     <>
-      <Paper
-        shadow="md"
-        p="xl"
-        radius="md"
-        style={{
-          height: "100%",
-          width: "100%",
-          // backgroundColor: frontOrBack == "front" ? theme.colors.orange[5] : theme.colors.grape[5],
-          backgroundColor: "transparent",
-          color: "black",
-        }}
-      >
-        <a.button style={{ width: "66%", height: "66%", opacity: opacity.to(o => 1 - o), transform, position: "absolute", top: 0, left: 0, backgroundColor: theme.colors.orange[5] }} onClick={() => setFlipped(state => !state)}>
-          <Stack align="center" style={{ width: "100%" }}>
-            <Title style={{ textAlign: "center" }}>Spørsmål</Title>
-            <Text
-              style={{
-                textAlign: "center",
-              }}
-              lineClamp={4}
-              size="xl"
-              p={10}
-            >
-              {view.front}
-            </Text>
-          </Stack>
-        </a.button>
-        <a.button style={{
-          width: "66%", height: "66%", opacity, transform, rotateX: '180deg', position: "absolute", top: "25%", left: "25%", backgroundColor: theme.colors.grape[5]
-        }} onClick={() => setFlipped(state => !state)}>
-          <Stack align="center" style={{ width: "100%" }}>
-            <Title style={{ textAlign: "center" }}>Fasit</Title>
-            <Text
-              style={{
-                textAlign: "center",
-              }}
-              lineClamp={4}
-              size="xl"
-              p={10}
-            >
-              {view.back}
-            </Text>
-          </Stack>
-        </a.button>
-        {view.isCopy ? (
-          <></>
-        ) : (
-          <Group justify="right">
-            <Checkbox
-              checked={hasCopy}
-              onChange={() => {
-                toggleDifficult(view);
-              }}
-              labelPosition="left"
-              label="Vanskelig?"
-            />
-          </Group>
-        )}
-      </Paper>
+      <a.button style={{
+        width: "800px", height: "100%", opacity: opacity.to(o => 1 - o), transform, position: "absolute", top: 0, left: "180px", backgroundColor: theme.colors.orange[5],
+        cursor: "pointer", border: "none"
+      }} onClick={() => setFlipped(state => !state)}>
+        <Stack align="center" style={{ width: "100%" }}>
+          <Title style={{ textAlign: "center" }}>Spørsmål</Title>
+          <Text
+            style={{
+              textAlign: "center",
+            }}
+            lineClamp={4}
+            size="xl"
+            p={10}
+          >
+            {view.front}
+          </Text>
+        </Stack>
+      </a.button>
+      <a.button style={{
+        width: "800px", height: "100%", opacity, transform, rotateX: '180deg', position: "absolute", top: 0, left: "180px", backgroundColor: theme.colors.grape[5],
+        cursor: "pointer", border: "none"
+      }} onClick={() => setFlipped(state => !state)} >
+        <Stack align="center" style={{ width: "100%" }}>
+          <Title style={{ textAlign: "center" }}>Fasit</Title>
+          <Text
+            style={{
+              textAlign: "center",
+            }}
+            lineClamp={4}
+            size="xl"
+            p={10}
+          >
+            {view.back}
+          </Text>
+        </Stack>
+      </a.button>
+      {view.isCopy ? (
+        <></>
+      ) : (
+        <Group justify="right">
+          <Checkbox
+            checked={hasCopy}
+            onChange={() => {
+              toggleDifficult(view);
+            }}
+            labelPosition="left"
+            label="Vanskelig?"
+          />
+        </Group>
+      )}
+
     </>
   );
 }
