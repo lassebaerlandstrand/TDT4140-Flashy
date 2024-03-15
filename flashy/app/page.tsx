@@ -96,37 +96,41 @@ export default function Home() {
         ) : (
           <>
             <Group style={{ justifyContent: 'center' }}>
-              <Title style={{ marginTop: '30px' }}>Populære flashies</Title>
+              <Title style={{ marginTop: '30px' }}>Alle flashies</Title>
             </Group>
+            <Group></Group>
+            <Group justify='space-between'>
+              <Group>
+                <TextInput
+                  value={searchQuery}
+                  onChange={(event) => setSearchQuery(event.target.value)}
+                  radius="xl"
+                  size="md"
+                  placeholder="Søk etter flashies etter tittel"
+                  rightSectionWidth={42}
+                  width="100%"
+                  leftSection={<IconSearch style={{ width: rem(18), height: rem(18) }} stroke={1.5} />}
+                  rightSection={
+                    <ActionIcon size={32} radius="xl" color={theme.primaryColor} variant="filled">
+                      <IconArrowRight style={{ width: rem(18), height: rem(18) }} stroke={1.5} />
+                    </ActionIcon>
+                  }
+                />
+                <Button component={Link} href="/createFlashcard">
+                  Lag nytt sett
+                </Button>
+              </Group >
 
-            <Group>
-              <TextInput
-                value={searchQuery}
-                onChange={(event) => setSearchQuery(event.target.value)}
-                radius="xl"
-                size="md"
-                placeholder="Søk etter flashies etter tittel"
-                rightSectionWidth={42}
-                width="100%"
-                leftSection={<IconSearch style={{ width: rem(18), height: rem(18) }} stroke={1.5} />}
-                rightSection={
-                  <ActionIcon size={32} radius="xl" color={theme.primaryColor} variant="filled">
-                    <IconArrowRight style={{ width: rem(18), height: rem(18) }} stroke={1.5} />
-                  </ActionIcon>
-                }
-              />
-              <Button component={Link} href="/createFlashcard">
-                Lag nytt sett
-              </Button>
-            </Group >
-            <Group style={{ justifyContent: 'flex-end' }}>
-              <Select
-                // label="Sorter"
-                placeholder="Sorter flashies"
-                data={options}
-                value={selectedOption}
-                onChange={(value) => setSelectedOption(value)}
-              />
+              <Group>
+                <Select
+                  // label="Sorter"
+                  placeholder="Sorter flashies"
+                  data={options}
+                  value={selectedOption}
+                  onChange={(value) => setSelectedOption(value)}
+                  clearable
+                />
+              </Group>
             </Group>
             {<ArticleCardsGrid user={session.user} flashcards={searchAndFilterFlashcardSets ?? []} />}
           </>
