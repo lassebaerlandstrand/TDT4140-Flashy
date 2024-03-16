@@ -17,7 +17,7 @@ type CommentSectionType = {
 export const CommentSection = ({ flashcard, actionUser, comments, w }: CommentSectionType) => {
 
   return (
-    <Stack w={w} px="sm" mt="xl">
+    <Stack w={w} mt="xl">
       <Group justify="space-between">
         <Text fw="bold" size="xl">Kommentarer</Text>
       </Group>

@@ -63,7 +63,7 @@ export default function Flashcards({ params }: FlashcardsType) {
       <CarouselCard views={flashcardSet.views ?? []} />
 
       {session?.user.role === "admin" || flashcardSet.creator?.id === session?.user.id ? (
-        <Group px="md" justify="space-between" w={800}>
+        <Group justify="space-between" w={800}>
           <SettingsButton user={session.user} flashcard={flashcardSet} />
           <Group>
             <LikeButton user={session.user} flashcard={flashcardSet} />

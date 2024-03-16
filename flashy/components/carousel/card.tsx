@@ -1,5 +1,5 @@
 import { FlashcardView } from "@/app/types/flashcard";
-import { Checkbox, Group, Stack, Text, Title, useMantineTheme } from "@mantine/core";
+import { Button, Checkbox, Group, Stack, Text, Title, UnstyledButton, useMantineTheme } from "@mantine/core";
 import { a, useSpring } from '@react-spring/web';
 import { useState } from "react";
 
@@ -10,7 +10,7 @@ type CardProps = {
 };
 
 export default function Card({ view, hasCopy, toggleDifficult }: CardProps) {
-
+  const theme = useMantineTheme();
   const [flipped, setFlipped] = useState(false)
   const { transform, opacity } = useSpring({
     opacity: flipped ? 1 : 0,
@@ -18,24 +18,14 @@ export default function Card({ view, hasCopy, toggleDifficult }: CardProps) {
     config: { mass: 5, tension: 500, friction: 80 },
   })
 
-  const [frontOrBack, setFrontOrBack] = useState("front");
-  const theme = useMantineTheme();
-  const handleClick = () => {
-    if (frontOrBack === "front") {
-      setFrontOrBack("back");
-    } else {
-      setFrontOrBack("front");
-    }
-  };
-
   return (
     <>
-      <a.button style={{
-        width: "800px", height: "100%", opacity: opacity.to(o => 1 - o), transform, position: "absolute", top: 0, left: "180px", backgroundColor: theme.colors.orange[5],
-        cursor: "pointer", border: "none"
-      }} onClick={() => setFlipped(state => !state)}>
-        <Stack align="center" style={{ width: "100%" }}>
-          <Title style={{ textAlign: "center" }}>Spørsmål</Title>
+      <a.div style={{
+        display: "flex", alignItems: "center", width: "800px", height: "100%", opacity: opacity.to(o => 1 - o), transform, position: "absolute", top: 0, left: "180px", backgroundColor: theme.colors.orange[5],
+        cursor: "pointer", border: "none", borderRadius: "10px", pointerEvents: `${ !flipped ? "auto" : "none" }`
+      }} onClick={() => setFlipped(state => !state)} >
+        <Stack align="center" style={{ width: "100%", color: "white" }}>
+          <Title style={{ textAlign: "center" }} >Spørsmål</Title>
           <Text
             style={{
               textAlign: "center",
@@ -47,13 +37,38 @@ export default function Card({ view, hasCopy, toggleDifficult }: CardProps) {
             {view.front}
           </Text>
         </Stack>
-      </a.button>
-      <a.button style={{
-        width: "800px", height: "100%", opacity, transform, rotateX: '180deg', position: "absolute", top: 0, left: "180px", backgroundColor: theme.colors.grape[5],
-        cursor: "pointer", border: "none"
+        {!view.isCopy && (
+          <Group style={{ position: "absolute", left: "645px", top: "355px" }} onClick={(e) => e.stopPropagation()}>
+            <Button
+              color="rgba(80, 80, 80, 1)"
+              onClick={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                toggleDifficult(view);
+              }}
+            >
+              <Checkbox
+                checked={hasCopy}
+                onChange={(e) => {
+                  e.stopPropagation();
+                }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleDifficult(view);
+                }}
+                labelPosition="left"
+                label="Vanskelig?"
+              />
+            </Button>
+          </Group>
+        )}
+      </a.div>
+      <a.div style={{
+        display: "flex", alignItems: "center", width: "800px", height: "100%", opacity, transform, rotateX: '180deg', position: "absolute", top: 0, left: "180px", backgroundColor: theme.colors.grape[5],
+        cursor: "pointer", border: "none", borderRadius: "10px", pointerEvents: `${ flipped ? "auto" : "none" }`
       }} onClick={() => setFlipped(state => !state)} >
-        <Stack align="center" style={{ width: "100%" }}>
-          <Title style={{ textAlign: "center" }}>Fasit</Title>
+        <Stack align="center" style={{ width: "100%", color: "white" }}>
+          <Title style={{ textAlign: "center" }} >Fasit</Title>
           <Text
             style={{
               textAlign: "center",
@@ -65,22 +80,32 @@ export default function Card({ view, hasCopy, toggleDifficult }: CardProps) {
             {view.back}
           </Text>
         </Stack>
-      </a.button>
-      {view.isCopy ? (
-        <></>
-      ) : (
-        <Group justify="right">
-          <Checkbox
-            checked={hasCopy}
-            onChange={() => {
-              toggleDifficult(view);
-            }}
-            labelPosition="left"
-            label="Vanskelig?"
-          />
-        </Group>
-      )}
-
+        {!view.isCopy && (
+          <Group style={{ position: "absolute", left: "645px", top: "355px" }} onClick={(e) => e.stopPropagation()}>
+            <Button
+              color="rgba(80, 80, 80, 1)"
+              onClick={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                toggleDifficult(view);
+              }}
+            >
+              <Checkbox
+                checked={hasCopy}
+                onChange={(e) => {
+                  e.stopPropagation();
+                }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleDifficult(view);
+                }}
+                labelPosition="left"
+                label="Vanskelig?"
+              />
+            </Button>
+          </Group>
+        )}
+      </a.div>
     </>
   );
 }
