@@ -108,7 +108,7 @@ export default function Home() {
                   size="md"
                   placeholder="Søk etter flashies etter tittel"
                   rightSectionWidth={42}
-                  width="100%"
+                  miw={350}
                   leftSection={<IconSearch style={{ width: rem(18), height: rem(18) }} stroke={1.5} />}
                   rightSection={
                     <ActionIcon size={32} radius="xl" color={theme.primaryColor} variant="filled">
