@@ -124,7 +124,7 @@ export const EditFlashCardForm = ({ flashcardSet }: EditFlashCardFormType) => {
                     {(props) => (
                       <Button {...props} color="lime.4" variant="filled">
                         {form.getInputProps(`views.${index}.image`) && (
-                          <>{view.image ? "endre bilde" : "Valgt bilde: " + (form.getInputProps(`views.${index}.image`).value?.name || "ingen valgt bilde")}</>
+                          <>{view.image ? "Endre bilde" : "Valgt bilde: " + (form.getInputProps(`views.${index}.image`).value?.name || "Ingen valgt bilde")}</>
                         )}
                       </Button>
                     )}
