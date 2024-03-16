@@ -72,10 +72,7 @@ export default function Flashcards({ params }: FlashcardsType) {
         </Group>
       ) : null}
 
-
-      {flashcardSet.comments &&
-        <CommentSection flashcard={flashcardSet} comments={flashcardSet.comments} actionUser={session.user} />
-      }
+      {flashcardSet.comments && <CommentSection flashcard={flashcardSet} comments={flashcardSet.comments} actionUser={session.user} />}
     </Stack>
   );
 }

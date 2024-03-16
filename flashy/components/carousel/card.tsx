@@ -1,5 +1,6 @@
 import { FlashcardView } from "@/app/types/flashcard";
 import { Checkbox, Group, Paper, Stack, Text, Title, UnstyledButton, useMantineTheme } from "@mantine/core";
+import Image from "next/image";
 import { useState } from "react";
 
 type CardProps = {
@@ -35,16 +36,33 @@ export default function Card({ view, hasCopy, toggleDifficult }: CardProps) {
         <UnstyledButton style={{ width: "100%", height: "100%" }} onClick={() => handleClick()}>
           <Stack align="center" style={{ width: "100%" }}>
             <Title style={{ textAlign: "center" }}>{frontOrBack === "front" ? "Spørsmål" : "Fasit"}</Title>
-            <Text
-              style={{
-                textAlign: "center",
-              }}
-              lineClamp={4}
-              size="xl"
-              p={10}
-            >
-              {frontOrBack === "front" ? <>{view.front}</> : <>{view.back}</>}
-            </Text>
+
+            {frontOrBack === "front" ? (
+              <>
+                <Text
+                  style={{
+                    textAlign: "center",
+                  }}
+                  lineClamp={4}
+                  size="xl"
+                  p={10}
+                >
+                  {view.front}
+                </Text>
+                {view.image && <Image src={view.image} width={340} height={100} objectFit="contain" alt="Bilde" />}
+              </>
+            ) : (
+              <Text
+                style={{
+                  textAlign: "center",
+                }}
+                lineClamp={4}
+                size="xl"
+                p={10}
+              >
+                {view.back}
+              </Text>
+            )}
           </Stack>
         </UnstyledButton>
         {view.isCopy ? (

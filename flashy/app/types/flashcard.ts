@@ -44,14 +44,18 @@ export type FlashcardComment = {
     createdAt: Date;
 }
 
+
 export type FlashcardView = {
     id: string;
     isCopy?: boolean;
     front: string;
     back: string;
-    image?: File;
+    image?: string;
 }
 
+export type CreateFlashCardViewType  = FlashcardView & {
+    image?: File;
+}
 export type CreateFlashCardType = {
     creator: User;
     title: string;
@@ -61,14 +65,14 @@ export type CreateFlashCardType = {
     image?: File;
 }
 
-export type CreateViewType = Pick<FlashcardView, "front" | "back" | "image">;
+export type CreateViewType = Pick<CreateFlashCardViewType, "front" | "back" | "image">;
 
 export type EditFlashCardType = {
     views: EditFlashcardView[];
     visibility: Visibility;
 }
 
-export type EditFlashcardView = Pick<FlashcardView, "front" | "back"> & {
+export type EditFlashcardView = Pick<FlashcardView, "front" | "back" | "image"> & {
     id?: string;
 };
 
