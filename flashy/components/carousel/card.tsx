@@ -21,7 +21,7 @@ export default function Card({ view, hasCopy, toggleDifficult }: CardProps) {
   return (
     <>
       <a.div style={{
-        display: "flex", alignItems: "center", width: "800px", height: "100%", opacity: opacity.to(o => 1 - o), transform, position: "absolute", top: 0, left: "180px", backgroundColor: theme.colors.orange[5],
+        display: "flex", alignItems: "center", width: "800px", height: "100%", opacity: opacity.to(o => 1 - o), transform, position: "absolute", top: 0, left: "180px", backgroundColor: theme.colors.orange[6],
         cursor: "pointer", border: "none", borderRadius: "10px", pointerEvents: `${ !flipped ? "auto" : "none" }`
       }} onClick={() => setFlipped(state => !state)} >
         <Stack align="center" style={{ width: "100%", color: "white" }}>
