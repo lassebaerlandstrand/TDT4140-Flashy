@@ -3,9 +3,10 @@ import { ConvertToBase64, editFlashcard } from "@/app/utils/firebase";
 import { ActionIcon, Button, Divider, FileButton, Flex, Grid, Group, Select, Space, Stack, Text, Textarea } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
-import { IconX } from "@tabler/icons-react";
+import { IconCheck, IconX } from "@tabler/icons-react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 type EditFlashCardFormType = {
@@ -16,11 +17,13 @@ export const EditFlashCardForm = ({ flashcardSet }: EditFlashCardFormType) => {
   const { data: session } = useSession();
   const [loading, setLoading] = useState(false);
   const [prevFlashcardSet, setPrevFlashcardSet] = useState<FlashcardSet>(flashcardSet);
+  const router = useRouter();
 
   const form = useForm<EditFlashCardType>({
     initialValues: {
       views: flashcardSet.views ?? [],
       visibility: flashcardSet.visibility ?? Visibility.Private,
+      coverImage: undefined,
     },
   });
 
@@ -33,6 +36,7 @@ export const EditFlashCardForm = ({ flashcardSet }: EditFlashCardFormType) => {
     const editedFlashcard: EditFlashCardType = {
       views: values.views,
       visibility: values.visibility,
+      coverImage: values.coverImage,
     };
 
     editFlashcard(session.user, prevFlashcardSet, editedFlashcard)
@@ -41,8 +45,12 @@ export const EditFlashCardForm = ({ flashcardSet }: EditFlashCardFormType) => {
           title: "Settet er oppdatert",
           message: "",
           color: "green",
+          onClick: () => {
+            router.push("/carousel/" + flashcardSet.title);
+            notifications.clean();
+          },
         });
-        setPrevFlashcardSet({ ...prevFlashcardSet, views: newViews, visibility: editedFlashcard.visibility });
+        setPrevFlashcardSet({ ...prevFlashcardSet, views: newViews, visibility: editedFlashcard.visibility, coverImage: editedFlashcard.coverImage });
         form.setInitialValues(editedFlashcard);
         form.reset();
       })
@@ -73,6 +81,12 @@ export const EditFlashCardForm = ({ flashcardSet }: EditFlashCardFormType) => {
     <form onSubmit={form.onSubmit((values) => onSubmit(values))}>
       <Stack>
         <Select label="Sett synlighet" placeholder="Rediger synlighet" data={Object.values(Visibility)} {...form.getInputProps("visibility")} maw={150} />
+        <Group align="center" my="xl">
+          <Text fw={600}>Endre Forsidebilde:</Text>
+          <FileButton onChange={(file) => form.setFieldValue("coverImage", file || undefined)} accept="image/png, image/jpeg">
+            {(props) => <Button {...props} color={form.getInputProps("coverImage").value?.name ? "green" : "blue"}>{form.getInputProps("coverImage").value?.name ? <>{form.getInputProps("coverImage").value?.name} <IconCheck stroke={3} style={{marginLeft: "8px"}} />  </>: "Last opp bilde"}</Button>}
+          </FileButton>
+        </Group>
 
         <Divider />
 

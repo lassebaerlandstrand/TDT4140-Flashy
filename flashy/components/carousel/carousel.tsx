@@ -2,7 +2,7 @@
 
 import { FlashcardView } from "@/app/types/flashcard";
 import { Carousel, Embla } from "@mantine/carousel";
-import { Button, Container, Group, Progress, Stack } from "@mantine/core";
+import { Button, Container, Group, Progress, Stack, Text } from "@mantine/core";
 import { IconCheck, IconQuestionMark } from "@tabler/icons-react";
 import { useCallback, useEffect, useState } from "react";
 import Card from "./card";
@@ -19,6 +19,7 @@ export default function CarouselCard({ views }: CarouselCardProps) {
   const [combinedViews, setCombinedViews] = useState(currentViews);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [embla, setEmbla] = useState<Embla | null>(null);
+  const [currentIndex, setCurrentIndex] = useState<number>(0);
 
   const toggleDifficult = (markedView: FlashcardView) => {
     const markedViewCopy: FlashcardView = { ...markedView, id: markedView.id + "copy", isCopy: true };
@@ -44,12 +45,14 @@ export default function CarouselCard({ views }: CarouselCardProps) {
     if (!embla) return;
     const progress = Math.max(0, Math.min(1, embla.scrollProgress()));
     setScrollProgress(progress * 100);
+
+    setCurrentIndex(embla.selectedScrollSnap() + 1); // Add one to make it 1-indexed
   }, [embla, setScrollProgress]);
 
   useEffect(() => {
     if (embla) {
       embla.on("scroll", handleScroll);
-      handleScroll();
+      handleScroll();      
     }
   }, [embla, handleScroll]);
 
@@ -84,7 +87,7 @@ export default function CarouselCard({ views }: CarouselCardProps) {
   ));
 
   return (
-    <Stack align="center" w="100%">
+    <Stack align="center" w="1200px">
       <Group>
         <Button
           onClick={shuffleViews}
@@ -95,11 +98,15 @@ export default function CarouselCard({ views }: CarouselCardProps) {
           Shuffle{isShuffled ? "d" : ""}
         </Button>
       </Group>
-      <Container w="100%">
-        <Carousel height={400} slideGap="xl" align="start" getEmblaApi={setEmbla}>
+      <Container w="100%" fluid>
+        <Carousel height={400} slideGap="xl" align="start" getEmblaApi={setEmbla} controlsOffset={120} controlSize={42}>
           {slides}
         </Carousel>
-        <Progress value={scrollProgress} size="sm" mt="xl" mx="auto" style={{ maxWidth: 320 }} />
+
+        <Group justify="center" mt="lg">
+          <Text fw={700} c="dimmed">{currentIndex} / {slides.length}</Text>
+          <Progress value={scrollProgress} size="sm" w={320}/>
+        </Group>
       </Container>
     </Stack>
   );

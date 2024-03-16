@@ -6,7 +6,7 @@ import { ActionIcon, Button, Divider, FileButton, Flex, Grid, Group, Select, Spa
 import { useForm } from "@mantine/form";
 import { modals } from "@mantine/modals";
 import { notifications } from "@mantine/notifications";
-import { IconPhoto, IconX } from "@tabler/icons-react";
+import { IconPhoto, IconCheck, IconX } from "@tabler/icons-react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -107,16 +107,13 @@ export const CreateFlashCardForm = () => {
 
           <Select label="Sett synlighet" placeholder="Rediger synlighet" data={Object.values(Visibility)} {...form.getInputProps("visibility")} maw={150} />
         </Group>
-        <Group justify="center">
+        <Group align="center" my="xl">
+          <Text fw={600}>Forsidebilde:</Text>
           <FileButton onChange={(file) => form.setFieldValue("image", file || undefined)} accept="image/png, image/jpeg">
-            {(props) => <Button {...props}>Last opp bilde</Button>}
+            {(props) => <Button {...props} color={form.getInputProps("image").value?.name ? "green" : "blue"}>{form.getInputProps("image").value?.name ? <>{form.getInputProps("image").value?.name} <IconCheck stroke={3} style={{marginLeft: "8px"}} />  </>: "Last opp bilde"}</Button>}
           </FileButton>
         </Group>
-        {form.getInputProps("image") && (
-          <Text size="sm" ta="center" mt="sm">
-            Picked file: {form.getInputProps("image").value?.name || "No file picked"}
-          </Text>
-        )}
+
         <Divider />
 
         <Stack gap="xl">
