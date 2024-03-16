@@ -17,12 +17,12 @@ type CommentSectionType = {
 export const CommentSection = ({ flashcard, actionUser, comments, w }: CommentSectionType) => {
 
   return (
-    <Stack w={w} mt="xl">
+    <Stack w={w} mt={80}>
       <Group justify="space-between">
         <Text fw="bold" size="xl">Kommentarer</Text>
       </Group>
       <NewComment flashcard={flashcard} actionUser={actionUser} />
-      <Divider my="xl" />
+      <Divider my="xl" label="Publiserte kommentarer under" labelPosition="center" size="sm"/>
       <Stack gap="xl">
         {comments.map((comment) => {
           return (
