@@ -13,11 +13,11 @@ export function UserButton() {
           <UnstyledButton className={classes.user} component={Link} href="/profile">
             <Group justify="center" gap="xs">
               <Avatar src={session.user?.image} radius="xl" />
-              <Container>
-                <Text size="sm" fw={500}>
+              <Container maw={180} px="xs">
+                <Text size="sm" fw={500} style={{textOverflow: "ellipsis", whiteSpace: "nowrap", overflow: "hidden" }} >
                   {session.user?.name}
                 </Text>
-                <Text size="xs" fw={500}>
+                <Text size="xs" fw={500} style={{textOverflow: "ellipsis", whiteSpace: "nowrap", overflow: "hidden" }} >
                   {session.user?.email}
                 </Text>
               </Container>
