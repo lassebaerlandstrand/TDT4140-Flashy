@@ -14,7 +14,7 @@ import {
   query,
   setDoc,
   updateDoc,
-  where
+  where,
 } from "@firebase/firestore";
 import { ComboboxItem } from "@mantine/core";
 import { Session } from "next-auth";
@@ -55,28 +55,30 @@ export async function getMyFlashies(user: User): Promise<FlashcardSet[]> {
   const userDoc = doc(firestore, "users", user.id);
   const querySelection = query(flashcardCollection, where("creator", "==", userDoc));
   const flashcardDocs = await getDocs(querySelection);
-  const allFlashcardSets = Promise.all(flashcardDocs.docs.map(async (doc) => {
-    try {
-      const { numOfFavorites, numOfLikes, numOfComments } = await getNumOfFavouritesLikesComments(doc.ref);
-      const flashcardSet: FlashcardSet = {
-        id: doc.id,
-        creator: await convertDocumentRefToType<User>(doc.data().creator),
-        title: doc.data().title,
-        numViews: doc.data().numViews,
-        numOfLikes: numOfLikes,
-        numOfComments: numOfComments,
-        numOfFavorites: numOfFavorites,
-        visibility: doc.data().isPublic ? Visibility.Public : Visibility.Private,
-        createdAt: doc.data().createdAt.toDate(),
-        popularityScore: calculatePopularityScore(doc.data().numViews, numOfFavorites, numOfLikes, numOfComments),
-        coverImage: doc.data().image,
+  const allFlashcardSets = Promise.all(
+    flashcardDocs.docs.map(async (doc) => {
+      try {
+        const { numOfFavorites, numOfLikes, numOfComments } = await getNumOfFavouritesLikesComments(doc.ref);
+        const flashcardSet: FlashcardSet = {
+          id: doc.id,
+          creator: await convertDocumentRefToType<User>(doc.data().creator),
+          title: doc.data().title,
+          numViews: doc.data().numViews,
+          numOfLikes: numOfLikes,
+          numOfComments: numOfComments,
+          numOfFavorites: numOfFavorites,
+          visibility: doc.data().isPublic ? Visibility.Public : Visibility.Private,
+          createdAt: doc.data().createdAt.toDate(),
+          popularityScore: calculatePopularityScore(doc.data().numViews, numOfFavorites, numOfLikes, numOfComments),
+          coverImage: doc.data().image,
+        };
+        return flashcardSet;
+      } catch (e) {
+        console.log(`[DocId: ${doc.id}]`, e);
       }
-      return flashcardSet;
-    } catch (e) {
-      console.log(`[DocId: ${doc.id}]`, e);
-    }
-    return null;
-  }));
+      return null;
+    })
+  );
 
   return (await allFlashcardSets).filter((flashcard) => flashcard != null) as FlashcardSet[];
 }
@@ -387,6 +389,12 @@ export async function editFlashcard(actionUser: User, flashcard: FlashcardSet, u
   if (flashcard.visibility !== updatedFlashcard.visibility) {
     await updateDoc(flashcardDoc, {
       isPublic: updatedFlashcard.visibility === Visibility.Public,
+    });
+  }
+
+  if (flashcard.coverImage !== updatedFlashcard.coverImage && updatedFlashcard.coverImage) {
+    await updateDoc(flashcardDoc, {
+      image: await ConvertToBase64(updatedFlashcard.coverImage),
     });
   }
 
