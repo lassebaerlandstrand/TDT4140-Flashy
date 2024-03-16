@@ -22,11 +22,7 @@ import { CreateFlashCardType, CreateNewCommentType, EditFlashCardType, Flashcard
 import { User } from "../types/user";
 import { convertDocumentRefToType, converter } from "./converter";
 
-export async function getAllUsers(actionUser: User): Promise<User[]> {
-  if (actionUser.role !== "admin") {
-    throw new Error("Du har ikke tilgang til å se alle brukere");
-  }
-
+export async function getAllUsers(): Promise<User[]> {
   const userCollection = collection(firestore, "users").withConverter(converter<User>());
   const userDocs = await getDocs(userCollection);
   return userDocs.docs.map((doc) => doc.data());

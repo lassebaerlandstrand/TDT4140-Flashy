@@ -14,7 +14,7 @@ export default function Home() {
   useEffect(() => {
     if (!session || session.user.role !== "admin") return;
     async function getUserTable() {
-      const users = await getAllUsers(session?.user);
+      const users = await getAllUsers();
       return setUsers(users);
     }
     getUserTable();
