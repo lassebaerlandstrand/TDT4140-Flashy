@@ -5,12 +5,6 @@ import { useRouter } from "next/navigation";
 import { ConfirmDeleteUser } from "./ConfirmationModal";
 import classes from "./UserCard.module.css";
 
-const stats = [
-  { value: "64", label: "Likerklikk" },
-  { value: "287", label: "Kommentarer" },
-  { value: "20", label: "Flashies" },
-];
-
 export const DangerZone = ({ user }: Session) => {
   const router = useRouter();
   const theme = useMantineTheme();
@@ -37,19 +31,9 @@ export const DangerZone = ({ user }: Session) => {
 
 export function UserCard({ user }: Session) {
   const theme = useMantineTheme();
-  const items = stats.map((stat) => (
-    <div key={stat.label}>
-      <Text ta="center" fz="lg" fw={500}>
-        {stat.value}
-      </Text>
-      <Text ta="center" fz="sm" c="dimmed" lh={1}>
-        {stat.label}
-      </Text>
-    </div>
-  ));
 
   return (
-    <Card withBorder padding="xl" radius="md" className={classes.card}>
+    <Card withBorder padding="xl" miw="300" radius="md" className={classes.card}>
       <Card.Section
         h={140}
         style={{
@@ -63,9 +47,6 @@ export function UserCard({ user }: Session) {
           {user.name}
         </Text>
         <Badge style={{ color: theme.colors.dark[5], background: theme.colors.orange[5] }}>Profesjonell</Badge>
-        <Group mt="md" justify="center" gap={30}>
-          {items}
-        </Group>
         <Button onClick={() => signOut()} fullWidth color="orange" variant="light" size="lg">
           Logg ut
         </Button>
