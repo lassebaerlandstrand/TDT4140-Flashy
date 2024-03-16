@@ -58,10 +58,21 @@ export default function Flashcards({ params }: FlashcardsType) {
         <Title>{flashcardSet.title}</Title>
       </Group>
       <Text>
-        by: <Code>{flashcardSet.creator ? flashcardSet.creator.name : "Slettet bruker"}</Code>{" "}
+        Av: <Code>{flashcardSet.creator ? flashcardSet.creator.name : "Slettet bruker"}</Code>{" "}
       </Text>
+      {flashcardSet.coAuthors ? (
+        <>
+          I samarbeid med:{" "}
+          <Group>
+            {flashcardSet.coAuthors.map((author) => (
+              <Text key={author.id}>
+                <Code>{author.name}</Code>
+              </Text>
+            ))}
+          </Group>
+        </>
+      ) : null}
       <CarouselCard views={flashcardSet.views ?? []} />
-
       {session?.user.role === "admin" || flashcardSet.creator?.id === session?.user.id ? (
         <Group px="md" justify="space-between" w={"100%"}>
           <SettingsButton user={session.user} flashcard={flashcardSet} />
@@ -71,11 +82,7 @@ export default function Flashcards({ params }: FlashcardsType) {
           </Group>
         </Group>
       ) : null}
-
-
-      {flashcardSet.comments &&
-        <CommentSection flashcard={flashcardSet} comments={flashcardSet.comments} actionUser={session.user} />
-      }
+      {flashcardSet.comments && <CommentSection flashcard={flashcardSet} comments={flashcardSet.comments} actionUser={session.user} />}
     </Stack>
   );
 }

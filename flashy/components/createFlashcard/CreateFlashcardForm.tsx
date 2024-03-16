@@ -1,26 +1,54 @@
 "use client";
 
 import { CreateFlashCardType, Visibility } from "@/app/types/flashcard";
-import { createNewFlashcard } from "@/app/utils/firebase";
-import { ActionIcon, Button, Divider, FileButton, Flex, Grid, Group, Select, Stack, Text, TextInput, Textarea } from "@mantine/core";
+import { createNewFlashcard, getAllUsers } from "@/app/utils/firebase";
+import { ActionIcon, Button, ComboboxData, Divider, FileButton, Flex, Grid, Group, MultiSelect, Select, Stack, Text, TextInput, Textarea, rem } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { modals } from "@mantine/modals";
 import { notifications } from "@mantine/notifications";
-import { IconX } from "@tabler/icons-react";
+import { IconSearch, IconX } from "@tabler/icons-react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const regexLettersAndNumbers = new RegExp("^[a-zA-Z0-9æøåÆØÅ\\s]+$");
 
+const usersToComboBoxData = async () => {
+  try {
+    const users = await getAllUsers();
+    return users.map((user) => ({
+      value: user.id,
+      label: user.name,
+    }));
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    return [];
+  }
+};
 export const CreateFlashCardForm = () => {
   const router = useRouter();
   const { data: session } = useSession();
   const [loading, setLoading] = useState(false);
+  const [userOptions, setUserOptions] = useState<ComboboxData | undefined>(undefined);
+
+  useEffect(() => {
+    const fetchUserOptions = async () => {
+      try {
+        const users = await usersToComboBoxData();
+        setUserOptions(users);
+      } catch (error) {
+        console.error("Error fetching user options:", error);
+        setUserOptions([]);
+      }
+    };
+
+    fetchUserOptions();
+  }, []);
 
   const form = useForm<Omit<CreateFlashCardType, "creator">>({
     initialValues: {
       title: "",
+      coAuthors: [],
       views: [],
       visibility: Visibility.Public,
       createdAt: new Date(),
@@ -64,6 +92,7 @@ export const CreateFlashCardForm = () => {
 
     const flashcardSet: CreateFlashCardType = {
       creator: session.user,
+      coAuthors: values.coAuthors,
       title: values.title,
       views: values.views,
       visibility: values.visibility,
@@ -117,6 +146,20 @@ export const CreateFlashCardForm = () => {
             Picked file: {form.getInputProps("image").value?.name || "No file picked"}
           </Text>
         )}
+        <Group>
+          <MultiSelect
+            label="Legge til medarbeidere?"
+            placeholder="Søk etter brukere"
+            data={userOptions || []}
+            searchable
+            clearable
+            value={form.values.coAuthors}
+            onChange={(value) => form.setFieldValue("coAuthors", value)}
+            w="400"
+            leftSection={<IconSearch style={{ width: rem(9), height: rem(9) }} stroke={1} />}
+          />
+        </Group>
+
         <Divider />
 
         <Stack gap="xl">

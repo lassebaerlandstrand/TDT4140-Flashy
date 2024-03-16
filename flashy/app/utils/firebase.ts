@@ -14,7 +14,7 @@ import {
   query,
   setDoc,
   updateDoc,
-  where
+  where,
 } from "@firebase/firestore";
 import { ComboboxItem } from "@mantine/core";
 import { Session } from "next-auth";
@@ -46,33 +46,55 @@ async function getViews(flashcardDocument: DocumentReference) {
   });
 }
 
+async function getCoAuthors(flashcardDocument: DocumentReference) {
+  const coAuthorsCollection = collection(flashcardDocument, "coAuthors");
+  const coAuthorsDocs = await getDocs(coAuthorsCollection);
+
+  const coAuthors: User[] = [];
+
+  await Promise.all(
+    coAuthorsDocs.docs.map(async (doc) => {
+      const user = await convertDocumentRefToType<User>(doc.data().coAuthor);
+      console.log(user);
+      if (user) {
+        coAuthors.push(user);
+      }
+    })
+  );
+
+  return coAuthors;
+}
+
 export async function getMyFlashies(user: User): Promise<FlashcardSet[]> {
   const flashcardCollection = collection(firestore, "flashies");
   const userDoc = doc(firestore, "users", user.id);
   const querySelection = query(flashcardCollection, where("creator", "==", userDoc));
   const flashcardDocs = await getDocs(querySelection);
-  const allFlashcardSets = Promise.all(flashcardDocs.docs.map(async (doc) => {
-    try {
-      const { numOfFavorites, numOfLikes, numOfComments } = await getNumOfFavouritesLikesComments(doc.ref);
-      const flashcardSet: FlashcardSet = {
-        id: doc.id,
-        creator: await convertDocumentRefToType<User>(doc.data().creator),
-        title: doc.data().title,
-        numViews: doc.data().numViews,
-        numOfLikes: numOfLikes,
-        numOfComments: numOfComments,
-        numOfFavorites: numOfFavorites,
-        visibility: doc.data().isPublic ? Visibility.Public : Visibility.Private,
-        createdAt: doc.data().createdAt.toDate(),
-        popularityScore: calculatePopularityScore(doc.data().numViews, numOfFavorites, numOfLikes, numOfComments),
-        coverImage: doc.data().image,
+  const allFlashcardSets = Promise.all(
+    flashcardDocs.docs.map(async (doc) => {
+      try {
+        const { numOfFavorites, numOfLikes, numOfComments } = await getNumOfFavouritesLikesComments(doc.ref);
+        const flashcardSet: FlashcardSet = {
+          id: doc.id,
+          creator: await convertDocumentRefToType<User>(doc.data().creator),
+          coAuthors: doc.data().coAuthors,
+          title: doc.data().title,
+          numViews: doc.data().numViews,
+          numOfLikes: numOfLikes,
+          numOfComments: numOfComments,
+          numOfFavorites: numOfFavorites,
+          visibility: doc.data().isPublic ? Visibility.Public : Visibility.Private,
+          createdAt: doc.data().createdAt.toDate(),
+          popularityScore: calculatePopularityScore(doc.data().numViews, numOfFavorites, numOfLikes, numOfComments),
+          coverImage: doc.data().image,
+        };
+        return flashcardSet;
+      } catch (e) {
+        console.log(`[DocId: ${doc.id}]`, e);
       }
-      return flashcardSet;
-    } catch (e) {
-      console.log(`[DocId: ${doc.id}]`, e);
-    }
-    return null;
-  }));
+      return null;
+    })
+  );
 
   return (await allFlashcardSets).filter((flashcard) => flashcard != null) as FlashcardSet[];
 }
@@ -231,6 +253,8 @@ export async function getFlashcardSet(flashcardId: string, currentUserId: User["
   const creator = await convertDocumentRefToType<User>(flashcardData.creator);
 
   const views = await getViews(flashcardDocument);
+  const coAuthors = await getCoAuthors(flashcardDocument);
+  console.log(coAuthors);
   const userHasLiked = await userHasLikedFlashcard(flashcardDocument, currentUserId);
   const { numOfFavorites, numOfLikes, numOfComments } = await getNumOfFavouritesLikesComments(flashcardDocument);
   const userHasFavorited = await getHasFavoritedFlashcard(flashcardDocument, currentUserId);
@@ -251,12 +275,12 @@ export async function getFlashcardSet(flashcardId: string, currentUserId: User["
       userHasFavorited: userHasFavorited,
       comments: comments,
       views: views,
+      coAuthors: coAuthors,
       visibility: visibility,
       createdAt: flashcardData.createdAt.toDate(),
       popularityScore: popularityScore,
       coverImage: flashcardData.image,
     };
-
     return flashcard;
   } catch (e) {
     console.log(`[DocId: ${flashcardDoc.id}]`, e);
@@ -340,6 +364,7 @@ export async function createNewFlashcard(flashcard: CreateFlashCardType) {
   if (flashcardData.exists()) {
     throw new Error("Navnet på settet er allerede i bruk");
   }
+  console.log(flashcard.coAuthors);
 
   // Create flashcard
   const docData = {
@@ -365,6 +390,16 @@ export async function createNewFlashcard(flashcard: CreateFlashCardType) {
   ).catch(() => {
     throw new Error("Feilet å opprette kortene for settet");
   });
+
+  const coAuthorsCollection = collection(flashcardDoc, "coAuthors");
+
+  await Promise.all(
+    flashcard.coAuthors.map(async (coAuthorID) => {
+      const userRef = doc(firestore, "users", coAuthorID);
+      console.log("hei lasse");
+      return await addDoc(coAuthorsCollection, { coAuthor: userRef });
+    })
+  );
 }
 
 export async function editFlashcard(actionUser: User, flashcard: FlashcardSet, updatedFlashcard: EditFlashCardType) {
