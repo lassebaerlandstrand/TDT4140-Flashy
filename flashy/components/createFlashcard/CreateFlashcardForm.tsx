@@ -2,11 +2,11 @@
 
 import { CreateFlashCardType, Visibility } from "@/app/types/flashcard";
 import { createNewFlashcard } from "@/app/utils/firebase";
-import { ActionIcon, Button, Divider, FileButton, Flex, Grid, Group, Select, Stack, Text, TextInput, Textarea } from "@mantine/core";
+import { ActionIcon, Button, Divider, FileButton, Flex, Grid, Group, Select, Space, Stack, Text, TextInput, Textarea } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { modals } from "@mantine/modals";
 import { notifications } from "@mantine/notifications";
-import { IconCheck, IconX } from "@tabler/icons-react";
+import { IconPhoto, IconCheck, IconX } from "@tabler/icons-react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -133,6 +133,17 @@ export const CreateFlashCardForm = () => {
                   resize="vertical"
                   minRows={4}
                 />
+                <Space h={10} />
+                <Group>
+                  <FileButton onChange={(file) => form.setFieldValue(`views.${index}.image`, file || undefined)} accept="image/png, image/jpeg">
+                    {(props) => (
+                      <ActionIcon {...props} color="lime.4" variant="filled">
+                        <IconPhoto size={50} />
+                      </ActionIcon>
+                    )}
+                  </FileButton>
+                  {form.getInputProps(`views.${index}.image`) && <>Valgt bilde: {form.getInputProps(`views.${index}.image`).value?.name || "ingen valgt bilde"}</>}
+                </Group>
               </Grid.Col>
               <Grid.Col span={5}>
                 <Textarea

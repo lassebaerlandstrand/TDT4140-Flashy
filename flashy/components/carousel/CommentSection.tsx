@@ -22,7 +22,7 @@ export const CommentSection = ({ flashcard, actionUser, comments, w }: CommentSe
         <Text fw="bold" size="xl">Kommentarer</Text>
       </Group>
       <NewComment flashcard={flashcard} actionUser={actionUser} />
-      <Divider my="xl" label="Publiserte kommentarer under" labelPosition="center" size="sm"/>
+      {comments.length > 0 && <Divider my="xl" label="Publiserte kommentarer under" labelPosition="center" size="sm"/>}
       <Stack gap="xl">
         {comments.map((comment) => {
           return (

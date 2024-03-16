@@ -1,6 +1,7 @@
 import { FlashcardView } from "@/app/types/flashcard";
 import { Button, Checkbox, Group, Stack, Text, Title, UnstyledButton, useMantineTheme } from "@mantine/core";
 import { a, useSpring } from '@react-spring/web';
+import Image from "next/image";
 import { useState } from "react";
 
 type CardProps = {
@@ -36,6 +37,7 @@ export default function Card({ view, hasCopy, toggleDifficult }: CardProps) {
           >
             {view.front}
           </Text>
+          {view.image && <Image src={view.image} width={340} height={100} objectFit="contain" alt="Bilde" />}
         </Stack>
         {!view.isCopy && (
           <Group style={{ position: "absolute", left: "645px", top: "355px" }} onClick={(e) => e.stopPropagation()}>

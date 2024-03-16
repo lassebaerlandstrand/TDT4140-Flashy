@@ -1,10 +1,11 @@
-import { EditFlashCardType, FlashcardSet, Visibility } from "@/app/types/flashcard";
-import { editFlashcard } from "@/app/utils/firebase";
-import { ActionIcon, Button, Divider, FileButton, Flex, Grid, Group, Select, Stack, Text, Textarea } from "@mantine/core";
+import { EditFlashCardType, EditFlashcardView, FlashcardSet, Visibility } from "@/app/types/flashcard";
+import { ConvertToBase64, editFlashcard } from "@/app/utils/firebase";
+import { ActionIcon, Button, Divider, FileButton, Flex, Grid, Group, Select, Space, Stack, Text, Textarea } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import { IconCheck, IconX } from "@tabler/icons-react";
 import { useSession } from "next-auth/react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -65,6 +66,17 @@ export const EditFlashCardForm = ({ flashcardSet }: EditFlashCardFormType) => {
       });
   };
 
+  const handleOnChangeAddImage = async (file: File | null, index: number, view: EditFlashcardView) => {
+    if (file) {
+      const imageBase64 = (await ConvertToBase64(file)) as string;
+      form.setFieldValue(`views.${index}.image`, imageBase64);
+      view.image = imageBase64;
+    } else {
+      form.setFieldValue(`views.${index}.image`, undefined);
+      view.image = undefined;
+    }
+  };
+
   return (
     <form onSubmit={form.onSubmit((values) => onSubmit(values))}>
       <Stack>
@@ -79,7 +91,7 @@ export const EditFlashCardForm = ({ flashcardSet }: EditFlashCardFormType) => {
         <Divider />
 
         <Stack gap="xl">
-          {form.values.views.map((_, index) => (
+          {form.values.views.map((view, index) => (
             <Grid key={index}>
               <Grid.Col span={1}>
                 <Flex justify="center" align="center" style={{ height: "100%" }}>
@@ -95,6 +107,29 @@ export const EditFlashCardForm = ({ flashcardSet }: EditFlashCardFormType) => {
                   resize="vertical"
                   minRows={4}
                 />
+                <Space h={10} />
+                {view.image && (
+                  <Group>
+                    Bilde: <Image src={view.image} alt="Bilde" height={50} width={200} />
+                  </Group>
+                )}
+                <Space h={10} />
+                <Group align="center">
+                  <FileButton
+                    onChange={(file) => {
+                      handleOnChangeAddImage(file, index, view);
+                    }}
+                    accept="image/png, image/jpeg"
+                  >
+                    {(props) => (
+                      <Button {...props} color="lime.4" variant="filled">
+                        {form.getInputProps(`views.${index}.image`) && (
+                          <>{view.image ? "Endre bilde" : "Valgt bilde: " + (form.getInputProps(`views.${index}.image`).value?.name || "Ingen valgt bilde")}</>
+                        )}
+                      </Button>
+                    )}
+                  </FileButton>
+                </Group>
               </Grid.Col>
               <Grid.Col span={5}>
                 <Textarea

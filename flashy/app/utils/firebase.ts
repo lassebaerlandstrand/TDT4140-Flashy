@@ -18,7 +18,7 @@ import {
 } from "@firebase/firestore";
 import { ComboboxItem } from "@mantine/core";
 import { Session } from "next-auth";
-import { CreateFlashCardType, CreateNewCommentType, EditFlashCardType, FlashcardComment, FlashcardSet, FlashcardView, Visibility } from "../types/flashcard";
+import { CreateFlashCardType, CreateNewCommentType, EditFlashCardType, EditFlashcardView, FlashcardComment, FlashcardSet, FlashcardView, Visibility } from "../types/flashcard";
 import { User } from "../types/user";
 import { convertDocumentRefToType, converter } from "./converter";
 
@@ -41,12 +41,17 @@ async function getViews(flashcardDocument: DocumentReference) {
   const viewsDocs = await getDocs(viewsCollection);
 
   return viewsDocs.docs.map((doc) => {
-    return {
+    const data: FlashcardView = {
       id: doc.id,
       front: doc.data().front,
       back: doc.data().back,
       isCopy: doc.data().isCopy,
     };
+    const image = doc.data().image;
+    if (image) {
+      data.image = image;
+    }
+    return data;
   });
 }
 
@@ -330,7 +335,7 @@ export const setUpdateFlashySetVisibility = async (actionUser: User, flashy: Fla
   }
 };
 
-function ConvertToBase64(image: File) {
+export function ConvertToBase64(image: File) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.readAsDataURL(image);
@@ -366,10 +371,16 @@ export async function createNewFlashcard(flashcard: CreateFlashCardType) {
 
   await Promise.all(
     flashcard.views.map(async (view) => {
-      return await addDoc(viewsCollection, view);
+      //const maybeFormattedView = {image: view.image ? await ConvertToBase64(view.image) : { front: view.front, back: view.back }}
+      const formattedView = {
+        image: view.image ? await ConvertToBase64(view.image) : "",
+        front: view.front,
+        back: view.back,
+      };
+      return await addDoc(viewsCollection, formattedView);
     })
-  ).catch(() => {
-    throw new Error("Feilet å opprette kortene for settet");
+  ).catch((e) => {
+    throw new Error("Feilet å opprette kortene for settet\n"+e);
   });
 }
 
@@ -424,15 +435,22 @@ export async function editFlashcard(actionUser: User, flashcard: FlashcardSet, u
   const newViews = updatedFlashcard.views.filter((view) => view.id == null);
   await Promise.all(
     newViews.map(async (view) => {
-      const newView = await addDoc(viewsCollection, {
+      const newImage = view.image
+      const newViewValues: EditFlashcardView = {
         front: view.front,
         back: view.back,
-      });
-      resultingViews.push({
-        id: newView.id,
-        front: view.front,
-        back: view.back,
-      });
+      }
+      const resultingViewValies: EditFlashcardView = {
+          front: view.front,
+          back: view.back,
+        }
+      if (newImage){
+        newViewValues.image = newImage
+        resultingViewValies.image = newImage
+      }
+      
+      const newView = await addDoc(viewsCollection, newViewValues);
+      resultingViews.push({id: newView.id, ...resultingViewValies});
     })
   ).catch(() => {
     throw new Error("Feilet å opprette kortene for settet");
@@ -445,10 +463,11 @@ export async function editFlashcard(actionUser: User, flashcard: FlashcardSet, u
   await Promise.all(
     updatedViews.map(async (view) => {
       const viewDoc = doc(viewsCollection, view.id);
-      await updateDoc(viewDoc, {
-        front: view.front,
-        back: view.back,
-      });
+      const updatedFlashcard: EditFlashcardView = {front: view.front, back: view.back}
+      if (view.image){
+        updatedFlashcard.image = view.image
+      }
+      await updateDoc(viewDoc, updatedFlashcard);
     })
   ).catch(() => {
     throw new Error("Feilet å oppdatere kortene for settet");
