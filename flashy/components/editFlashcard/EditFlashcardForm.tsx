@@ -3,7 +3,7 @@ import { editFlashcard } from "@/app/utils/firebase";
 import { ActionIcon, Button, Divider, FileButton, Flex, Grid, Group, Select, Stack, Text, Textarea } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
-import { IconX } from "@tabler/icons-react";
+import { IconCheck, IconX } from "@tabler/icons-react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -69,17 +69,12 @@ export const EditFlashCardForm = ({ flashcardSet }: EditFlashCardFormType) => {
     <form onSubmit={form.onSubmit((values) => onSubmit(values))}>
       <Stack>
         <Select label="Sett synlighet" placeholder="Rediger synlighet" data={Object.values(Visibility)} {...form.getInputProps("visibility")} maw={150} />
-
-        <Group justify="center">
+        <Group align="center" my="xl">
+          <Text fw={600}>Endre Forsidebilde:</Text>
           <FileButton onChange={(file) => form.setFieldValue("coverImage", file || undefined)} accept="image/png, image/jpeg">
-            {(props) => <Button {...props}>Last opp bilde</Button>}
+            {(props) => <Button {...props} color={form.getInputProps("coverImage").value?.name ? "green" : "blue"}>{form.getInputProps("coverImage").value?.name ? <>{form.getInputProps("coverImage").value?.name} <IconCheck stroke={3} style={{marginLeft: "8px"}} />  </>: "Last opp bilde"}</Button>}
           </FileButton>
         </Group>
-        {form.getInputProps("image") && (
-          <Text size="sm" ta="center" mt="sm">
-            Picked file: {form.getInputProps("coverImage").value?.name || "No file picked"}
-          </Text>
-        )}
 
         <Divider />
 
