@@ -92,7 +92,7 @@ export default function CarouselCard({ views }: CarouselCardProps) {
           color={isShuffled ? "blue" : "gray"}
           rightSection={isShuffled ? <IconCheck></IconCheck> : <IconQuestionMark></IconQuestionMark>}
         >
-          Shuffle{isShuffled ? "d" : ""}
+          Stokke{isShuffled ? "t" : ""}
         </Button>
       </Group>
       <Container w="100%">
