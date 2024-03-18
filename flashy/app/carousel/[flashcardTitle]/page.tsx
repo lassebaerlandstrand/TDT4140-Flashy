@@ -60,7 +60,7 @@ export default function Flashcards({ params }: FlashcardsType) {
       <Text>
         Av: <Code>{flashcardSet.creator ? flashcardSet.creator.name : "Slettet bruker"}</Code>{" "}
       </Text>
-      {flashcardSet.coAuthors ? (
+      {flashcardSet.coAuthors?.length ? (
         <>
           I samarbeid med:{" "}
           <Group>
@@ -73,7 +73,7 @@ export default function Flashcards({ params }: FlashcardsType) {
         </>
       ) : null}
       <CarouselCard views={flashcardSet.views ?? []} />
-      {session?.user.role === "admin" || flashcardSet.creator?.id === session?.user.id ? (
+      {session?.user.role === "admin" || flashcardSet.creator?.id === session?.user.id || flashcardSet.coAuthors?.some((coAuthor) => coAuthor.id === session.user.id) ? (
         <Group px="md" justify="space-between" w={"100%"}>
           <SettingsButton user={session.user} flashcard={flashcardSet} />
           <Group>

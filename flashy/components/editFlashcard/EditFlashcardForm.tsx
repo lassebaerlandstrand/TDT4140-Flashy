@@ -48,7 +48,7 @@ export const EditFlashCardForm = ({ flashcardSet }: EditFlashCardFormType) => {
     initialValues: {
       views: flashcardSet.views ?? [],
       visibility: flashcardSet.visibility ?? Visibility.Private,
-      coAuthors: flashcardSet.coAuthors ?? [],
+      coAuthors: flashcardSet.coAuthors?.map((coAuthor) => coAuthor.id) ?? [],
     },
   });
 
@@ -63,7 +63,6 @@ export const EditFlashCardForm = ({ flashcardSet }: EditFlashCardFormType) => {
       visibility: values.visibility,
       coAuthors: values.coAuthors,
     };
-
     editFlashcard(session.user, prevFlashcardSet, editedFlashcard)
       .then((newViews) => {
         notifications.show({
@@ -88,7 +87,7 @@ export const EditFlashCardForm = ({ flashcardSet }: EditFlashCardFormType) => {
   };
 
   return (
-    <form onSubmit={form.onSubmit((values) => onSubmit(values))}>
+    <form onSubmit={form.onSubmit((values) => onSubmit(values as EditFlashCardType))}>
       <Stack>
         <Select label="Sett synlighet" placeholder="Rediger synlighet" data={Object.values(Visibility)} {...form.getInputProps("visibility")} maw={150} />
         <Group>
@@ -98,7 +97,10 @@ export const EditFlashCardForm = ({ flashcardSet }: EditFlashCardFormType) => {
             data={userOptions || []}
             searchable
             clearable
-            value={form.values.coAuthors.map((user) => user.name)}
+            value={form.values.coAuthors}
+            onChange={(value) => {
+              form.setFieldValue("coAuthors", value);
+            }}
             w="400"
             leftSection={<IconSearch style={{ width: rem(9), height: rem(9) }} stroke={1} />}
           />

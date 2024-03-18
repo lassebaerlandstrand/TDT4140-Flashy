@@ -55,7 +55,6 @@ async function getCoAuthors(flashcardDocument: DocumentReference) {
   await Promise.all(
     coAuthorsDocs.docs.map(async (doc) => {
       const user = await convertDocumentRefToType<User>(doc.data().coAuthor);
-      console.log(user);
       if (user) {
         coAuthors.push(user);
       }
@@ -254,7 +253,6 @@ export async function getFlashcardSet(flashcardId: string, currentUserId: User["
 
   const views = await getViews(flashcardDocument);
   const coAuthors = await getCoAuthors(flashcardDocument);
-  console.log(coAuthors);
   const userHasLiked = await userHasLikedFlashcard(flashcardDocument, currentUserId);
   const { numOfFavorites, numOfLikes, numOfComments } = await getNumOfFavouritesLikesComments(flashcardDocument);
   const userHasFavorited = await getHasFavoritedFlashcard(flashcardDocument, currentUserId);
@@ -396,14 +394,13 @@ export async function createNewFlashcard(flashcard: CreateFlashCardType) {
   await Promise.all(
     flashcard.coAuthors.map(async (coAuthorID) => {
       const userRef = doc(firestore, "users", coAuthorID);
-      console.log("hei lasse");
       return await addDoc(coAuthorsCollection, { coAuthor: userRef });
     })
   );
 }
 
 export async function editFlashcard(actionUser: User, flashcard: FlashcardSet, updatedFlashcard: EditFlashCardType) {
-  if (actionUser.id !== flashcard.creator?.id && actionUser.role !== "admin") {
+  if (actionUser.id !== flashcard.creator?.id && actionUser.role !== "admin" && !flashcard.coAuthors?.some((coAuthor) => coAuthor.id === actionUser.id)) {
     throw new Error("Du har ikke tilgang til å redigere dette settet");
   }
 
@@ -435,6 +432,42 @@ export async function editFlashcard(actionUser: User, flashcard: FlashcardSet, u
       })
     ).catch(() => {
       throw new Error("Feilet å slette kortene for settet");
+    });
+  }
+
+  const coAuthorsCollection = collection(flashcardDoc, "coAuthors");
+
+  // Delete coAuthors
+  const deletedCoAuthors = flashcard.coAuthors?.filter((coAuthor) => {
+    return !updatedFlashcard.coAuthors.some((updatedCoAuthor) => updatedCoAuthor === coAuthor.id);
+  });
+
+  if (deletedCoAuthors) {
+    await Promise.all(
+      deletedCoAuthors.map(async (coAuthor) => {
+        const coAuthorDoc = await getDocs(query(coAuthorsCollection, where("coAuthor", "==", doc(firestore, "users", coAuthor.id))));
+
+        await deleteDoc(coAuthorDoc.docs[0].ref);
+        console.log(coAuthor);
+      })
+    ).catch(() => {
+      throw new Error("Feilet å slette coAuthors for settet");
+    });
+  }
+
+  // Add coAuthors
+  const newCoAuthors = updatedFlashcard.coAuthors.filter((coAuthor) => {
+    return !flashcard.coAuthors?.some((flashcardCoAuthor) => flashcardCoAuthor.id === coAuthor);
+  });
+
+  if (newCoAuthors) {
+    await Promise.all(
+      newCoAuthors.map(async (coAuthor) => {
+        const userRef = doc(firestore, "users", coAuthor);
+        await addDoc(coAuthorsCollection, { coAuthor: userRef });
+      })
+    ).catch(() => {
+      throw new Error("Feilet å legge til coAuthors for settet");
     });
   }
 
@@ -481,7 +514,7 @@ export async function editFlashcard(actionUser: User, flashcard: FlashcardSet, u
 }
 
 export async function deleteFlashcardSet(actionUser: User, flashcard: FlashcardSet) {
-  if (actionUser.id !== flashcard.creator?.id && actionUser.role !== "admin") {
+  if (actionUser.id !== flashcard.creator?.id && actionUser.role !== "admin" && !flashcard.coAuthors?.some((coAuthor) => coAuthor.id === actionUser.id)) {
     throw new Error("Du har ikke tilgang til å redigere dette settet");
   }
 

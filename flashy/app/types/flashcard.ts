@@ -67,7 +67,7 @@ export type CreateViewType = Pick<FlashcardView, "front" | "back">;
 export type EditFlashCardType = {
   views: EditFlashcardView[];
   visibility: Visibility;
-  coAuthors: User[];
+  coAuthors: string[];
 };
 
 export type EditFlashcardView = Pick<FlashcardView, "front" | "back"> & {
