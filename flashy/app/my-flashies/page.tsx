@@ -1,7 +1,7 @@
 "use client";
 
 import { FlashcardSet } from "@/app/types/flashcard";
-import { getAllPublicFlashCardSets, getMyFlashies } from "@/app/utils/firebase";
+import { getAllContributingFlashcardSets, getAllPublicFlashCardSets, getMyFlashies } from "@/app/utils/firebase";
 import { ArticleCardsGrid } from "@/components/articleView/ArticleCardsGrid";
 import { ActionIcon, Button, Group, Loader, Stack, Text, TextInput, Title, rem, useMantineTheme } from "@mantine/core";
 import { IconArrowRight, IconSearch } from "@tabler/icons-react";
@@ -16,6 +16,7 @@ export default function Home() {
   const { data: session } = useSession();
   const [flashcardSets, setFlashcardSets] = useState<FlashcardSet[]>();
   const [favoriteFlashcards, setFavoriteFlashcards] = useState<FlashcardSet[]>();
+  const [coAuthorFlashcards, setCoAuthorFlashcards] = useState<FlashcardSet[]>();
 
   const theme = useMantineTheme();
 
@@ -29,6 +30,9 @@ export default function Home() {
 
       const favoriteCards = (await getAllPublicFlashCardSets(session.user)).filter((flashcardSet) => flashcardSet.userHasFavorited);
       setFavoriteFlashcards(favoriteCards);
+
+      const coAuthorCards = await getAllContributingFlashcardSets(session.user);
+      setCoAuthorFlashcards(coAuthorCards);
     }
     fetchData();
   }, [session]);
@@ -78,6 +82,18 @@ export default function Home() {
               <Stack align="center">
                 <Title>Mine favoritter</Title>
                 {favoriteFlashcards.length === 0 ? <Text>Du har ingen favoritter enda... 🙊</Text> : <ArticleCardsGrid user={session.user} flashcards={favoriteFlashcards ?? []} />}
+              </Stack>
+            )}
+            {coAuthorFlashcards && (
+              <Stack align="center">
+                {coAuthorFlashcards.length === 0 ? (
+                  <></>
+                ) : (
+                  <>
+                    <Title>Flashies jeg har bidratt på</Title>
+                    <ArticleCardsGrid user={session.user} flashcards={coAuthorFlashcards ?? []} />
+                  </>
+                )}
               </Stack>
             )}
           </>

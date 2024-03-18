@@ -73,15 +73,16 @@ export async function getMyFlashies(user: User): Promise<FlashcardSet[]> {
     flashcardDocs.docs.map(async (doc) => {
       try {
         const { numOfFavorites, numOfLikes, numOfComments } = await getNumOfFavouritesLikesComments(doc.ref);
+        const coAuthors = await getCoAuthors(doc.ref);
         const flashcardSet: FlashcardSet = {
           id: doc.id,
           creator: await convertDocumentRefToType<User>(doc.data().creator),
-          coAuthors: doc.data().coAuthors,
+          coAuthors: coAuthors,
           title: doc.data().title,
           numViews: doc.data().numViews,
           numOfLikes: numOfLikes,
-          numOfComments: numOfComments,
           numOfFavorites: numOfFavorites,
+          numOfComments: numOfComments,
           visibility: doc.data().isPublic ? Visibility.Public : Visibility.Private,
           createdAt: doc.data().createdAt.toDate(),
           popularityScore: calculatePopularityScore(doc.data().numViews, numOfFavorites, numOfLikes, numOfComments),
@@ -107,10 +108,12 @@ export async function getAllPublicFlashCardSets(currentUser: Session["user"]): P
     flashcardDocs.docs.map(async (doc) => {
       try {
         const { numOfFavorites, numOfLikes, numOfComments } = await getNumOfFavouritesLikesComments(doc.ref);
+        const coAuthors = await getCoAuthors(doc.ref);
         const flashcardSet: FlashcardSet = {
           id: doc.id,
           userHasFavorited: await getHasFavoritedFlashcard(doc.ref, currentUser.id),
           creator: await convertDocumentRefToType<User>(doc.data().creator),
+          coAuthors: coAuthors,
           title: doc.data().title,
           numViews: doc.data().numViews,
           numOfLikes: numOfLikes,
@@ -118,8 +121,48 @@ export async function getAllPublicFlashCardSets(currentUser: Session["user"]): P
           numOfComments: numOfComments,
           visibility: doc.data().isPublic ? Visibility.Public : Visibility.Private,
           createdAt: doc.data().createdAt.toDate(),
-          coverImage: doc.data().image,
           popularityScore: calculatePopularityScore(doc.data().numViews, numOfFavorites, numOfLikes, numOfComments),
+          coverImage: doc.data().image,
+        };
+        return flashcardSet;
+      } catch (e) {
+        console.log(`[DocId: ${doc.id}]`, e);
+      }
+      return null;
+    })
+  );
+
+  return (await allFlashcardSets).filter((flashcard) => flashcard != null) as FlashcardSet[];
+}
+
+export async function getAllContributingFlashcardSets(user: User): Promise<FlashcardSet[]> {
+  const flashcardCollection = collection(firestore, "flashies");
+  const userDoc = doc(firestore, "users", user.id);
+  const flashcardDocs = await getDocs(flashcardCollection);
+  const allFlashcardSets = Promise.all(
+    flashcardDocs.docs.map(async (doc) => {
+      const coAuthorscollection = collection(doc.ref, "coAuthors");
+      const coAuthorQuery = query(coAuthorscollection, where("coAuthor", "==", userDoc));
+      const coAuthorDocs = await getDocs(coAuthorQuery);
+      if (coAuthorDocs.empty) {
+        return null;
+      }
+      try {
+        const { numOfFavorites, numOfLikes, numOfComments } = await getNumOfFavouritesLikesComments(doc.ref);
+        const coAuthors = await getCoAuthors(doc.ref);
+        const flashcardSet: FlashcardSet = {
+          id: doc.id,
+          creator: await convertDocumentRefToType<User>(doc.data().creator),
+          coAuthors: coAuthors,
+          title: doc.data().title,
+          numViews: doc.data().numViews,
+          numOfLikes: numOfLikes,
+          numOfFavorites: numOfFavorites,
+          numOfComments: numOfComments,
+          visibility: doc.data().isPublic ? Visibility.Public : Visibility.Private,
+          createdAt: doc.data().createdAt.toDate(),
+          popularityScore: calculatePopularityScore(doc.data().numViews, numOfFavorites, numOfLikes, numOfComments),
+          coverImage: doc.data().image,
         };
         return flashcardSet;
       } catch (e) {
