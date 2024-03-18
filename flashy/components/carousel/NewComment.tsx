@@ -50,13 +50,8 @@ export const NewComment = ({ flashcard, actionUser }: NewCommentType) => {
   }
 
   return (
-    <Paper shadow="sm" p="lg">
+    <Paper py="xl">
       <Stack gap={12}>
-        <Group gap={8}>
-          <Avatar src={actionUser?.image} size={30} mr={8} />
-          <Text size="sm" fw={500}>{actionUser?.name ?? "Slettet Bruker"}</Text>
-        </Group>
-        <Divider />
         <form onSubmit={form.onSubmit((values) => onSubmit(values))}>
           <Textarea
             variant="unstyled"
@@ -64,8 +59,9 @@ export const NewComment = ({ flashcard, actionUser }: NewCommentType) => {
             autosize
             {...form.getInputProps("content")}
           />
+          <Divider />
           <Group justify="flex-end" mt="xs">
-            <Button type="submit" size="xs" loading={loading}>Publiser kommentar</Button>
+            <Button type="submit" size="sm" loading={loading}>Publiser kommentar</Button>
           </Group>
         </form>
       </Stack>

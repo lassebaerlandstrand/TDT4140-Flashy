@@ -53,7 +53,7 @@ export default function Flashcards({ params }: FlashcardsType) {
   }
 
   return (
-    <Stack align="center" w={800}>
+    <Stack align="center">
       <Group gap="lg">
         <Title>{flashcardSet.title}</Title>
       </Group>
@@ -74,7 +74,7 @@ export default function Flashcards({ params }: FlashcardsType) {
       ) : null}
       <CarouselCard views={flashcardSet.views ?? []} />
       {session?.user.role === "admin" || flashcardSet.creator?.id === session?.user.id || flashcardSet.coAuthors?.some((coAuthor) => coAuthor.id === session.user.id) ? (
-        <Group px="md" justify="space-between" w={"100%"}>
+        <Group justify="space-between" w={800}>
           <SettingsButton user={session.user} flashcard={flashcardSet} />
           <Group>
             <LikeButton user={session.user} flashcard={flashcardSet} />
@@ -82,7 +82,9 @@ export default function Flashcards({ params }: FlashcardsType) {
           </Group>
         </Group>
       ) : null}
-      {flashcardSet.comments && <CommentSection flashcard={flashcardSet} comments={flashcardSet.comments} actionUser={session.user} />}
+      {flashcardSet.comments &&
+        <CommentSection flashcard={flashcardSet} comments={flashcardSet.comments} actionUser={session.user} w={800} />
+      }
     </Stack>
   );
 }

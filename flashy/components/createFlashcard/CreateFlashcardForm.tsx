@@ -2,12 +2,12 @@
 
 import { CreateFlashCardType, Visibility } from "@/app/types/flashcard";
 import { createNewFlashcard, getAllUsers } from "@/app/utils/firebase";
-import { ActionIcon, Button, ComboboxData, Divider, FileButton, Flex, Grid, Group, MultiSelect, Select, Stack, Text, TextInput, Textarea, rem } from "@mantine/core";
+import { Session } from "next-auth";
+import { ActionIcon, Button, ComboboxData, Divider, FileButton, Flex, Grid, Group, MultiSelect, Select, Space, Stack, Text, TextInput, Textarea } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { modals } from "@mantine/modals";
 import { notifications } from "@mantine/notifications";
-import { IconSearch, IconX } from "@tabler/icons-react";
-import { Session } from "next-auth";
+import { IconSearch, IconPhoto, IconCheck, IconX } from "@tabler/icons-react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -139,9 +139,10 @@ export const CreateFlashCardForm = () => {
 
           <Select label="Sett synlighet" placeholder="Rediger synlighet" data={Object.values(Visibility)} {...form.getInputProps("visibility")} maw={150} />
         </Group>
-        <Group justify="center">
+        <Group align="center" my="xl">
+          <Text fw={600}>Forsidebilde:</Text>
           <FileButton onChange={(file) => form.setFieldValue("image", file || undefined)} accept="image/png, image/jpeg">
-            {(props) => <Button {...props}>Last opp bilde</Button>}
+            {(props) => <Button {...props} color={form.getInputProps("image").value?.name ? "green" : "blue"}>{form.getInputProps("image").value?.name ? <>{form.getInputProps("image").value?.name} <IconCheck stroke={3} style={{marginLeft: "8px"}} />  </>: "Last opp bilde"}</Button>}
           </FileButton>
         </Group>
         {form.getInputProps("image") && (
@@ -182,6 +183,17 @@ export const CreateFlashCardForm = () => {
                   resize="vertical"
                   minRows={4}
                 />
+                <Space h={10} />
+                <Group>
+                  <FileButton onChange={(file) => form.setFieldValue(`views.${index}.image`, file || undefined)} accept="image/png, image/jpeg">
+                    {(props) => (
+                      <ActionIcon {...props} color="lime.4" variant="filled">
+                        <IconPhoto size={50} />
+                      </ActionIcon>
+                    )}
+                  </FileButton>
+                  {form.getInputProps(`views.${index}.image`) && <>Valgt bilde: {form.getInputProps(`views.${index}.image`).value?.name || "ingen valgt bilde"}</>}
+                </Group>
               </Grid.Col>
               <Grid.Col span={5}>
                 <Textarea

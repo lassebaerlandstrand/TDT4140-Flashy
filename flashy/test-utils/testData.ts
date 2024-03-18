@@ -9,6 +9,7 @@ export const dummyFlashcard: FlashcardSet = {
   numOfFavorites: 4,
   numOfComments: 3,
   createdAt: new Date(),
+  popularityScore: 2,
 }
 
 export const dummyUser: User = {

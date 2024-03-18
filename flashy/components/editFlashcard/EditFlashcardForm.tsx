@@ -1,11 +1,13 @@
-import { EditFlashCardType, FlashcardSet, Visibility } from "@/app/types/flashcard";
-import { editFlashcard, getAllUsers } from "@/app/utils/firebase";
-import { ActionIcon, Button, ComboboxData, Divider, Flex, Grid, Group, MultiSelect, Select, Stack, Text, Textarea, rem } from "@mantine/core";
+import { EditFlashCardType, FlashcardSet, EditFlashcardView, Visibility } from "@/app/types/flashcard";
+import { editFlashcard, getAllUsers, ConvertToBase64 } from "@/app/utils/firebase";
+import { ActionIcon, Button, ComboboxData, Divider, FileButton, Flex, Grid, Group, MultiSelect, Select, Space, Stack, Text, Textarea } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
-import { IconSearch, IconX } from "@tabler/icons-react";
+import { IconSearch, IconCheck, IconX } from "@tabler/icons-react";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 type EditFlashCardFormType = {
   flashcardSet: FlashcardSet;
@@ -45,12 +47,14 @@ export const EditFlashCardForm = ({ flashcardSet }: EditFlashCardFormType) => {
 
     fetchUserOptions();
   }, [prevFlashcardSet.creator?.id]);
+  const router = useRouter();
 
   const form = useForm<EditFlashCardType>({
     initialValues: {
       views: flashcardSet.views ?? [],
       visibility: flashcardSet.visibility ?? Visibility.Private,
       coAuthors: flashcardSet.coAuthors?.map((coAuthor) => coAuthor.id) ?? [],
+      coverImage: undefined,
     },
   });
 
@@ -64,6 +68,7 @@ export const EditFlashCardForm = ({ flashcardSet }: EditFlashCardFormType) => {
       views: values.views,
       visibility: values.visibility,
       coAuthors: values.coAuthors,
+      coverImage: values.coverImage,
     };
     editFlashcard(session.user, prevFlashcardSet, editedFlashcard)
       .then((newViews) => {
@@ -71,8 +76,12 @@ export const EditFlashCardForm = ({ flashcardSet }: EditFlashCardFormType) => {
           title: "Settet er oppdatert",
           message: "",
           color: "green",
+          onClick: () => {
+            router.push("/carousel/" + flashcardSet.title);
+            notifications.clean();
+          },
         });
-        setPrevFlashcardSet({ ...prevFlashcardSet, views: newViews, visibility: editedFlashcard.visibility });
+        setPrevFlashcardSet({ ...prevFlashcardSet, views: newViews, visibility: editedFlashcard.visibility, coverImage: editedFlashcard.coverImage });
         form.setInitialValues(editedFlashcard);
         form.reset();
       })
@@ -86,6 +95,17 @@ export const EditFlashCardForm = ({ flashcardSet }: EditFlashCardFormType) => {
       .finally(() => {
         setLoading(false);
       });
+  };
+
+  const handleOnChangeAddImage = async (file: File | null, index: number, view: EditFlashcardView) => {
+    if (file) {
+      const imageBase64 = (await ConvertToBase64(file)) as string;
+      form.setFieldValue(`views.${index}.image`, imageBase64);
+      view.image = imageBase64;
+    } else {
+      form.setFieldValue(`views.${index}.image`, undefined);
+      view.image = undefined;
+    }
   };
 
   return (
@@ -106,12 +126,17 @@ export const EditFlashCardForm = ({ flashcardSet }: EditFlashCardFormType) => {
             w="400"
             leftSection={<IconSearch style={{ width: rem(9), height: rem(9) }} stroke={1} />}
           />
+        <Group align="center" my="xl">
+          <Text fw={600}>Endre Forsidebilde:</Text>
+          <FileButton onChange={(file) => form.setFieldValue("coverImage", file || undefined)} accept="image/png, image/jpeg">
+            {(props) => <Button {...props} color={form.getInputProps("coverImage").value?.name ? "green" : "blue"}>{form.getInputProps("coverImage").value?.name ? <>{form.getInputProps("coverImage").value?.name} <IconCheck stroke={3} style={{marginLeft: "8px"}} />  </>: "Last opp bilde"}</Button>}
+          </FileButton>
         </Group>
 
         <Divider />
 
         <Stack gap="xl">
-          {form.values.views.map((_, index) => (
+          {form.values.views.map((view, index) => (
             <Grid key={index}>
               <Grid.Col span={1}>
                 <Flex justify="center" align="center" style={{ height: "100%" }}>
@@ -127,6 +152,29 @@ export const EditFlashCardForm = ({ flashcardSet }: EditFlashCardFormType) => {
                   resize="vertical"
                   minRows={4}
                 />
+                <Space h={10} />
+                {view.image && (
+                  <Group>
+                    Bilde: <Image src={view.image} alt="Bilde" height={50} width={200} />
+                  </Group>
+                )}
+                <Space h={10} />
+                <Group align="center">
+                  <FileButton
+                    onChange={(file) => {
+                      handleOnChangeAddImage(file, index, view);
+                    }}
+                    accept="image/png, image/jpeg"
+                  >
+                    {(props) => (
+                      <Button {...props} color="lime.4" variant="filled">
+                        {form.getInputProps(`views.${index}.image`) && (
+                          <>{view.image ? "Endre bilde" : "Valgt bilde: " + (form.getInputProps(`views.${index}.image`).value?.name || "Ingen valgt bilde")}</>
+                        )}
+                      </Button>
+                    )}
+                  </FileButton>
+                </Group>
               </Grid.Col>
               <Grid.Col span={5}>
                 <Textarea

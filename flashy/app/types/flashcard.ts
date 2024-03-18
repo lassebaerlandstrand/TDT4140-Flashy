@@ -9,7 +9,7 @@ export type FlashcardSet = {
   id: string;
   creator?: User;
   coAuthors?: User[];
-  coverImage?: string;
+  coverImage?: string | File;
   title: string;
   numViews: number;
   numOfLikes: number;
@@ -52,6 +52,10 @@ export type FlashcardView = {
   back: string;
 };
 
+export type CreateFlashCardViewType  = FlashcardView & {
+  image?: File;
+}
+
 export type CreateFlashCardType = {
   creator: User;
   coAuthors: string[];
@@ -62,15 +66,16 @@ export type CreateFlashCardType = {
   image?: File;
 };
 
-export type CreateViewType = Pick<FlashcardView, "front" | "back">;
+export type CreateViewType = Pick<CreateFlashCardViewType, "front" | "back" | "image">;
 
 export type EditFlashCardType = {
   views: EditFlashcardView[];
   visibility: Visibility;
   coAuthors: string[];
+  coverImage: File | undefined;
 };
 
-export type EditFlashcardView = Pick<FlashcardView, "front" | "back"> & {
+export type EditFlashcardView = Pick<FlashcardView, "front" | "back" | "image"> & {
   id?: string;
 };
 
