@@ -36,8 +36,8 @@ export const CreateFlashCardForm = () => {
 
   const usersToComboBoxData = async (session: Session | null) => {
     try {
-      const users = await getAllUsers();
-      users.filter((user) => user.id !== session?.user.id);
+      let users = await getAllUsers();
+      users = users.filter((user) => user.id !== session?.user?.id);
       return users.map((user) => ({
         value: user.id,
         label: user.name,

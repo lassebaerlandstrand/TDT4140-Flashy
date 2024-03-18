@@ -4,7 +4,6 @@ import { ActionIcon, Button, ComboboxData, Divider, Flex, Grid, Group, MultiSele
 import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import { IconSearch, IconX } from "@tabler/icons-react";
-import { Session } from "next-auth";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 
@@ -19,9 +18,24 @@ export const EditFlashCardForm = ({ flashcardSet }: EditFlashCardFormType) => {
   const [userOptions, setUserOptions] = useState<ComboboxData | undefined>(undefined);
 
   useEffect(() => {
+    const usersToComboBoxData = async () => {
+      try {
+        let users = await getAllUsers();
+        // filter out the user that created the initial flashcard set
+        users = users.filter((user) => user.id !== prevFlashcardSet.creator?.id);
+        return users.map((user) => ({
+          value: user.id,
+          label: user.name,
+        }));
+      } catch (error) {
+        console.error("Error fetching users:", error);
+        return [];
+      }
+    };
+
     const fetchUserOptions = async () => {
       try {
-        const users = await usersToComboBoxData(session);
+        const users = await usersToComboBoxData();
         setUserOptions(users);
       } catch (error) {
         console.error("Error fetching user options:", error);
@@ -30,21 +44,7 @@ export const EditFlashCardForm = ({ flashcardSet }: EditFlashCardFormType) => {
     };
 
     fetchUserOptions();
-  }, [session]);
-
-  const usersToComboBoxData = async (session: Session | null) => {
-    try {
-      const users = await getAllUsers();
-      users.filter((user) => user.id !== session?.user.id);
-      return users.map((user) => ({
-        value: user.id,
-        label: user.name,
-      }));
-    } catch (error) {
-      console.error("Error fetching users:", error);
-      return [];
-    }
-  };
+  }, [prevFlashcardSet.creator?.id]);
 
   const form = useForm<EditFlashCardType>({
     initialValues: {
