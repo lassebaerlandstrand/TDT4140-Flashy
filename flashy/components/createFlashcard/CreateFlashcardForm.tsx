@@ -7,24 +7,13 @@ import { useForm } from "@mantine/form";
 import { modals } from "@mantine/modals";
 import { notifications } from "@mantine/notifications";
 import { IconSearch, IconX } from "@tabler/icons-react";
+import { Session } from "next-auth";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const regexLettersAndNumbers = new RegExp("^[a-zA-Z0-9æøåÆØÅ\\s]+$");
 
-const usersToComboBoxData = async () => {
-  try {
-    const users = await getAllUsers();
-    return users.map((user) => ({
-      value: user.id,
-      label: user.name,
-    }));
-  } catch (error) {
-    console.error("Error fetching users:", error);
-    return [];
-  }
-};
 export const CreateFlashCardForm = () => {
   const router = useRouter();
   const { data: session } = useSession();
@@ -34,7 +23,7 @@ export const CreateFlashCardForm = () => {
   useEffect(() => {
     const fetchUserOptions = async () => {
       try {
-        const users = await usersToComboBoxData();
+        const users = await usersToComboBoxData(session);
         setUserOptions(users);
       } catch (error) {
         console.error("Error fetching user options:", error);
@@ -43,7 +32,21 @@ export const CreateFlashCardForm = () => {
     };
 
     fetchUserOptions();
-  }, []);
+  }, [session]);
+
+  const usersToComboBoxData = async (session: Session | null) => {
+    try {
+      const users = await getAllUsers();
+      users.filter((user) => user.id !== session?.user.id);
+      return users.map((user) => ({
+        value: user.id,
+        label: user.name,
+      }));
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      return [];
+    }
+  };
 
   const form = useForm<Omit<CreateFlashCardType, "creator">>({
     initialValues: {
