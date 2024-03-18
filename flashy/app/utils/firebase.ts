@@ -410,7 +410,6 @@ export async function createNewFlashcard(flashcard: CreateFlashCardType) {
   if (flashcardData.exists()) {
     throw new Error("Navnet på settet er allerede i bruk");
   }
-  console.log(flashcard.coAuthors);
 
   // Create flashcard
   const docData = {
@@ -506,9 +505,7 @@ export async function editFlashcard(actionUser: User, flashcard: FlashcardSet, u
     await Promise.all(
       deletedCoAuthors.map(async (coAuthor) => {
         const coAuthorDoc = await getDocs(query(coAuthorsCollection, where("coAuthor", "==", doc(firestore, "users", coAuthor.id))));
-
         await deleteDoc(coAuthorDoc.docs[0].ref);
-        console.log(coAuthor);
       })
     ).catch(() => {
       throw new Error("Feilet å slette coAuthors for settet");
@@ -553,7 +550,7 @@ export async function editFlashcard(actionUser: User, flashcard: FlashcardSet, u
         newViewValues.image = newImage
         resultingViewValies.image = newImage
       }
-      
+
       const newView = await addDoc(viewsCollection, newViewValues);
       resultingViews.push({id: newView.id, ...resultingViewValies});
     })

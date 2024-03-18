@@ -1,13 +1,13 @@
-import { EditFlashCardType, FlashcardSet, EditFlashcardView, Visibility } from "@/app/types/flashcard";
-import { editFlashcard, getAllUsers, ConvertToBase64 } from "@/app/utils/firebase";
-import { ActionIcon, Button, ComboboxData, Divider, FileButton, Flex, Grid, Group, MultiSelect, Select, Space, Stack, Text, Textarea } from "@mantine/core";
+import { EditFlashCardType, EditFlashcardView, FlashcardSet, Visibility } from "@/app/types/flashcard";
+import { ConvertToBase64, editFlashcard, getAllUsers } from "@/app/utils/firebase";
+import { ActionIcon, Button, ComboboxData, Divider, FileButton, Flex, Grid, Group, MultiSelect, Select, Space, Stack, Text, Textarea, rem } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
-import { IconSearch, IconCheck, IconX } from "@tabler/icons-react";
+import { IconCheck, IconSearch, IconX } from "@tabler/icons-react";
 import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 type EditFlashCardFormType = {
   flashcardSet: FlashcardSet;
@@ -126,10 +126,21 @@ export const EditFlashCardForm = ({ flashcardSet }: EditFlashCardFormType) => {
             w="400"
             leftSection={<IconSearch style={{ width: rem(9), height: rem(9) }} stroke={1} />}
           />
+        </Group>
         <Group align="center" my="xl">
           <Text fw={600}>Endre Forsidebilde:</Text>
           <FileButton onChange={(file) => form.setFieldValue("coverImage", file || undefined)} accept="image/png, image/jpeg">
-            {(props) => <Button {...props} color={form.getInputProps("coverImage").value?.name ? "green" : "blue"}>{form.getInputProps("coverImage").value?.name ? <>{form.getInputProps("coverImage").value?.name} <IconCheck stroke={3} style={{marginLeft: "8px"}} />  </>: "Last opp bilde"}</Button>}
+            {(props) => (
+              <Button {...props} color={form.getInputProps("coverImage").value?.name ? "green" : "blue"}>
+                {form.getInputProps("coverImage").value?.name ? (
+                  <>
+                    {form.getInputProps("coverImage").value?.name} <IconCheck stroke={3} style={{ marginLeft: "8px" }} />{" "}
+                  </>
+                ) : (
+                  "Last opp bilde"
+                )}
+              </Button>
+            )}
           </FileButton>
         </Group>
 

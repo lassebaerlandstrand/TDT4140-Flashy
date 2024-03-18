@@ -50,11 +50,12 @@ export type FlashcardView = {
   isCopy?: boolean;
   front: string;
   back: string;
+  image?: string;
 };
 
-export type CreateFlashCardViewType  = FlashcardView & {
+export type CreateFlashCardViewType = FlashcardView & {
   image?: File;
-}
+};
 
 export type CreateFlashCardType = {
   creator: User;
@@ -75,7 +76,7 @@ export type EditFlashCardType = {
   coverImage: File | undefined;
 };
 
-export type EditFlashcardView = Pick<FlashcardView, "front" | "back" | "image"> & {
+export type EditFlashcardView = Pick<FlashcardView, "front" | "back" | "image"> & {
   id?: string;
 };
 
