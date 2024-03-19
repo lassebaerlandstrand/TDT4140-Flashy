@@ -9,6 +9,7 @@ import { getServerSession } from "next-auth";
 
 const theme = createTheme({
   fontFamily: "Open Sans, sans-serif",
+  cursorType: 'pointer',
 });
 
 export default async function RootStyleRegistry({

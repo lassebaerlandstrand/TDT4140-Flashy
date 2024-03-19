@@ -1,25 +1,28 @@
 import classes from "@/components/navigation/NavbarNested.module.css";
 import { UserButton } from "@/components/user/UserButton";
 import { Code, Container, Flex, Group, Space, Stack, Text, UnstyledButton } from "@mantine/core";
-import { IconCards, IconUser } from "@tabler/icons-react";
+import { IconCards, IconCardsFilled, IconCircleKey, IconCircleKeyFilled, IconRectangleVertical, IconRectangleVerticalFilled, IconUser, IconUserFilled } from "@tabler/icons-react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const data = [
-  { link: "/profile", label: "Profil", icon: IconUser, requiresAdmin: false },
-  { link: "/my-flashies", label: "Mine Flashies", icon: IconCards, requiresAdmin: false },
-  { link: "/admin", label: "Administrasjon", icon: IconUser, requiresAdmin: true },
+  { link: "/profile", label: "Profil", icon: IconUser, filledIcon: IconUserFilled, requiresAdmin: false },
+  { link: "/my-flashies", label: "Mine Flashies", icon: IconRectangleVertical, filledIcon: IconRectangleVerticalFilled, requiresAdmin: false },
+  { link: "/", label: "Alle flashies", icon: IconCards, filledIcon: IconCardsFilled, requiresAdmin: false },
+  { link: "/admin", label: "Administrasjon", icon: IconCircleKey, filledIcon: IconCircleKeyFilled, requiresAdmin: true },
 ];
 
 export function NavbarNested() {
   const session = useSession();
+  const pathname = usePathname();
   const links = data
     .filter((item) => session.data?.user?.role == "admin" || !item.requiresAdmin)
     .map((item) => (
       <UnstyledButton component={Link} className={classes.link} href={item.link} key={item.label}>
-        <item.icon className={classes.linkIcon} stroke={1.5} />
-        <Text>{item.label}</Text>
+        {pathname == item.link ? <item.filledIcon className={classes.linkIcon} stroke={1.5} /> : <item.icon className={classes.linkIcon} stroke={1.5} />}
+        <Text px="10">{item.label}</Text>
       </UnstyledButton>
     ));
 
@@ -31,7 +34,7 @@ export function NavbarNested() {
             <UnstyledButton component={Link} href="/" style={{ display: "flex", alignItems: "center" }}>
               <Image src="/logo/FlashyLogoHorizontal.png" alt="Flashy logo" width={128} height={30} priority={true} />
             </UnstyledButton>
-            <Code fw={700}>V 0.1.0</Code>
+            <Code fw={700}>v0.1.0</Code>
           </Group>
           <Space h="md" />
           <Stack>{links}</Stack>

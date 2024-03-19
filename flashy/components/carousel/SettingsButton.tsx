@@ -1,41 +1,29 @@
 import { FlashcardSet } from "@/app/types/flashcard";
 import { User } from "@/app/types/user";
-import { deleteFlashcard } from "@/app/utils/firebase";
 import { Button, Menu } from "@mantine/core";
-import { notifications } from "@mantine/notifications";
 import { IconPencil, IconSettings, IconTrash } from "@tabler/icons-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { ConfirmDeleteFlashy } from "../user/ConfirmationModal";
 
 type SettingsButtonType = {
   user: User;
   flashcard: FlashcardSet;
-}
+};
 
 export function SettingsButton({ user, flashcard }: SettingsButtonType) {
   const router = useRouter();
 
   const deleteFlashcardFunction = (user: User, flashcard: FlashcardSet) => {
-    deleteFlashcard(user, flashcard).then(() => {
-      router.push("/");
-      notifications.show({
-        title: "Settet er slettet",
-        message: "",
-        color: "green",
-      });
-    }).catch((error) => {
-      notifications.show({
-        title: 'Noe gikk galt',
-        message: error.message,
-        color: 'red',
-      });
-    });
-  }
+    ConfirmDeleteFlashy(user, flashcard, router);
+  };
 
   return (
     <Menu shadow="md">
       <Menu.Target>
-        <Button color="gray" leftSection={<IconSettings width={18} />}>Innstillinger</Button>
+        <Button color="gray" leftSection={<IconSettings width={18} />}>
+          Innstillinger
+        </Button>
       </Menu.Target>
 
       <Menu.Dropdown>

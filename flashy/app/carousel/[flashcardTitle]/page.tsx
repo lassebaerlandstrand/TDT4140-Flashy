@@ -2,6 +2,9 @@
 
 import { FlashcardSet } from "@/app/types/flashcard";
 import { getFlashcardSet } from "@/app/utils/firebase";
+import { CommentSection } from "@/components/carousel/CommentSection";
+import FavoriteButton from "@/components/carousel/FavoriteButton";
+import { LikeButton } from "@/components/carousel/LikeButton";
 import { SettingsButton } from "@/components/carousel/SettingsButton";
 import CarouselCard from "@/components/carousel/carousel";
 import { Button, Code, Group, Loader, Stack, Text, Title } from "@mantine/core";
@@ -14,7 +17,7 @@ type FlashcardsType = {
 };
 
 export default function Flashcards({ params }: FlashcardsType) {
-  const [flashcardSet, setFlashcardSet] = useState<FlashcardSet>();
+  const [flashcardSet, setFlashcardSet] = useState<FlashcardSet | null>();
   const [failedToFetch, setFailedToFetch] = useState(false);
   const { data: session } = useSession();
 
@@ -51,17 +54,37 @@ export default function Flashcards({ params }: FlashcardsType) {
 
   return (
     <Stack align="center">
-      <Title>{flashcardSet.title}</Title>
+      <Group gap="lg">
+        <Title>{flashcardSet.title}</Title>
+      </Group>
       <Text>
-        by: <Code>{flashcardSet.creator ? flashcardSet.creator.name : "Slettet bruker"}</Code>
+        Av: <Code>{flashcardSet.creator ? flashcardSet.creator.name : "Slettet bruker"}</Code>{" "}
       </Text>
+      {flashcardSet.coAuthors?.length ? (
+        <>
+          I samarbeid med:{" "}
+          <Group>
+            {flashcardSet.coAuthors.map((author) => (
+              <Text key={author.id}>
+                <Code>{author.name}</Code>
+              </Text>
+            ))}
+          </Group>
+        </>
+      ) : null}
       <CarouselCard views={flashcardSet.views ?? []} />
-
-      {session?.user.role === "admin" || flashcardSet.creator?.id === session?.user.id ? (
-        <Group pl="md" w={"100%"}>
+      {session?.user.role === "admin" || flashcardSet.creator?.id === session?.user.id || flashcardSet.coAuthors?.some((coAuthor) => coAuthor.id === session.user.id) ? (
+        <Group justify="space-between" w={800}>
           <SettingsButton user={session.user} flashcard={flashcardSet} />
+          <Group>
+            <LikeButton user={session.user} flashcard={flashcardSet} />
+            <FavoriteButton user={session.user} flashcard={flashcardSet} />
+          </Group>
         </Group>
       ) : null}
+      {flashcardSet.comments &&
+        <CommentSection flashcard={flashcardSet} comments={flashcardSet.comments} actionUser={session.user} w={800} />
+      }
     </Stack>
   );
 }

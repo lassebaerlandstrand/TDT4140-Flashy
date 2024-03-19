@@ -1,14 +1,6 @@
-import {
-  UnstyledButton,
-  Group,
-  Avatar,
-  Text,
-  rem,
-  Button,
-  Container,
-} from "@mantine/core";
+import classes from "@/components/user/UserButton.module.css";
+import { Avatar, Container, Group, Text, UnstyledButton, rem } from "@mantine/core";
 import { IconChevronRight } from "@tabler/icons-react";
-import classes from "./UserButton.module.css";
 import { signIn, useSession } from "next-auth/react";
 import Link from "next/link";
 
@@ -18,25 +10,18 @@ export function UserButton() {
     <>
       {session ? (
         <>
-          <UnstyledButton
-            className={classes.user}
-            component={Link}
-            href="/profile"
-          >
+          <UnstyledButton className={classes.user} component={Link} href="/profile">
             <Group justify="center" gap="xs">
               <Avatar src={session.user?.image} radius="xl" />
-              <Container>
-                <Text size="sm" fw={500}>
+              <Container maw={180} px="xs">
+                <Text size="sm" fw={500} style={{textOverflow: "ellipsis", whiteSpace: "nowrap", overflow: "hidden" }} >
                   {session.user?.name}
                 </Text>
-                <Text size="xs" fw={500}>
+                <Text size="xs" fw={500} style={{textOverflow: "ellipsis", whiteSpace: "nowrap", overflow: "hidden" }} >
                   {session.user?.email}
                 </Text>
               </Container>
-              <IconChevronRight
-                style={{ width: rem(14), height: rem(14) }}
-                stroke={1.5}
-              />
+              <IconChevronRight style={{ width: rem(14), height: rem(14) }} stroke={1.5} />
             </Group>
           </UnstyledButton>
         </>
@@ -55,10 +40,7 @@ export function UserButton() {
                 </Text>
               </Container>
 
-              <IconChevronRight
-                style={{ width: rem(14), height: rem(14) }}
-                stroke={1.5}
-              />
+              <IconChevronRight style={{ width: rem(14), height: rem(14) }} stroke={1.5} />
             </Group>
           </UnstyledButton>
         </>

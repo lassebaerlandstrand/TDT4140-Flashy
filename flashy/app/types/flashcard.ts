@@ -1,64 +1,86 @@
 import { User } from "./user";
 
 export enum Visibility {
-    Public = 'Offentlig',
-    Private = 'Privat',
+  Public = "Offentlig",
+  Private = "Privat",
 }
 
 export type FlashcardSet = {
-    id: string;
-    creator: User | undefined;
-    title: string;
-    numViews: number;
-    numOfLikes: number;
-    userHasLiked?: boolean;
-    userHasFavorited?: boolean;
-    comments?: FlashcardComment[];
-    flagged?: FlashcardFlagged;
-    views?: FlashcardView[];
-    visibility?: Visibility;
-}
+  id: string;
+  creator?: User;
+  coAuthors?: User[];
+  coverImage?: string | File;
+  title: string;
+  numViews: number;
+  numOfLikes: number;
+  numOfFavorites: number;
+  numOfComments?: number;
+  userHasLiked?: boolean;
+  userHasFavorited?: boolean;
+  comments?: FlashcardComment[];
+  views?: FlashcardView[];
+  visibility?: Visibility;
+  createdAt: Date;
+  popularityScore: number;
+};
 
 // Used to save on read operations
 export type ShallowFlashcardSet = {
-    id: string;
-    creator: User | undefined;
-    title: string;
-    numViews: number;
-    numOfLikes: number;
-    visibility: Visibility;
-}
+  id: string;
+  creator: User | undefined;
+  title: string;
+  numViews: number;
+  numOfLikes: number;
+  visibility: Visibility;
+};
 
 export type FlashcardFlagged = {
-    cardsFlagged: string[];
-}
+  cardsFlagged: string[];
+};
 
 export type FlashcardComment = {
-    commentedBy: User | undefined;
-    content: string;
-}
+  id: string;
+  commentedBy: User | undefined;
+  content: string;
+  createdAt: Date;
+};
 
 export type FlashcardView = {
-    id: string;
-    isCopy?: boolean;
-    front: string;
-    back: string;
-}
+  id: string;
+  isCopy?: boolean;
+  front: string;
+  back: string;
+  image?: string;
+};
+
+export type CreateFlashCardViewType = FlashcardView & {
+  image?: File;
+};
 
 export type CreateFlashCardType = {
-    creator: User;
-    title: string;
-    views: CreateViewType[];
-    visibility: Visibility;
-}
+  creator: User;
+  coAuthors: string[];
+  title: string;
+  views: CreateViewType[];
+  visibility: Visibility;
+  createdAt: Date;
+  image?: File;
+};
 
-export type CreateViewType = Pick<FlashcardView, "front" | "back">;
+export type CreateViewType = Pick<CreateFlashCardViewType, "front" | "back" | "image">;
 
 export type EditFlashCardType = {
-    views: EditFlashcardView[];
-    visibility: Visibility;
-}
+  views: EditFlashcardView[];
+  visibility: Visibility;
+  coAuthors: string[];
+  coverImage: File | undefined;
+};
 
-export type EditFlashcardView = Pick<FlashcardView, "front" | "back"> & {
-    id?: string;
+export type EditFlashcardView = Pick<FlashcardView, "front" | "back" | "image"> & {
+  id?: string;
+};
+
+export type CreateNewCommentType = {
+  commentedBy: User;
+  content: string;
 };

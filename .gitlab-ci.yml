@@ -1,0 +1,29 @@
+default:
+  image: node:21.6.1
+
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - flashy/node_modules/
+
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+
+stages:
+    - lintAndTest
+
+lintAndTest:
+  stage: lintAndTest
+  allow_failure: false
+  tags:
+    - docker
+
+  script: 
+    - "cd flashy" 
+    - echo "Running installing stage"
+    - "npm install"
+    - echo "Running linting stage"
+    - "npm run lint"
+    - echo "Running testing stage"
+    - "npm run test"

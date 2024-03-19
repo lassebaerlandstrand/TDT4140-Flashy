@@ -1,0 +1,261 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Navbar Snapshot Test Snapshot matches 1`] = `
+<DocumentFragment>
+  <style
+    data-mantine-styles="classes"
+  >
+    @media (max-width: 35.99375em) {.mantine-visible-from-xs {display: none !important;}}@media (min-width: 36em) {.mantine-hidden-from-xs {display: none !important;}}@media (max-width: 47.99375em) {.mantine-visible-from-sm {display: none !important;}}@media (min-width: 48em) {.mantine-hidden-from-sm {display: none !important;}}@media (max-width: 61.99375em) {.mantine-visible-from-md {display: none !important;}}@media (min-width: 62em) {.mantine-hidden-from-md {display: none !important;}}@media (max-width: 74.99375em) {.mantine-visible-from-lg {display: none !important;}}@media (min-width: 75em) {.mantine-hidden-from-lg {display: none !important;}}@media (max-width: 87.99375em) {.mantine-visible-from-xl {display: none !important;}}@media (min-width: 88em) {.mantine-hidden-from-xl {display: none !important;}}
+  </style>
+  <nav
+    class="navbar"
+  >
+    <div
+      class="m-8bffd616 mantine-Flex-root __m__-r1c"
+      style="height: 100%; width: 100%; justify-content: space-between; flex-direction: column;"
+    >
+      <div
+        class="header m-7485cace mantine-Container-root"
+      >
+        <div
+          class="m-4081bf90 mantine-Group-root"
+          style="--group-gap: var(--mantine-spacing-md); --group-align: center; --group-justify: space-around; --group-wrap: wrap;"
+        >
+          <a
+            class="mantine-focus-auto m-87cf2631 mantine-UnstyledButton-root"
+            href="/"
+            style="display: flex; align-items: center;"
+          >
+            <img
+              alt="Flashy logo"
+              data-nimg="1"
+              decoding="async"
+              fetchpriority="high"
+              height="30"
+              src="/_next/image?url=%2Flogo%2FFlashyLogoHorizontal.png&w=256&q=75"
+              srcset="/_next/image?url=%2Flogo%2FFlashyLogoHorizontal.png&w=128&q=75 1x, /_next/image?url=%2Flogo%2FFlashyLogoHorizontal.png&w=256&q=75 2x"
+              style="color: transparent;"
+              width="128"
+            />
+          </a>
+          <code
+            class="m-b183c0a2 mantine-Code-root"
+            dir="ltr"
+            style="font-weight: 700;"
+          >
+            v0.1.0
+          </code>
+        </div>
+        <div
+          class=""
+          style="min-height: var(--mantine-spacing-md);"
+        />
+        <div
+          class="m-6d731127 mantine-Stack-root"
+          style="--stack-gap: var(--mantine-spacing-md); --stack-align: stretch; --stack-justify: flex-start;"
+        >
+          <a
+            class="mantine-focus-auto link m-87cf2631 mantine-UnstyledButton-root"
+            href="/profile"
+          >
+            <svg
+              class="linkIcon"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1.5"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0"
+              />
+              <path
+                d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"
+              />
+            </svg>
+            <p
+              class="mantine-focus-auto m-b6d8b162 mantine-Text-root"
+            >
+              Profil
+            </p>
+          </a>
+          <a
+            class="mantine-focus-auto link m-87cf2631 mantine-UnstyledButton-root"
+            href="/my-flashies"
+          >
+            <svg
+              class="linkIcon"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1.5"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M5 3m0 2a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2z"
+              />
+            </svg>
+            <p
+              class="mantine-focus-auto m-b6d8b162 mantine-Text-root"
+            >
+              Mine Flashies
+            </p>
+          </a>
+          <a
+            class="mantine-focus-auto link m-87cf2631 mantine-UnstyledButton-root"
+            href="/"
+          >
+            <svg
+              class="linkIcon"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1.5"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10.348 3.169l-7.15 3.113a2 2 0 0 0 -1.03 2.608l4.92 11.895a1.96 1.96 0 0 0 2.59 1.063l7.142 -3.11a2.002 2.002 0 0 0 1.036 -2.611l-4.92 -11.894a1.96 1.96 0 0 0 -2.588 -1.064z"
+                fill="currentColor"
+                stroke-width="0"
+              />
+              <path
+                d="M16 3a2 2 0 0 1 1.995 1.85l.005 .15v3.5a1 1 0 0 1 -1.993 .117l-.007 -.117v-3.5h-1a1 1 0 0 1 -.117 -1.993l.117 -.007h1z"
+                fill="currentColor"
+                stroke-width="0"
+              />
+              <path
+                d="M19.08 5.61a1 1 0 0 1 1.31 -.53c.257 .108 .505 .21 .769 .314a2 2 0 0 1 1.114 2.479l-.056 .146l-2.298 5.374a1 1 0 0 1 -1.878 -.676l.04 -.11l2.296 -5.371l-.366 -.148l-.402 -.167a1 1 0 0 1 -.53 -1.312z"
+                fill="currentColor"
+                stroke-width="0"
+              />
+            </svg>
+            <p
+              class="mantine-focus-auto m-b6d8b162 mantine-Text-root"
+            >
+              Alle flashies
+            </p>
+          </a>
+          <a
+            class="mantine-focus-auto link m-87cf2631 mantine-UnstyledButton-root"
+            href="/admin"
+          >
+            <svg
+              class="linkIcon"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1.5"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M14 10m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"
+              />
+              <path
+                d="M21 12a9 9 0 1 1 -18 0a9 9 0 0 1 18 0z"
+              />
+              <path
+                d="M12.5 11.5l-4 4l1.5 1.5"
+              />
+              <path
+                d="M12 15l-1.5 -1.5"
+              />
+            </svg>
+            <p
+              class="mantine-focus-auto m-b6d8b162 mantine-Text-root"
+            >
+              Administrasjon
+            </p>
+          </a>
+        </div>
+      </div>
+      <div
+        class="footer m-7485cace mantine-Container-root"
+      >
+        <a
+          class="mantine-focus-auto user m-87cf2631 mantine-UnstyledButton-root"
+          href="/profile"
+        >
+          <div
+            class="m-4081bf90 mantine-Group-root"
+            style="--group-gap: var(--mantine-spacing-xs); --group-align: center; --group-justify: center; --group-wrap: wrap;"
+          >
+            <div
+              class="m-f85678b6 mantine-Avatar-root"
+              style="--avatar-radius: var(--mantine-radius-xl);"
+            >
+              <span
+                class="m-104cd71f mantine-Avatar-placeholder"
+              >
+                <svg
+                  data-avatar-placeholder-icon="true"
+                  fill="none"
+                  viewBox="0 0 15 15"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    clip-rule="evenodd"
+                    d="M0.877014 7.49988C0.877014 3.84219 3.84216 0.877045 7.49985 0.877045C11.1575 0.877045 14.1227 3.84219 14.1227 7.49988C14.1227 11.1575 11.1575 14.1227 7.49985 14.1227C3.84216 14.1227 0.877014 11.1575 0.877014 7.49988ZM7.49985 1.82704C4.36683 1.82704 1.82701 4.36686 1.82701 7.49988C1.82701 8.97196 2.38774 10.3131 3.30727 11.3213C4.19074 9.94119 5.73818 9.02499 7.50023 9.02499C9.26206 9.02499 10.8093 9.94097 11.6929 11.3208C12.6121 10.3127 13.1727 8.97172 13.1727 7.49988C13.1727 4.36686 10.6328 1.82704 7.49985 1.82704ZM10.9818 11.9787C10.2839 10.7795 8.9857 9.97499 7.50023 9.97499C6.01458 9.97499 4.71624 10.7797 4.01845 11.9791C4.97952 12.7272 6.18765 13.1727 7.49985 13.1727C8.81227 13.1727 10.0206 12.727 10.9818 11.9787ZM5.14999 6.50487C5.14999 5.207 6.20212 4.15487 7.49999 4.15487C8.79786 4.15487 9.84999 5.207 9.84999 6.50487C9.84999 7.80274 8.79786 8.85487 7.49999 8.85487C6.20212 8.85487 5.14999 7.80274 5.14999 6.50487ZM7.49999 5.10487C6.72679 5.10487 6.09999 5.73167 6.09999 6.50487C6.09999 7.27807 6.72679 7.90487 7.49999 7.90487C8.27319 7.90487 8.89999 7.27807 8.89999 6.50487C8.89999 5.73167 8.27319 5.10487 7.49999 5.10487Z"
+                    fill="currentColor"
+                    fill-rule="evenodd"
+                  />
+                </svg>
+              </span>
+            </div>
+            <div
+              class="m-7485cace mantine-Container-root"
+              style="max-width: calc(11.25rem * var(--mantine-scale));"
+            >
+              <p
+                class="mantine-focus-auto m-b6d8b162 mantine-Text-root"
+                data-size="sm"
+                style="--text-fz: var(--mantine-font-size-sm); --text-lh: var(--mantine-line-height-sm); text-overflow: ellipsis; white-space: nowrap; overflow: hidden; font-weight: 500;"
+              >
+                Ola Nordmann Admin
+              </p>
+              <p
+                class="mantine-focus-auto m-b6d8b162 mantine-Text-root"
+                data-size="xs"
+                style="--text-fz: var(--mantine-font-size-xs); --text-lh: var(--mantine-line-height-xs); text-overflow: ellipsis; white-space: nowrap; overflow: hidden; font-weight: 500;"
+              >
+                test@test.com
+              </p>
+            </div>
+            <svg
+              class="tabler-icon tabler-icon-chevron-right"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1.5"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M9 6l6 6l-6 6"
+              />
+            </svg>
+          </div>
+        </a>
+      </div>
+    </div>
+  </nav>
+</DocumentFragment>
+`;
