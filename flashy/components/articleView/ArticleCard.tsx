@@ -2,7 +2,7 @@ import { FlashcardSet } from "@/app/types/flashcard";
 import { setIncrementFlashcardViews } from "@/app/utils/firebase";
 import classes from "@/components/articleView/ArticleCardsGrid.module.css";
 import { AspectRatio, Card, Container, Divider, Group, Space, Stack, Text, UnstyledButton } from "@mantine/core";
-import { IconBrandHipchat, IconEyeUp, IconThumbUp } from "@tabler/icons-react";
+import { IconBrandHipchat, IconEyeUp, IconFriends, IconThumbUp } from "@tabler/icons-react";
 import { Session } from "next-auth";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -36,12 +36,22 @@ export function ArticleCard({ flashcard }: ArticleCardProps) {
         <Space h={10} />
         <Stack align="left" w={"100%"}>
           <Stack gap={0}>
-            <Text c="dimmed" size="xs" tt="uppercase" fw={700}>👨‍🎨 {flashcard.creator?.name ?? "slettet bruker"}</Text>
+            <Text c="dimmed" size="xs" tt="uppercase" fw={700}>
+              👨‍🎨 {flashcard.creator?.name ?? "slettet bruker"}{" "}
+              {flashcard.coAuthors?.length ? (
+                <>
+                  <Text style={{ display: "inline" }}> +{flashcard.coAuthors.length}</Text>
+                  <IconFriends width={15} style={{ verticalAlign: "middle" }}></IconFriends>
+                </>
+              ) : (
+                <></>
+              )}
+            </Text>
             <Text c="dimmed" tt="capitalize" fw={600} size="xl">
               {flashcard.title}
             </Text>
           </Stack>
-          <Group justify="space-between" w={"100%"}>
+          <Group justify="space-between" w={"100%"} style={{ display: "flex" }}>
             <Container style={{ display: "flex", alignItems: "center" }}>
               <Text size="xl" fw={700} style={{ paddingRight: 2 }}>
                 {flashcard.numOfLikes ?? 0}

@@ -22,11 +22,7 @@ import { CreateFlashCardType, CreateNewCommentType, EditFlashCardType, EditFlash
 import { User } from "../types/user";
 import { convertDocumentRefToType, converter } from "./converter";
 
-export async function getAllUsers(actionUser: User): Promise<User[]> {
-  if (actionUser.role !== "admin") {
-    throw new Error("Du har ikke tilgang til å se alle brukere");
-  }
-
+export async function getAllUsers(): Promise<User[]> {
   const userCollection = collection(firestore, "users").withConverter(converter<User>());
   const userDocs = await getDocs(userCollection);
   return userDocs.docs.map((doc) => doc.data());
@@ -55,6 +51,24 @@ async function getViews(flashcardDocument: DocumentReference) {
   });
 }
 
+async function getCoAuthors(flashcardDocument: DocumentReference) {
+  const coAuthorsCollection = collection(flashcardDocument, "coAuthors");
+  const coAuthorsDocs = await getDocs(coAuthorsCollection);
+
+  const coAuthors: User[] = [];
+
+  await Promise.all(
+    coAuthorsDocs.docs.map(async (doc) => {
+      const user = await convertDocumentRefToType<User>(doc.data().coAuthor);
+      if (user) {
+        coAuthors.push(user);
+      }
+    })
+  );
+
+  return coAuthors;
+}
+
 export async function getMyFlashies(user: User): Promise<FlashcardSet[]> {
   const flashcardCollection = collection(firestore, "flashies");
   const userDoc = doc(firestore, "users", user.id);
@@ -64,14 +78,16 @@ export async function getMyFlashies(user: User): Promise<FlashcardSet[]> {
     flashcardDocs.docs.map(async (doc) => {
       try {
         const { numOfFavorites, numOfLikes, numOfComments } = await getNumOfFavouritesLikesComments(doc.ref);
+        const coAuthors = await getCoAuthors(doc.ref);
         const flashcardSet: FlashcardSet = {
           id: doc.id,
           creator: await convertDocumentRefToType<User>(doc.data().creator),
+          coAuthors: coAuthors,
           title: doc.data().title,
           numViews: doc.data().numViews,
           numOfLikes: numOfLikes,
-          numOfComments: numOfComments,
           numOfFavorites: numOfFavorites,
+          numOfComments: numOfComments,
           visibility: doc.data().isPublic ? Visibility.Public : Visibility.Private,
           createdAt: doc.data().createdAt.toDate(),
           popularityScore: calculatePopularityScore(doc.data().numViews, numOfFavorites, numOfLikes, numOfComments),
@@ -97,10 +113,12 @@ export async function getAllPublicFlashCardSets(currentUser: Session["user"]): P
     flashcardDocs.docs.map(async (doc) => {
       try {
         const { numOfFavorites, numOfLikes, numOfComments } = await getNumOfFavouritesLikesComments(doc.ref);
+        const coAuthors = await getCoAuthors(doc.ref);
         const flashcardSet: FlashcardSet = {
           id: doc.id,
           userHasFavorited: await getHasFavoritedFlashcard(doc.ref, currentUser.id),
           creator: await convertDocumentRefToType<User>(doc.data().creator),
+          coAuthors: coAuthors,
           title: doc.data().title,
           numViews: doc.data().numViews,
           numOfLikes: numOfLikes,
@@ -108,8 +126,48 @@ export async function getAllPublicFlashCardSets(currentUser: Session["user"]): P
           numOfComments: numOfComments,
           visibility: doc.data().isPublic ? Visibility.Public : Visibility.Private,
           createdAt: doc.data().createdAt.toDate(),
-          coverImage: doc.data().image,
           popularityScore: calculatePopularityScore(doc.data().numViews, numOfFavorites, numOfLikes, numOfComments),
+          coverImage: doc.data().image,
+        };
+        return flashcardSet;
+      } catch (e) {
+        console.log(`[DocId: ${doc.id}]`, e);
+      }
+      return null;
+    })
+  );
+
+  return (await allFlashcardSets).filter((flashcard) => flashcard != null) as FlashcardSet[];
+}
+
+export async function getAllContributingFlashcardSets(user: User): Promise<FlashcardSet[]> {
+  const flashcardCollection = collection(firestore, "flashies");
+  const userDoc = doc(firestore, "users", user.id);
+  const flashcardDocs = await getDocs(flashcardCollection);
+  const allFlashcardSets = Promise.all(
+    flashcardDocs.docs.map(async (doc) => {
+      const coAuthorscollection = collection(doc.ref, "coAuthors");
+      const coAuthorQuery = query(coAuthorscollection, where("coAuthor", "==", userDoc));
+      const coAuthorDocs = await getDocs(coAuthorQuery);
+      if (coAuthorDocs.empty) {
+        return null;
+      }
+      try {
+        const { numOfFavorites, numOfLikes, numOfComments } = await getNumOfFavouritesLikesComments(doc.ref);
+        const coAuthors = await getCoAuthors(doc.ref);
+        const flashcardSet: FlashcardSet = {
+          id: doc.id,
+          creator: await convertDocumentRefToType<User>(doc.data().creator),
+          coAuthors: coAuthors,
+          title: doc.data().title,
+          numViews: doc.data().numViews,
+          numOfLikes: numOfLikes,
+          numOfFavorites: numOfFavorites,
+          numOfComments: numOfComments,
+          visibility: doc.data().isPublic ? Visibility.Public : Visibility.Private,
+          createdAt: doc.data().createdAt.toDate(),
+          popularityScore: calculatePopularityScore(doc.data().numViews, numOfFavorites, numOfLikes, numOfComments),
+          coverImage: doc.data().image,
         };
         return flashcardSet;
       } catch (e) {
@@ -242,6 +300,7 @@ export async function getFlashcardSet(flashcardId: string, currentUserId: User["
   const creator = await convertDocumentRefToType<User>(flashcardData.creator);
 
   const views = await getViews(flashcardDocument);
+  const coAuthors = await getCoAuthors(flashcardDocument);
   const userHasLiked = await userHasLikedFlashcard(flashcardDocument, currentUserId);
   const { numOfFavorites, numOfLikes, numOfComments } = await getNumOfFavouritesLikesComments(flashcardDocument);
   const userHasFavorited = await getHasFavoritedFlashcard(flashcardDocument, currentUserId);
@@ -262,12 +321,12 @@ export async function getFlashcardSet(flashcardId: string, currentUserId: User["
       userHasFavorited: userHasFavorited,
       comments: comments,
       views: views,
+      coAuthors: coAuthors,
       visibility: visibility,
       createdAt: flashcardData.createdAt.toDate(),
       popularityScore: popularityScore,
       coverImage: flashcardData.image,
     };
-
     return flashcard;
   } catch (e) {
     console.log(`[DocId: ${flashcardDoc.id}]`, e);
@@ -382,10 +441,19 @@ export async function createNewFlashcard(flashcard: CreateFlashCardType) {
   ).catch((e) => {
     throw new Error("Feilet å opprette kortene for settet\n"+e);
   });
+
+  const coAuthorsCollection = collection(flashcardDoc, "coAuthors");
+
+  await Promise.all(
+    flashcard.coAuthors.map(async (coAuthorID) => {
+      const userRef = doc(firestore, "users", coAuthorID);
+      return await addDoc(coAuthorsCollection, { coAuthor: userRef });
+    })
+  );
 }
 
 export async function editFlashcard(actionUser: User, flashcard: FlashcardSet, updatedFlashcard: EditFlashCardType) {
-  if (actionUser.id !== flashcard.creator?.id && actionUser.role !== "admin") {
+  if (actionUser.id !== flashcard.creator?.id && actionUser.role !== "admin" && !flashcard.coAuthors?.some((coAuthor) => coAuthor.id === actionUser.id)) {
     throw new Error("Du har ikke tilgang til å redigere dette settet");
   }
 
@@ -426,6 +494,40 @@ export async function editFlashcard(actionUser: User, flashcard: FlashcardSet, u
     });
   }
 
+  const coAuthorsCollection = collection(flashcardDoc, "coAuthors");
+
+  // Delete coAuthors
+  const deletedCoAuthors = flashcard.coAuthors?.filter((coAuthor) => {
+    return !updatedFlashcard.coAuthors.some((updatedCoAuthor) => updatedCoAuthor === coAuthor.id);
+  });
+
+  if (deletedCoAuthors) {
+    await Promise.all(
+      deletedCoAuthors.map(async (coAuthor) => {
+        const coAuthorDoc = await getDocs(query(coAuthorsCollection, where("coAuthor", "==", doc(firestore, "users", coAuthor.id))));
+        await deleteDoc(coAuthorDoc.docs[0].ref);
+      })
+    ).catch(() => {
+      throw new Error("Feilet å slette coAuthors for settet");
+    });
+  }
+
+  // Add coAuthors
+  const newCoAuthors = updatedFlashcard.coAuthors.filter((coAuthor) => {
+    return !flashcard.coAuthors?.some((flashcardCoAuthor) => flashcardCoAuthor.id === coAuthor);
+  });
+
+  if (newCoAuthors) {
+    await Promise.all(
+      newCoAuthors.map(async (coAuthor) => {
+        const userRef = doc(firestore, "users", coAuthor);
+        await addDoc(coAuthorsCollection, { coAuthor: userRef });
+      })
+    ).catch(() => {
+      throw new Error("Feilet å legge til coAuthors for settet");
+    });
+  }
+
   // In order to return the correct id's
   const resultingViews: FlashcardView[] = updatedFlashcard.views.filter((view) => {
     return flashcard.views?.some((flashcardView) => flashcardView.id === view.id);
@@ -448,7 +550,7 @@ export async function editFlashcard(actionUser: User, flashcard: FlashcardSet, u
         newViewValues.image = newImage
         resultingViewValies.image = newImage
       }
-      
+
       const newView = await addDoc(viewsCollection, newViewValues);
       resultingViews.push({id: newView.id, ...resultingViewValies});
     })
@@ -477,7 +579,7 @@ export async function editFlashcard(actionUser: User, flashcard: FlashcardSet, u
 }
 
 export async function deleteFlashcardSet(actionUser: User, flashcard: FlashcardSet) {
-  if (actionUser.id !== flashcard.creator?.id && actionUser.role !== "admin") {
+  if (actionUser.id !== flashcard.creator?.id && actionUser.role !== "admin" && !flashcard.coAuthors?.some((coAuthor) => coAuthor.id === actionUser.id)) {
     throw new Error("Du har ikke tilgang til å redigere dette settet");
   }
 

@@ -1,13 +1,13 @@
 import { EditFlashCardType, EditFlashcardView, FlashcardSet, Visibility } from "@/app/types/flashcard";
-import { ConvertToBase64, editFlashcard } from "@/app/utils/firebase";
-import { ActionIcon, Button, Divider, FileButton, Flex, Grid, Group, Select, Space, Stack, Text, Textarea } from "@mantine/core";
+import { ConvertToBase64, editFlashcard, getAllUsers } from "@/app/utils/firebase";
+import { ActionIcon, Button, ComboboxData, Divider, FileButton, Flex, Grid, Group, MultiSelect, Select, Space, Stack, Text, Textarea, rem } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
-import { IconCheck, IconX } from "@tabler/icons-react";
+import { IconCheck, IconSearch, IconX } from "@tabler/icons-react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type EditFlashCardFormType = {
   flashcardSet: FlashcardSet;
@@ -17,12 +17,43 @@ export const EditFlashCardForm = ({ flashcardSet }: EditFlashCardFormType) => {
   const { data: session } = useSession();
   const [loading, setLoading] = useState(false);
   const [prevFlashcardSet, setPrevFlashcardSet] = useState<FlashcardSet>(flashcardSet);
+  const [userOptions, setUserOptions] = useState<ComboboxData | undefined>(undefined);
+
+  useEffect(() => {
+    const usersToComboBoxData = async () => {
+      try {
+        let users = await getAllUsers();
+        // filter out the user that created the initial flashcard set
+        users = users.filter((user) => user.id !== prevFlashcardSet.creator?.id);
+        return users.map((user) => ({
+          value: user.id,
+          label: user.name,
+        }));
+      } catch (error) {
+        console.error("Error fetching users:", error);
+        return [];
+      }
+    };
+
+    const fetchUserOptions = async () => {
+      try {
+        const users = await usersToComboBoxData();
+        setUserOptions(users);
+      } catch (error) {
+        console.error("Error fetching user options:", error);
+        setUserOptions([]);
+      }
+    };
+
+    fetchUserOptions();
+  }, [prevFlashcardSet.creator?.id]);
   const router = useRouter();
 
   const form = useForm<EditFlashCardType>({
     initialValues: {
       views: flashcardSet.views ?? [],
       visibility: flashcardSet.visibility ?? Visibility.Private,
+      coAuthors: flashcardSet.coAuthors?.map((coAuthor) => coAuthor.id) ?? [],
       coverImage: undefined,
     },
   });
@@ -36,9 +67,9 @@ export const EditFlashCardForm = ({ flashcardSet }: EditFlashCardFormType) => {
     const editedFlashcard: EditFlashCardType = {
       views: values.views,
       visibility: values.visibility,
+      coAuthors: values.coAuthors,
       coverImage: values.coverImage,
     };
-
     editFlashcard(session.user, prevFlashcardSet, editedFlashcard)
       .then((newViews) => {
         notifications.show({
@@ -78,13 +109,38 @@ export const EditFlashCardForm = ({ flashcardSet }: EditFlashCardFormType) => {
   };
 
   return (
-    <form onSubmit={form.onSubmit((values) => onSubmit(values))}>
+    <form onSubmit={form.onSubmit((values) => onSubmit(values as EditFlashCardType))}>
       <Stack>
         <Select label="Sett synlighet" placeholder="Rediger synlighet" data={Object.values(Visibility)} {...form.getInputProps("visibility")} maw={150} />
+        <Group>
+          <MultiSelect
+            label="Legge til medarbeidere?"
+            placeholder="Søk etter brukere"
+            data={userOptions || []}
+            searchable
+            clearable
+            value={form.values.coAuthors}
+            onChange={(value) => {
+              form.setFieldValue("coAuthors", value);
+            }}
+            w="400"
+            leftSection={<IconSearch style={{ width: rem(9), height: rem(9) }} stroke={1} />}
+          />
+        </Group>
         <Group align="center" my="xl">
           <Text fw={600}>Endre Forsidebilde:</Text>
           <FileButton onChange={(file) => form.setFieldValue("coverImage", file || undefined)} accept="image/png, image/jpeg">
-            {(props) => <Button {...props} color={form.getInputProps("coverImage").value?.name ? "green" : "blue"}>{form.getInputProps("coverImage").value?.name ? <>{form.getInputProps("coverImage").value?.name} <IconCheck stroke={3} style={{marginLeft: "8px"}} />  </>: "Last opp bilde"}</Button>}
+            {(props) => (
+              <Button {...props} color={form.getInputProps("coverImage").value?.name ? "green" : "blue"}>
+                {form.getInputProps("coverImage").value?.name ? (
+                  <>
+                    {form.getInputProps("coverImage").value?.name} <IconCheck stroke={3} style={{ marginLeft: "8px" }} />{" "}
+                  </>
+                ) : (
+                  "Last opp bilde"
+                )}
+              </Button>
+            )}
           </FileButton>
         </Group>
 

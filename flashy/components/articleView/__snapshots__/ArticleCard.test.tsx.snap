@@ -48,7 +48,7 @@ exports[`ArticleCard Snapshot Test Snapshot matches 1`] = `
             data-size="xs"
             style="--text-fz: var(--mantine-font-size-xs); --text-lh: var(--mantine-line-height-xs); font-weight: 700; text-transform: uppercase;"
           >
-            👨‍🎨 slettet bruker
+            👨‍🎨 slettet bruker 
           </p>
           <p
             class="mantine-focus-auto m-b6d8b162 mantine-Text-root"
@@ -60,7 +60,7 @@ exports[`ArticleCard Snapshot Test Snapshot matches 1`] = `
         </div>
         <div
           class="m-4081bf90 mantine-Group-root"
-          style="--group-gap: var(--mantine-spacing-md); --group-align: center; --group-justify: space-between; --group-wrap: wrap; width: 100%;"
+          style="--group-gap: var(--mantine-spacing-md); --group-align: center; --group-justify: space-between; --group-wrap: wrap; display: flex; width: 100%;"
         >
           <div
             class="m-7485cace mantine-Container-root"

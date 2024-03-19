@@ -1,15 +1,16 @@
 "use client";
 
 import { CreateFlashCardType, Visibility } from "@/app/types/flashcard";
-import { createNewFlashcard } from "@/app/utils/firebase";
-import { ActionIcon, Button, Divider, FileButton, Flex, Grid, Group, Select, Space, Stack, Text, TextInput, Textarea } from "@mantine/core";
+import { createNewFlashcard, getAllUsers } from "@/app/utils/firebase";
+import { Session } from "next-auth";
+import { ActionIcon, Button, ComboboxData, Divider, FileButton, Flex, Grid, Group, MultiSelect, Select, Space, Stack, Text, TextInput, Textarea } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { modals } from "@mantine/modals";
 import { notifications } from "@mantine/notifications";
-import { IconPhoto, IconCheck, IconX } from "@tabler/icons-react";
+import { IconSearch, IconPhoto, IconCheck, IconX } from "@tabler/icons-react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const regexLettersAndNumbers = new RegExp("^[a-zA-Z0-9æøåÆØÅ\\s]+$");
 
@@ -17,10 +18,40 @@ export const CreateFlashCardForm = () => {
   const router = useRouter();
   const { data: session } = useSession();
   const [loading, setLoading] = useState(false);
+  const [userOptions, setUserOptions] = useState<ComboboxData | undefined>(undefined);
+
+  useEffect(() => {
+    const fetchUserOptions = async () => {
+      try {
+        const users = await usersToComboBoxData(session);
+        setUserOptions(users);
+      } catch (error) {
+        console.error("Error fetching user options:", error);
+        setUserOptions([]);
+      }
+    };
+
+    fetchUserOptions();
+  }, [session]);
+
+  const usersToComboBoxData = async (session: Session | null) => {
+    try {
+      let users = await getAllUsers();
+      users = users.filter((user) => user.id !== session?.user?.id);
+      return users.map((user) => ({
+        value: user.id,
+        label: user.name,
+      }));
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      return [];
+    }
+  };
 
   const form = useForm<Omit<CreateFlashCardType, "creator">>({
     initialValues: {
       title: "",
+      coAuthors: [],
       views: [],
       visibility: Visibility.Public,
       createdAt: new Date(),
@@ -64,6 +95,7 @@ export const CreateFlashCardForm = () => {
 
     const flashcardSet: CreateFlashCardType = {
       creator: session.user,
+      coAuthors: values.coAuthors,
       title: values.title,
       views: values.views,
       visibility: values.visibility,
@@ -112,6 +144,24 @@ export const CreateFlashCardForm = () => {
           <FileButton onChange={(file) => form.setFieldValue("image", file || undefined)} accept="image/png, image/jpeg">
             {(props) => <Button {...props} color={form.getInputProps("image").value?.name ? "green" : "blue"}>{form.getInputProps("image").value?.name ? <>{form.getInputProps("image").value?.name} <IconCheck stroke={3} style={{marginLeft: "8px"}} />  </>: "Last opp bilde"}</Button>}
           </FileButton>
+        </Group>
+        {form.getInputProps("image") && (
+          <Text size="sm" ta="center" mt="sm">
+            Picked file: {form.getInputProps("image").value?.name || "No file picked"}
+          </Text>
+        )}
+        <Group>
+          <MultiSelect
+            label="Legge til medarbeidere?"
+            placeholder="Søk etter brukere"
+            data={userOptions || []}
+            searchable
+            clearable
+            value={form.values.coAuthors}
+            onChange={(value) => form.setFieldValue("coAuthors", value)}
+            w="400"
+            leftSection={<IconSearch style={{ width: rem(9), height: rem(9) }} stroke={1} />}
+          />
         </Group>
 
         <Divider />
