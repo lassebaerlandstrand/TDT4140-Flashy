@@ -2,12 +2,12 @@
 
 import { CreateFlashCardType, Visibility } from "@/app/types/flashcard";
 import { createNewFlashcard, getAllUsers } from "@/app/utils/firebase";
-import { Session } from "next-auth";
-import { ActionIcon, Button, ComboboxData, Divider, FileButton, Flex, Grid, Group, MultiSelect, Select, Space, Stack, Text, TextInput, Textarea } from "@mantine/core";
+import { ActionIcon, Button, ComboboxData, Divider, FileButton, Flex, Grid, Group, MultiSelect, Select, Space, Stack, Text, TextInput, Textarea, rem } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { modals } from "@mantine/modals";
 import { notifications } from "@mantine/notifications";
-import { IconSearch, IconPhoto, IconCheck, IconX } from "@tabler/icons-react";
+import { IconCheck, IconPhoto, IconSearch, IconX } from "@tabler/icons-react";
+import { Session } from "next-auth";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -142,7 +142,17 @@ export const CreateFlashCardForm = () => {
         <Group align="center" my="xl">
           <Text fw={600}>Forsidebilde:</Text>
           <FileButton onChange={(file) => form.setFieldValue("image", file || undefined)} accept="image/png, image/jpeg">
-            {(props) => <Button {...props} color={form.getInputProps("image").value?.name ? "green" : "blue"}>{form.getInputProps("image").value?.name ? <>{form.getInputProps("image").value?.name} <IconCheck stroke={3} style={{marginLeft: "8px"}} />  </>: "Last opp bilde"}</Button>}
+            {(props) => (
+              <Button {...props} color={form.getInputProps("image").value?.name ? "green" : "blue"}>
+                {form.getInputProps("image").value?.name ? (
+                  <>
+                    {form.getInputProps("image").value?.name} <IconCheck stroke={3} style={{ marginLeft: "8px" }} />{" "}
+                  </>
+                ) : (
+                  "Last opp bilde"
+                )}
+              </Button>
+            )}
           </FileButton>
         </Group>
         {form.getInputProps("image") && (

@@ -109,7 +109,7 @@ export const EditFlashCardForm = ({ flashcardSet }: EditFlashCardFormType) => {
   };
 
   return (
-    <form onSubmit={form.onSubmit((values) => onSubmit(values as EditFlashCardType))}>
+    <form onSubmit={form.onSubmit((values) => onSubmit(values))}>
       <Stack>
         <Select label="Sett synlighet" placeholder="Rediger synlighet" data={Object.values(Visibility)} {...form.getInputProps("visibility")} maw={150} />
         <Group>
