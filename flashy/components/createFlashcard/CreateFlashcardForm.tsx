@@ -155,11 +155,6 @@ export const CreateFlashCardForm = () => {
             )}
           </FileButton>
         </Group>
-        {form.getInputProps("image") && (
-          <Text size="sm" ta="center" mt="sm">
-            Picked file: {form.getInputProps("image").value?.name || "No file picked"}
-          </Text>
-        )}
         <Group>
           <MultiSelect
             label="Legge til medarbeidere?"

@@ -1,5 +1,5 @@
 import { FlashcardView } from "@/app/types/flashcard";
-import { Button, Checkbox, Group, Stack, Text, Title, UnstyledButton, useMantineTheme } from "@mantine/core";
+import { Button, Checkbox, Group, Stack, Text, Title, useMantineTheme } from "@mantine/core";
 import { a, useSpring } from '@react-spring/web';
 import Image from "next/image";
 import { useState } from "react";
@@ -23,7 +23,7 @@ export default function Card({ view, hasCopy, toggleDifficult }: CardProps) {
     <>
       <a.div style={{
         display: "flex", alignItems: "center", width: "800px", height: "100%", opacity: opacity.to(o => 1 - o), transform, position: "absolute", top: 0, left: "180px", backgroundColor: theme.colors.orange[6],
-        cursor: "pointer", border: "none", borderRadius: "10px", pointerEvents: `${ !flipped ? "auto" : "none" }`
+        cursor: "pointer", border: "none", borderRadius: "10px", pointerEvents: `${!flipped ? "auto" : "none"}`
       }} onClick={() => setFlipped(state => !state)} >
         <Stack align="center" style={{ width: "100%", color: "white" }}>
           <Title style={{ textAlign: "center" }} >Spørsmål</Title>
@@ -37,7 +37,7 @@ export default function Card({ view, hasCopy, toggleDifficult }: CardProps) {
           >
             {view.front}
           </Text>
-          {view.image && <Image src={view.image} width={340} height={100} objectFit="contain" alt="Bilde" />}
+          {view.image && <Image src={view.image} width={340} height={150} objectFit="contain" alt="Bilde" />}
         </Stack>
         {!view.isCopy && (
           <Group style={{ position: "absolute", left: "645px", top: "355px" }} onClick={(e) => e.stopPropagation()}>
@@ -67,7 +67,7 @@ export default function Card({ view, hasCopy, toggleDifficult }: CardProps) {
       </a.div>
       <a.div style={{
         display: "flex", alignItems: "center", width: "800px", height: "100%", opacity, transform, rotateX: '180deg', position: "absolute", top: 0, left: "180px", backgroundColor: theme.colors.grape[5],
-        cursor: "pointer", border: "none", borderRadius: "10px", pointerEvents: `${ flipped ? "auto" : "none" }`
+        cursor: "pointer", border: "none", borderRadius: "10px", pointerEvents: `${flipped ? "auto" : "none"}`
       }} onClick={() => setFlipped(state => !state)} >
         <Stack align="center" style={{ width: "100%", color: "white" }}>
           <Title style={{ textAlign: "center" }} >Fasit</Title>
