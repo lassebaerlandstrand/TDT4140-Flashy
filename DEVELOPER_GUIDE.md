@@ -75,6 +75,25 @@ When you push from a new branch, you may need to set a upstream branch, just fol
 
 When you plan to start on a new issue, you need to create a new branch (never make changes directly to `dev` or `main`). The branch name should be the issue number followed by a short description of the issue. For example, if you are working on issue #1, you should create a branch named `1/implementing-new-feature`. This will ensure that the branch is automatically linked to that issue, and add some QOL improvements when creating merge requests.
 
+When facing conflicts during branch merging, follow these steps to resolve them:
+
+1. Identify Conflicts:
+Git notifies conflicts when merging branches with overlapping changes.
+
+2. Resolve Conflicts Locally:
+Open affected files and manually edit conflicting sections, removing Git's conflict markers.
+
+3. Review & Test Changes:
+Ensure the merged code incorporates all desired modifications and functions correctly. Test thoroughly.
+
+4. Commit Changes:
+Commit resolved conflicts with a descriptive message summarizing the changes made.
+
+5. Push Changes:
+Push resolved changes to the remote repository, updating the branch.
+
+By adhering to these steps, conflicts can be efficiently managed, maintaining code integrity and collaboration.
+
 ### Creating a new branch
 
 This is a step by step guide on how to create a new branch. 
@@ -128,6 +147,8 @@ When the review is done, you are ready to merge into `dev`. Click the "Merge pul
 ## Milestones
 
 We will use milestones to track sprint iterations. For each sprint iteration, we will have new milestone in GitLab. Utilizing milestones allows us to set specific goals, plans and allocate tasks, and monitor the overall advancement of our project.
+
+Additionally, milestones serve as pivotal markers for sprint planning, enabling the team to delineate targeted objectives for development efforts within defined timeframes. This structured approach enhances coordination and facilitates cohesive workflow management throughout the project lifecycle.
 
 ## Conventions
 
