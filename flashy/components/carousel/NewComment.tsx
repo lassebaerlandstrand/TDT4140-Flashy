@@ -50,7 +50,7 @@ export const NewComment = ({ flashcard, actionUser }: NewCommentType) => {
   }
 
   return (
-    <Paper py="xl">
+    <Paper py="xl" style={{backgroundColor: "transparent"}}>
       <Stack gap={12}>
         <form onSubmit={form.onSubmit((values) => onSubmit(values))}>
           <Textarea

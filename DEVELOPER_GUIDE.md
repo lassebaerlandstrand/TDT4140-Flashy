@@ -2,6 +2,8 @@
 
 This document is intended to provide information about the project structure, best practices and other useful information for contributors.
 
+We are using the [Next.js project structure](https://nextjs.org/docs/app/building-your-application/routing). 
+
 ## Prerequisites
 - Node v21.6 (the latest version)
 - NVM v1.12
@@ -18,14 +20,6 @@ This document is intended to provide information about the project structure, be
 ### Node
 `nvm install 21`, then `nvm use 21`
 
-### Mantine
-- `npm install @mantine/core @mantine/hooks`
-- `npm install embla-carousel-react@^7.1.0 @mantine/carousel`
-
-## Project structure
-
-TBA
-We are using the [Next.js project structure](https://nextjs.org/docs/app/building-your-application/routing). 
 
 ## Workflow
 
@@ -149,6 +143,8 @@ When the review is done, you are ready to merge into `dev`. Click the "Merge pul
 We will use milestones to track sprint iterations. For each sprint iteration, we will have new milestone in GitLab. Utilizing milestones allows us to set specific goals, plans and allocate tasks, and monitor the overall advancement of our project.
 
 Additionally, milestones serve as pivotal markers for sprint planning, enabling the team to delineate targeted objectives for development efforts within defined timeframes. This structured approach enhances coordination and facilitates cohesive workflow management throughout the project lifecycle.
+
+Active engagement with milestones is encouraged, including regular progress updates, task completion, and addressing any obstacles encountered. By leveraging milestones, we enhance coordination, facilitate communication, and ensure project success.
 
 ## Conventions
 
