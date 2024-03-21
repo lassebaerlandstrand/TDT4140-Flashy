@@ -2,6 +2,8 @@
 
 This document is intended to provide information about the project structure, best practices and other useful information for contributors.
 
+We are using the [Next.js project structure](https://nextjs.org/docs/app/building-your-application/routing). 
+
 ## Prerequisites
 - Node v21.6 (the latest version)
 - NVM v1.12
@@ -18,14 +20,6 @@ This document is intended to provide information about the project structure, be
 ### Node
 `nvm install 21`, then `nvm use 21`
 
-### Mantine
-- `npm install @mantine/core @mantine/hooks`
-- `npm install embla-carousel-react@^7.1.0 @mantine/carousel`
-
-## Project structure
-
-TBA
-We are using the [Next.js project structure](https://nextjs.org/docs/app/building-your-application/routing). 
 
 ## Workflow
 
