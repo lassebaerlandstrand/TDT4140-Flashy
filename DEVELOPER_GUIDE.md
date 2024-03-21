@@ -144,6 +144,8 @@ We will use milestones to track sprint iterations. For each sprint iteration, we
 
 Additionally, milestones serve as pivotal markers for sprint planning, enabling the team to delineate targeted objectives for development efforts within defined timeframes. This structured approach enhances coordination and facilitates cohesive workflow management throughout the project lifecycle.
 
+Active engagement with milestones is encouraged, including regular progress updates, task completion, and addressing any obstacles encountered. By leveraging milestones, we enhance coordination, facilitate communication, and ensure project success.
+
 ## Conventions
 
 (This is a suggestion, we can discuss this in the next meeting)
