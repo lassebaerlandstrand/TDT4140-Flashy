@@ -4,13 +4,25 @@ This document is intended to provide information about the project structure, be
 
 We are using the [Next.js project structure](https://nextjs.org/docs/app/building-your-application/routing). 
 
+## Tech stack
+
+### Frontend:
+- React
+- TypeScript
+- Next.js
+- Mantine
+
+### Backend:
+- Firebase
+
+### Testing:
+- Jest
+- React Testing Library
+
 ## Prerequisites
 - Node v21.6 (the latest version)
 - NVM v1.12
 - Next.js v14
-- Mantine/carousel v7.5.2
-- Embla-Carousel-React v7.1
-- Mantine/core & hooks v7.5
 
 ## How to install
 
@@ -20,6 +32,9 @@ We are using the [Next.js project structure](https://nextjs.org/docs/app/buildin
 ### Node
 `nvm install 21`, then `nvm use 21`
 
+## Environment variables
+
+In order to get the environment variables needed to run the project, please contact me (Lasse) and I will provide you with the necessary values.
 
 ## Workflow
 
